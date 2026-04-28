@@ -6,9 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-
-@NoArgsConstructor
-@AllArgsConstructor
 public class Cuidador {
     private int idCuidador;
     private String nombre;

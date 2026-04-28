@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Mascota {
     private int idMascota;
     private String nombre;

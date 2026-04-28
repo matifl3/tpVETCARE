@@ -9,8 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Reserva {
     private int idReserva;
     private Date fecha;
