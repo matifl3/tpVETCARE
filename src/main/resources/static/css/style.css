@@ -1,0 +1,13 @@
+body{
+    margin:0;
+    font-family: Arial;
+    background:grey;
+    color: white;
+}
+
+header{
+    background: black;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
