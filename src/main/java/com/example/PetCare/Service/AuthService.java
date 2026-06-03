@@ -17,10 +17,18 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Usuario registrar(String nombre, String apellido, String email,
-                              String password, RolUsuario rol) {
+    // Función para registrar un usuario común desde el formulario público.
+    // Solo permite crear usuarios con rol USUARIO. Rechaza cualquier intento de registro
+    // con roles profesionales (VETERINARIO, PASEADOR, etc.) o ADMINISTRADOR.
+    // Verifica que el email no esté duplicado. La contraseña se guarda hasheada con BCrypt.
+    // - Matias Z.
+    public Usuario registrar(String nombre, String apellido, String email, String password, RolUsuario rol) {
+        if (rol != RolUsuario.USUARIO) {
+            throw new IllegalArgumentException("El registro público solo está disponible para usuarios. Los profesionales deben postularse.");
+        }
+
         if (usuarioRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("El email ya está registrado");
+            throw new IllegalArgumentException("El email ya está registrado en  el sistema");
         }
 
         Usuario usuario = new Usuario();
@@ -34,6 +42,11 @@ public class AuthService {
         return usuarioRepository.save(usuario);
     }
 
+    /* Función para autenticar un usuario al iniciar sesión.*/
+    // Busca al usuario por email, verifica que esté activo, que la contraseña
+    // coincida y que el rol seleccionado en el formulario
+    // sea exactamente el mismo que tiene asignado en la base de datos.
+    // - Matias Z.
     public Usuario autenticar(String email, String password, RolUsuario rol) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Email no registrado"));
@@ -43,7 +56,7 @@ public class AuthService {
         }
 
         if (!passwordEncoder.matches(password, usuario.getPassword())) {
-            throw new IllegalArgumentException("Contraseña incorrecta");
+            throw new IllegalArgumentException("Contraseña incorrecta. Intente nuevamente");
         }
 
         if (usuario.getRol() != rol) {

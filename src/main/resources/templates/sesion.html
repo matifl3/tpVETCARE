@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare - Estado de Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: #f5f5fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+        .card h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+        .card > p {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 24px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .badge.activo {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge.inactivo {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .badge.info {
+            background: #e8f0fe;
+            color: #302b63;
+        }
+        .field {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f5;
+            font-size: 14px;
+        }
+        .field .label { color: #888; font-weight: 500; }
+        .field .value { color: #1a1a2e; font-weight: 600; }
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-secondary {
+            background: #f0f0f5;
+            color: #555;
+        }
+        .btn-secondary:hover { background: #e8e8ef; }
+        .btn-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .btn-danger:hover { background: #f5c6cb; }
+        .no-sesion {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .no-sesion .icon { font-size: 56px; display: block; margin-bottom: 16px; }
+        .no-sesion p { color: #888; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div th:if="${logueado}">
+            <h1>👤 Sesión activa</h1>
+            <p>Estado de la sesión del usuario logueado</p>
+
+            <span class="badge activo" th:if="${activo}">✓ Usuario activo</span>
+            <span class="badge inactivo" th:unless="${activo}">✗ Usuario desactivado</span>
+            <span class="badge info" th:text="'Rol: ' + ${rol}">Rol: USUARIO</span>
+
+            <div class="field">
+                <span class="label">Nombre</span>
+                <span class="value" th:text="${nombre}">Juan Pérez</span>
+            </div>
+            <div class="field">
+                <span class="label">Email</span>
+                <span class="value" th:text="${email}">correo@ejemplo.com</span>
+            </div>
+            <div class="field">
+                <span class="label">Dashboard</span>
+                <span class="value" th:text="${dashboardUrl}">/dashboard/usuario</span>
+            </div>
+
+            <div class="actions">
+                <a th:href="${dashboardUrl}" class="btn btn-primary">Ir al Dashboard</a>
+                <a href="/logout" class="btn btn-danger">Cerrar sesión</a>
+            </div>
+        </div>
+
+        <div th:unless="${logueado}" class="no-sesion">
+            <span class="icon">🔒</span>
+            <h1>Sin sesión activa</h1>
+            <p>No hay ningún usuario logueado en este momento.</p>
+            <a href="/" class="btn btn-primary">Ir al inicio</a>
+        </div>
+    </div>
+</body>
+</html>
