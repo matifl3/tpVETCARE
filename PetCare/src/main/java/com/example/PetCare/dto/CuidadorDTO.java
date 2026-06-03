@@ -1,12 +1,13 @@
-package model;
+package com.example.PetCare.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
-public class Cuidador {
+@NoArgsConstructor
+@AllArgsConstructor
+public class CuidadorDTO {
     private int idCuidador;
     private String nombre;
     private String apellido;
@@ -14,5 +15,4 @@ public class Cuidador {
     private String telefono;
     private String email;
     private boolean disponible;
-
 }

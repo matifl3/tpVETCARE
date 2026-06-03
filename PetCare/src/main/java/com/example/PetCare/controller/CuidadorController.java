@@ -1,8 +1,7 @@
-package Controller;
+package com.example.PetCare.controller;
 
-
-import model.Cuidador;
-import Service.CuidadorService;
+import com.example.PetCare.dto.CuidadorDTO;
+import com.example.PetCare.service.CuidadorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,48 +19,42 @@ public class CuidadorController {
     }
 
     @GetMapping
-    public List<Cuidador> listarTodos() {
+    public List<CuidadorDTO> listarTodos() {
         return cuidadorService.listarTodos();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Cuidador> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<CuidadorDTO> buscarPorId(@PathVariable Integer id) {
         return cuidadorService.buscarPorId(id)
-                .map(cuidador -> ResponseEntity.ok(cuidador))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<String> crear(@RequestBody Cuidador cuidador) {
-        boolean creado = cuidadorService.crear(cuidador);
-
+    public ResponseEntity<String> crear(@RequestBody CuidadorDTO dto) {
+        boolean creado = cuidadorService.crear(dto);
         if (creado) {
             return ResponseEntity.status(HttpStatus.CREATED).body("Cuidador creado correctamente");
         }
-
         return ResponseEntity.badRequest().body("No se pudo crear el cuidador");
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizar(@PathVariable Integer id,
-                                             @RequestBody Cuidador cuidador) {
-        boolean actualizado = cuidadorService.actualizar(id, cuidador);
-
+                                             @RequestBody CuidadorDTO dto) {
+        boolean actualizado = cuidadorService.actualizar(id, dto);
         if (actualizado) {
             return ResponseEntity.ok("Cuidador actualizado correctamente");
         }
-
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminar(@PathVariable Integer id) {
         boolean eliminado = cuidadorService.eliminar(id);
-
         if (eliminado) {
             return ResponseEntity.ok("Cuidador eliminado correctamente");
         }
-
         return ResponseEntity.notFound().build();
     }
 }

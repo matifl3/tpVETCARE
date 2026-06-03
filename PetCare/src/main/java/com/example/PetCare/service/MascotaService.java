@@ -1,0 +1,94 @@
+package com.example.PetCare.service;
+
+import com.example.PetCare.dto.MascotaDTO;
+import com.example.PetCare.model.Mascota;
+import com.example.PetCare.model.Usuario;
+import com.example.PetCare.repository.MascotaRepository;
+import com.example.PetCare.repository.UsuarioRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class MascotaService {
+
+    private final MascotaRepository mascotaRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public MascotaService(MascotaRepository mascotaRepository, UsuarioRepository usuarioRepository) {
+        this.mascotaRepository = mascotaRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
+
+    public List<MascotaDTO> listarTodos() {
+        return mascotaRepository.findAll().stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    public Optional<MascotaDTO> buscarPorId(Integer idMascota) {
+        return mascotaRepository.findById(idMascota)
+                .map(this::toDTO);
+    }
+
+    public boolean crear(MascotaDTO dto) {
+        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);
+        if (usuario == null) {
+            return false;
+        }
+        Mascota entity = toEntity(dto, usuario);
+        mascotaRepository.save(entity);
+        return true;
+    }
+
+    public boolean actualizar(Integer idMascota, MascotaDTO dto) {
+        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);
+        if (usuario == null) {
+            return false;
+        }
+        return mascotaRepository.findById(idMascota)
+                .map(entity -> {
+                    entity.setNombre(dto.getNombre());
+                    entity.setEspecie(dto.getEspecie());
+                    entity.setRaza(dto.getRaza());
+                    entity.setEdad(dto.getEdad());
+                    entity.setPeso(dto.getPeso());
+                    entity.setUsuario(usuario);
+                    mascotaRepository.save(entity);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    public boolean eliminar(Integer idMascota) {
+        if (mascotaRepository.existsById(idMascota)) {
+            mascotaRepository.deleteById(idMascota);
+            return true;
+        }
+        return false;
+    }
+
+    private MascotaDTO toDTO(Mascota entity) {
+        MascotaDTO dto = new MascotaDTO();
+        dto.setIdMascota(entity.getIdMascota());
+        dto.setNombre(entity.getNombre());
+        dto.setEspecie(entity.getEspecie());
+        dto.setRaza(entity.getRaza());
+        dto.setEdad(entity.getEdad());
+        dto.setPeso(entity.getPeso());
+        dto.setIdUsuario(entity.getUsuario().getIdUsuario());
+        return dto;
+    }
+
+    private Mascota toEntity(MascotaDTO dto, Usuario usuario) {
+        Mascota entity = new Mascota();
+        entity.setNombre(dto.getNombre());
+        entity.setEspecie(dto.getEspecie());
+        entity.setRaza(dto.getRaza());
+        entity.setEdad(dto.getEdad());
+        entity.setPeso(dto.getPeso());
+        entity.setUsuario(usuario);
+        return entity;
+    }
+}

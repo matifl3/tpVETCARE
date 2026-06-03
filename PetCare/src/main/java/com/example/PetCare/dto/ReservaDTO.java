@@ -1,24 +1,22 @@
-package model;
+package com.example.PetCare.dto;
 
-import java.sql.Date;
-import java.sql.Time;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Data
-
-public class Reserva {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ReservaDTO {
     private int idReserva;
-    private Date fecha;
-    private Time hora;
+    private LocalDate fecha;
+    private LocalTime hora;
     private String servicio;
     private String estado;
     private int idUsuario;
     private int idCuidador;
     private int idMascota;
-
-
 }
