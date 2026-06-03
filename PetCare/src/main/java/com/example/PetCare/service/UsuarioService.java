@@ -1,6 +1,6 @@
 package com.example.PetCare.service;
 
-import com.example.PetCare.dto.UsuarioDTO;
+import com.example.PetCare.enums.Rol;
 import com.example.PetCare.model.Usuario;
 import com.example.PetCare.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
@@ -17,35 +17,30 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public List<UsuarioDTO> listarTodos() {
-        return usuarioRepository.findAll().stream()
-                .map(this::toDTO)
-                .toList();
+    public List<Usuario> listarTodos() {
+        return usuarioRepository.findAll();
     }
 
-    public Optional<UsuarioDTO> buscarPorId(Integer idUsuario) {
-        return usuarioRepository.findById(idUsuario)
-                .map(this::toDTO);
+    public Optional<Usuario> buscarPorId(Integer idUsuario) {
+        return usuarioRepository.findById(idUsuario);
     }
 
-    public boolean crear(UsuarioDTO dto) {
-        Usuario entity = toEntity(dto);
-        usuarioRepository.save(entity);
-        return true;
+    public Usuario crear(Usuario entity) {
+        return usuarioRepository.save(entity);
+
     }
 
-    public boolean actualizar(Integer idUsuario, UsuarioDTO dto) {
-        return usuarioRepository.findById(idUsuario)
-                .map(entity -> {
-                    entity.setNombre(dto.getNombre());
-                    entity.setApellido(dto.getApellido());
-                    entity.setTelefono(dto.getTelefono());
-                    entity.setEmail(dto.getEmail());
-                    entity.setDireccion(dto.getDireccion());
-                    usuarioRepository.save(entity);
-                    return true;
-                })
-                .orElse(false);
+    public Usuario actualizar(Usuario entity) {
+        Usuario usu= usuarioRepository.findById(entity.getIdUsuario()).orElse(null);
+            usu.setNombre(entity.getNombre());
+            usu.setApellido(entity.getApellido());
+            usu.setEmail(entity.getEmail());
+            usu.setTelefono(entity.getTelefono());
+            usu.setDireccion(entity.getDireccion());
+            usu.setTelefono(entity.getTelefono());
+            usu.setActivo(true);
+            return usu;
+
     }
 
     public boolean eliminar(Integer idUsuario) {
@@ -56,30 +51,5 @@ public class UsuarioService {
         return false;
     }
 
-    /// pasa de entidad a DTO
-    private UsuarioDTO toDTO(Usuario entity) {
-        UsuarioDTO dto = new UsuarioDTO();
-        dto.setIdUsuario(entity.getIdUsuario());
-        dto.setNombre(entity.getNombre());
-        dto.setApellido(entity.getApellido());
-        dto.setTelefono(entity.getTelefono());
-        dto.setEmail(entity.getEmail());
-        dto.setDireccion(entity.getDireccion());
-        dto.setRol(entity.getRol());
-        dto.setActivo(entity.isActivo());
-        return dto;
-    }
 
-    ///  pasa de DTO a entidad
-    private Usuario toEntity(UsuarioDTO dto) {
-        Usuario entity = new Usuario();
-        entity.setNombre(dto.getNombre());
-        entity.setApellido(dto.getApellido());
-        entity.setTelefono(dto.getTelefono());
-        entity.setEmail(dto.getEmail());
-        entity.setDireccion(dto.getDireccion());
-        entity.setRol(dto.getRol());
-        entity.setActivo(dto.isActivo());
-        return entity;
-    }
 }
