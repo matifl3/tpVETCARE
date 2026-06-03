@@ -12,5 +12,7 @@ import java.util.List;
 public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
     List<Mascota> findByEspecieAndActivoTrue(String especie);
     List<Mascota> findByRazaAndActivoTrue(String especie);
+    List<Mascota> findByNombreAndActivoTrue(String especie);
+
 
 }

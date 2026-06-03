@@ -36,6 +36,10 @@ public class MascotaController {
     public List<Mascota> buscarPorRaza(@PathVariable String raza) {
         return mascotaService.buscarPorRaza(raza);
     }
+    @GetMapping("/nombre/{nombre}")
+    public List<Mascota> buscarPorNombre(@PathVariable String nombre) {
+        return mascotaService.buscarPorRaza(nombre);
+    }
 
     @PostMapping
     public MascotaDTO crear(@RequestBody MascotaDTO dto) {

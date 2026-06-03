@@ -39,6 +39,9 @@ public class MascotaService {
     public List<Mascota> buscarPorRaza(String raza) {
         return mascotaRepository.findByRazaAndActivoTrue(raza);
     }
+    public List<Mascota> buscarPorNombre(String nombre) {
+        return mascotaRepository.findByRazaAndActivoTrue(nombre);
+    }
 
 
     public boolean crear(MascotaDTO dto) {
