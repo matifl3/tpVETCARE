@@ -9,11 +9,9 @@ import org.hibernate.annotations.SQLDelete;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "mascota")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE mascota SET activo = false WHERE id_mascota = ?")
 public class Mascota {
 
     @Id
