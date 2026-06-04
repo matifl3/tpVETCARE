@@ -85,7 +85,7 @@ public class MascotaService {
         return false;
     }
  /// pasa de dto a entidad
-    private MascotaDTO toDTO(Mascota entity) {
+    public MascotaDTO toDTO(Mascota entity) {
         MascotaDTO dto = new MascotaDTO();
         dto.setIdMascota(entity.getIdMascota());
         dto.setNombre(entity.getNombre());
@@ -100,7 +100,7 @@ public class MascotaService {
         return dto;
     }
     /// pasa de entidad a dto
-    private Mascota toEntity(MascotaDTO dto, Usuario usuario) {
+    public Mascota toEntity(MascotaDTO dto, Usuario usuario) {
         Mascota entity = new Mascota();
         entity.setNombre(dto.getNombre());
         entity.setEspecie(dto.getEspecie());
