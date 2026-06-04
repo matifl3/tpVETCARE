@@ -22,6 +22,7 @@ public class MascotaService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    /// listados
     public List<MascotaDTO> listarTodos() {
         return mascotaRepository.findAll().stream()
                 .map(this::toDTO)
@@ -43,7 +44,7 @@ public class MascotaService {
         return mascotaRepository.findByNombreAndActivoTrue(nombre);
     }
 
-
+    /// ABM
     public boolean crear(MascotaDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);
         if (usuario == null) {
