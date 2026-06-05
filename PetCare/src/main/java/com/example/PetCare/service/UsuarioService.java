@@ -1,6 +1,5 @@
 package com.example.PetCare.service;
 
-import com.example.PetCare.enums.Rol;
 import com.example.PetCare.model.Usuario;
 import com.example.PetCare.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
