@@ -1,7 +1,6 @@
 package com.example.PetCare.repository;
 
 import com.example.PetCare.model.Turno;
-import org.apache.catalina.LifecycleState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +14,7 @@ import java.util.List;
 public interface TurnoRepository extends JpaRepository<Turno, Integer> {
     List<Turno> findAllByActivoTrue();
     List<Turno> findByMascotaIdMascota(Integer idMascota);
-    List<Turno> findByProfesionalId(Integer id);
+    List<Turno> findByProfesionalIdUsuario(Integer id);
 
     List<Turno> findByFechaBefore(LocalDate fecha);   // turnos antes de una fecha
     List<Turno> findByFechaAfter(LocalDate fecha);    // turnos después de una fecha

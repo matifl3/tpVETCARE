@@ -26,4 +26,5 @@ public class Turno {
     @ManyToOne
     @JoinColumn(name = "id_profesional")
     private Profesional profesional;
+    private boolean activo;
 }

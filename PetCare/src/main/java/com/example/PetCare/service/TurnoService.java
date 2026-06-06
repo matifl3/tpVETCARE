@@ -7,10 +7,12 @@ import com.example.PetCare.model.Turno;
 import com.example.PetCare.repository.MascotaRepository;
 import com.example.PetCare.repository.ProfesionalRepository;
 import com.example.PetCare.repository.TurnoRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 public class TurnoService {
     private final TurnoRepository turnoRepository;
     private final MascotaRepository mascotaRepository;
@@ -38,7 +40,7 @@ public class TurnoService {
     }
 
     public List<TurnoDTO> listarTurnoXProfesional(Integer idProfesional){
-        return turnoRepository.findByProfesionalId(idProfesional).stream().map(a->toDTO(a)).toList();
+        return turnoRepository.findByProfesionalIdUsuario(idProfesional).stream().map(a->toDTO(a)).toList();
     }
 
     public List<TurnoDTO> listarFechaBefore(LocalDate fecha){
@@ -98,7 +100,7 @@ public class TurnoService {
         dto.setEstadoTurno(entity.getEstadoTurno());
         dto.setFecha(entity.getFecha());
         dto.setId_mascota(entity.getMascota().getIdMascota());
-        dto.setId_profesional(entity.getProfesional().getId());
+        dto.setId_profesional(entity.getProfesional().getIdUsuario());
         return dto;
     }
     /// pasa de entidad a dto

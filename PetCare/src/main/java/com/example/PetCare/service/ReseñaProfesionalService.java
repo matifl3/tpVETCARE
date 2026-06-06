@@ -90,7 +90,7 @@ public class ReseñaProfesionalService {
     private ReseñaProfesionalDTO toDTO (ReseñaProfesional entity){
         ReseñaProfesionalDTO dto=new ReseñaProfesionalDTO();
         dto.setId(entity.getId());
-        dto.setId_profesional(entity.getProfesional().getId());
+        dto.setId_profesional(entity.getProfesional().getIdUsuario());
         dto.setId_usuario(entity.getUsuario().getIdUsuario());
         dto.setFecha(entity.getFecha());
         dto.setTexto(entity.getTexto());

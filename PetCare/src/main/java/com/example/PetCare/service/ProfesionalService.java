@@ -20,9 +20,9 @@ public class ProfesionalService {
     }
 
     public Profesional actualizar(int id, Profesional profesional){
-        Profesional existente = profesionalRepository.findById(profesional.getId())
+        Profesional existente = profesionalRepository.findById(profesional.getIdUsuario())
                 .orElseThrow(() -> new NoEncontradoException("El profesional no fue encontrado"));
-        profesional.setId(id);
+        profesional.setIdUsuario(id);
         return profesionalRepository.save(profesional);
     }
 

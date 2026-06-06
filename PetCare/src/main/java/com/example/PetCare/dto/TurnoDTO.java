@@ -15,4 +15,5 @@ public class TurnoDTO {
     private int id_mascota;
     private int id_profesional;
     private Estado_Turno estadoTurno;
+    private boolean activo;
 }
