@@ -1,5 +1,7 @@
 package com.example.PetCare.controller;
 
+import com.example.PetCare.dto.ProfesionalDTO;
+import com.example.PetCare.enums.Rol;
 import com.example.PetCare.model.Profesional;
 import com.example.PetCare.service.ProfesionalService;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +32,32 @@ public class ProfesionalController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Profesional>> listarTodos(){
-        return ResponseEntity.ok(profesionalService.listarTodos());
+    public ResponseEntity<List<ProfesionalDTO>> listarTodos(){
+        return ResponseEntity.ok(profesionalService.listarTodosDTO());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfesionalDTO> buscarPorId(@PathVariable int id){
+        return profesionalService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/rol/{rol}")
+    public ResponseEntity<List<ProfesionalDTO>> buscarPorRol(@PathVariable Rol rol){
+        return ResponseEntity.ok(profesionalService.buscarPorRol(rol));
+    }
+
+    @GetMapping("/apellido/{apellido}")
+    public ResponseEntity<List<ProfesionalDTO>> buscarPorApellido(@PathVariable String apellido){
+        return ResponseEntity.ok(profesionalService.buscarPorApellido(apellido));
+    }
+
+    @GetMapping("/matricula/{matricula}")
+    public ResponseEntity<ProfesionalDTO> buscarPorMatricula(@PathVariable String matricula){
+        return profesionalService.buscarPorMatricula(matricula)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/actualizar/{id}")
