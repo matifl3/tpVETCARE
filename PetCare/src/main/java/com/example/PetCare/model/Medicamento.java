@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDate;
 
@@ -12,25 +11,24 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Mascota {
-
+public class Medicamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idMascota;
+    private int id;
+
     private String nombre;
-    private String especie;
-    private String raza;
-    private String sexo;
-    private double peso;
-    private LocalDate fecha_nacimiento;
-    private String observaciones;
+    private String dosis;
+    private String frecuencia;
+    private String duracion;
+    private LocalDate fechaPrescripcion;
+    private String indicaciones;
     private boolean activo;
 
     @ManyToOne
-    @JoinColumn(name = "id_dueño")
-    private Usuario usuario;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id_historial")
     private HistorialClinico historialClinico;
+
+    @ManyToOne
+    @JoinColumn(name = "id_profesional")
+    private Usuario profesional;
 }
