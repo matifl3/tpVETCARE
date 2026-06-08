@@ -24,8 +24,8 @@ public class ProfesionalController {
         return ResponseEntity.ok(profesionalService.crear(profesional));
     }
 
-    //todo: agregar seguridad(tizi)
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable int id){
         profesionalService.eliminar(id);
         return ResponseEntity.noContent().build();
@@ -61,6 +61,7 @@ public class ProfesionalController {
     }
 
     @PutMapping("/actualizar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Profesional> actualizar(@RequestBody Profesional profesional, @PathVariable int id){
         return ResponseEntity.ok(profesionalService.actualizar(id, profesional));
     }

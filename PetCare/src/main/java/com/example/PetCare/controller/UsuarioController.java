@@ -76,9 +76,9 @@ public class UsuarioController {
         return usuarioService.actualizar(dto);
     }
 
-    //todo: agregar seguridad(tizi)
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void eliminar(@PathVariable Integer id) {
-        boolean eliminado = usuarioService.eliminar(id);
+        usuarioService.eliminar(id);
     }
 }
