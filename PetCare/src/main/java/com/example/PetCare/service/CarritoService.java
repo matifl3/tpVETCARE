@@ -7,8 +7,8 @@ import com.example.PetCare.exceptions.NoEncontradoException;
 import com.example.PetCare.model.Carrito;
 import com.example.PetCare.model.CarritoProducto;
 import com.example.PetCare.model.Producto;
+import com.example.PetCare.model.Usuario;
 import com.example.PetCare.repository.CarritoRepository;
-import com.example.PetCare.repository.ProductoRepository;
 import com.example.PetCare.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,47 +20,54 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CarritoService {
     private final CarritoRepository carritoRepository;
-    private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProductoService productoService;
     private final CarritoProductoService carritoProductoService;
 
+    /**
+     * Busca el carrito activo (estado CARRITO) del usuario. Si no existe, lo crea y lo asocia al usuario.
+     */
     public Carrito obtenerOCrearCarrito(int idUsuario) {
-        Carrito carritoExistente = carritoRepository.findByIdUsuarioAndEstado(idUsuario, Estado_Carrito.CARRITO);
-        if(carritoExistente != null) {
-            return carritoExistente;
-        }else {
-            Carrito carrito = new Carrito();
-            carrito.setUsuario(usuarioRepository.findById(idUsuario).
-                    orElseThrow(() -> new NoEncontradoException("Usuario no encontrado")));
-            carrito.setEstado(Estado_Carrito.CARRITO);
-            carrito.setFechaCreacion(LocalDate.now());
-            return carritoRepository.save(carrito);
-        }
+        return carritoRepository.findByIdUsuarioAndEstado(idUsuario, Estado_Carrito.CARRITO)
+                .orElseGet(() -> {
+                    Usuario usuario = usuarioRepository.findById(idUsuario)
+                            .orElseThrow(() -> new NoEncontradoException("Usuario no encontrado"));
+                    Carrito carrito = new Carrito();
+                    carrito.setUsuario(usuario);
+                    carrito.setEstado(Estado_Carrito.CARRITO);
+                    carrito.setFechaCreacion(LocalDate.now());
+                    return carritoRepository.save(carrito);
+                });
     }
 
+    /**
+     * Retorna el carrito activo actual del usuario convertido a DTO para mostrarlo en la vista/frontend.
+     */
     public CarritoDTO verCarrito(int idUsuario){
         Carrito carrito = obtenerOCrearCarrito(idUsuario);
         return toDTO(carrito);
     }
 
-    public CarritoDTO agregarPoducto(int idUsuario, int idProducto, int cantidad){
+    /**
+     * Agrega un producto al carrito activo. Valida que exista stock suficiente sumando lo ya existente,
+     * actualiza la cantidad y guarda los cambios.
+     */
+    public CarritoDTO agregarProducto(int idUsuario, int idProducto, int cantidad){
         Carrito carrito = obtenerOCrearCarrito(idUsuario);
-        Producto producto = productoRepository.findByActivo(true).stream()
-                .filter(p -> p.getId() == idProducto)
-                .findFirst()
-                .orElseThrow(() -> new NoEncontradoException("Producto no encontrado"));
 
-        if (producto.getStock() < cantidad) {
-            throw new NoEncontradoException("Stock insuficiente");
-        }
-
+        Producto producto = productoService.listarPorid(idProducto);
         CarritoProducto productos = carritoProductoService.obtenerOCrearItem(carrito, producto);
-        productos.setCantidad(productos.getCantidad() + cantidad);
+        int cantidadTotal = productos.getCantidad() + cantidad;
+
+        productoService.validarProducto(producto, cantidadTotal);
+        productos.setCantidad(cantidadTotal);
         carrito.setFechaActualizacion(LocalDate.now());
         return toDTO(carritoRepository.save(carrito));
     }
 
+    /**
+     * Elimina por completo un producto del carrito activo basándose en su ID y actualiza la fecha.
+     */
     public CarritoDTO eliminarProducto(int idUsuario, int idProducto){
         Carrito carrito = obtenerOCrearCarrito(idUsuario);
         carrito.getItems().removeIf(i -> i.getProducto().getId() == idProducto);
@@ -68,19 +75,36 @@ public class CarritoService {
         return toDTO(carritoRepository.save(carrito));
     }
 
+    /**
+     * Modifica la cantidad de un producto en el carrito activo. Si la cantidad es menor o igual a 0,
+     * elimina el producto. Valida el stock antes de aplicar el nuevo valor.
+     */
+    public CarritoDTO modificarCantidad(int idUsuario, int idProducto, int cantidad){
+        if(cantidad <= 0){
+            return eliminarProducto(idUsuario, idProducto);
+        }
+        Carrito carrito = carritoRepository.findByIdUsuarioAndEstado(idUsuario, Estado_Carrito.CARRITO)
+                .orElseThrow(() -> new NoEncontradoException("Carrito no encontrado"));
+        Producto producto = productoService.listarPorid(idProducto);
+        productoService.validarProducto(producto, cantidad);
+        carritoProductoService.modificarCantidad(carrito, producto, cantidad);
+        carrito.setFechaActualizacion(LocalDate.now());
+        return toDTO(carritoRepository.save(carrito));
+    }
+
+    /**
+     * Cierra la compra: valida que el carrito no esté vacío, resta las cantidades del stock físico de los productos,
+     * pasa el carrito a estado 'ENVIO' y genera un nuevo carrito vacío para futuras compras del usuario.
+     */
     public CarritoDTO realizarCompra(int idUsuario){
         Carrito carrito = obtenerOCrearCarrito(idUsuario);
         if(carrito.getItems().isEmpty()){
             throw new NoEncontradoException("El carrito está vacío");
         }
         for(CarritoProducto productos : carrito.getItems()){
-            Producto producto = productos.getProducto();
-            try{
-                productoService.restaStock(producto.getId(), productos.getCantidad());
-            } catch (NoEncontradoException e) {
-                throw new NoEncontradoException(e.getMessage());
-            }
+            productoService.restaStock(productos.getProducto().getId(), productos.getCantidad());
         }
+
         carrito.setEstado(Estado_Carrito.ENVIO);
         carrito.setFechaActualizacion(LocalDate.now());
         carritoRepository.save(carrito);
@@ -88,6 +112,9 @@ public class CarritoService {
         return toDTO(carrito);
     }
 
+    /**
+     * Recupera todos los carritos históricos del usuario cuyo estado NO sea 'CARRITO' (es decir, compras procesadas).
+     */
     public List<CarritoDTO> listarHistorialCompras(int idUsuario){
         return carritoRepository.findByUsuarioIdUsuarioAndEstadoNot(idUsuario, Estado_Carrito.CARRITO)
                 .stream()
@@ -95,29 +122,37 @@ public class CarritoService {
                 .toList();
     }
 
+    /**
+     * Cambia el estado de un carrito en tránsito de 'ENVIO' a 'COMPLETADO', finalizando el ciclo de entrega.
+     */
     public CarritoDTO confirmarEntrega(int idCarrito){
-        Carrito carrito = isCarritoEstadoEnvio(idCarrito);
+        Carrito carrito = obtenerCarritoEnEnvio(idCarrito);
         carrito.setEstado(Estado_Carrito.COMPLETADO);
         carrito.setFechaActualizacion(LocalDate.now());
         return toDTO(carritoRepository.save(carrito));
     }
 
-    public CarritoDTO cancelarCompra(int idCarrito){
-        Carrito carrito = isCarritoEstadoEnvio(idCarrito);
-        for(CarritoProducto productos : carrito.getItems()){
-            Producto producto = productos.getProducto();
-            try{
-                productoService.sumaStock(producto.getId(), productos.getCantidad());
-            } catch (NoEncontradoException e) {
-                throw new NoEncontradoException(e.getMessage());
-            }
+    /**
+     * Cancela una compra en estado de envío: devuelve las cantidades de los productos al stock físico,
+     * cambia el estado del carrito a 'CANCELADO' y retorna un nuevo carrito activo actual del usuario.
+     */
+    public CarritoDTO cancelarCompra(int idUsuario, int idCarrito){
+        Carrito carrito = obtenerCarritoEnEnvio(idCarrito);
+        for(CarritoProducto productos : carrito.getItems()) {
+            productoService.sumaStock(productos.getProducto().getId(), productos.getCantidad());
         }
         carrito.setEstado(Estado_Carrito.CANCELADO);
         carrito.setFechaActualizacion(LocalDate.now());
-        return toDTO(carritoRepository.save(carrito));
+        carritoRepository.save(carrito);
+
+        Carrito nuevoCarrito = obtenerOCrearCarrito(idUsuario);
+        return toDTO(nuevoCarrito);
     }
 
-    public Carrito isCarritoEstadoEnvio(int idCarrito){
+    /**
+     * Metodo auxiliar para buscar un carrito por ID y asegurarse de que se encuentre en estado 'ENVIO'.
+     */
+    public Carrito obtenerCarritoEnEnvio(int idCarrito){
         Carrito carrito = carritoRepository.findById(idCarrito)
                 .orElseThrow(() -> new NoEncontradoException("Carrito no encontrado"));
         if(carrito.getEstado() != Estado_Carrito.ENVIO) {
@@ -126,10 +161,13 @@ public class CarritoService {
         return carrito;
     }
 
+    /**
+     * Metodo encargado de transformar la entidad 'Carrito' y sus relaciones a un DTO específico para la vista,
+     * calculando subtotales por producto y el precio total general de la compra.
+     */
     private CarritoDTO toDTO(Carrito carrito) {
         List<CarritoProductoDTO> items = carrito.getItems().stream().map(a -> {
             CarritoProductoDTO dto = new CarritoProductoDTO();
-            dto.setIdProducto(a.getProducto().getId());
             dto.setIdProducto(a.getProducto().getId());
             dto.setCantidad(a.getCantidad());
             dto.setPrecioUnitario(a.getPrecioUnitario());

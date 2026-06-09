@@ -81,4 +81,15 @@ public class ProductoService {
         return productoRepository.findByStockBefore(10);
     }
 
+    /**
+     * Valida que el producto esté activo y que tenga stock suficiente para la venta. Si alguna de las condiciones no se cumple, lanza una excepción de no encontrado.
+     */
+    public void validarProducto(Producto producto, int cantidadRequerida){
+        if(!producto.isActivo()) {
+            throw new NoEncontradoException("Producto no disponible");
+        }
+        if(producto.getStock() < cantidadRequerida) {
+            throw new NoEncontradoException("Stock insuficiente");
+        }
+    }
 }
