@@ -21,38 +21,38 @@ public class TurnoService {
 
     public TurnoService(TurnoRepository turnoRepository, MascotaRepository mascotaRepository, ProfesionalRepository profesionalRepository) {
         this.turnoRepository = turnoRepository;
-        this.mascotaRepository= mascotaRepository;
+        this.mascotaRepository = mascotaRepository;
         this.profesionalRepository = profesionalRepository;
     }
 
-    public List<TurnoDTO> listarTodos(){
+    public List<TurnoDTO> listarTodos() {
         return turnoRepository.findAll().stream()
-                .map(a-> toDTO(a))
+                .map(a -> toDTO(a))
                 .toList();
     }
 
-    public List<TurnoDTO> listarTodosTurnosActivos(){
+    public List<TurnoDTO> listarTodosTurnosActivos() {
         return turnoRepository.findAllByActivoTrue().stream()
-                .map(a->toDTO(a)).toList();
+                .map(a -> toDTO(a)).toList();
     }
 
-    public List<TurnoDTO> listarTurnoXMascota(Integer idMascota){
-        return turnoRepository.findByMascotaIdMascota(idMascota).stream().map(a->toDTO(a)).toList();
+    public List<TurnoDTO> listarTurnoXMascota(Integer idMascota) {
+        return turnoRepository.findByMascotaIdMascota(idMascota).stream().map(a -> toDTO(a)).toList();
     }
 
-    public List<TurnoDTO> listarTurnoXProfesional(Integer idProfesional){
-        return turnoRepository.findByProfesionalIdUsuario(idProfesional).stream().map(a->toDTO(a)).toList();
+    public List<TurnoDTO> listarTurnoXProfesional(Integer idProfesional) {
+        return turnoRepository.findByProfesionalIdUsuario(idProfesional).stream().map(a -> toDTO(a)).toList();
     }
 
-    public List<TurnoDTO> listarFechaBefore(LocalDate fecha){
-        return turnoRepository.findByFechaBefore(fecha).stream().map(a->toDTO(a)).toList();
+    public List<TurnoDTO> listarFechaBefore(LocalDate fecha) {
+        return turnoRepository.findByFechaBefore(fecha).stream().map(a -> toDTO(a)).toList();
     }
 
-    public List<TurnoDTO> listarFechaAfter(LocalDate fecha){
-        return turnoRepository.findByFechaAfter(fecha).stream().map(a->toDTO(a)).toList();
+    public List<TurnoDTO> listarFechaAfter(LocalDate fecha) {
+        return turnoRepository.findByFechaAfter(fecha).stream().map(a -> toDTO(a)).toList();
     }
 
-    public List<TurnoDTO> listarFechaMascota(LocalDate fecha){
+    public List<TurnoDTO> listarFechaMascota(LocalDate fecha) {
         return turnoRepository.findByFecha(fecha).stream()
                 .map(this::toDTO)
                 .toList();
@@ -63,7 +63,7 @@ public class TurnoService {
                 .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
         Profesional profesional = profesionalRepository.findById(dto.getId_profesional())
                 .orElseThrow(() -> new NoEncontradoException("Profesional no encontrado"));
-        Turno entity = toEntity(dto, mascota,profesional);
+        Turno entity = toEntity(dto, mascota, profesional);
         return turnoRepository.save(entity);
     }
 
@@ -77,14 +77,12 @@ public class TurnoService {
 
 
     public Turno actualizar(Integer idTurno, TurnoDTO dto) {
-        Mascota mascota = mascotaRepository.findById(dto.getId_mascota()).orElse(null);
-        Profesional profesional = profesionalRepository.findById(dto.getId_profesional()).orElse(null);
-        if (mascota == null || profesional == null) {
-            return null;
-        }
-        return turnoRepository.findById(idTurno)
-                .map(a-> toEntity(dto,mascota,profesional))
+        Mascota mascota = mascotaRepository.findById(dto.getId_mascota()).orElseThrow(() -> new NoEncontradoException("Mascot no existe"));
+        Profesional profesional = profesionalRepository.findById(dto.getId_profesional()).orElseThrow(() -> new NoEncontradoException("Profesional no existe"));
+        Turno turno = turnoRepository.findById(idTurno)
+                .map(a -> toEntity(dto, mascota, profesional))
                 .orElse(null);
+        return turnoRepository.save(turno);
     }
 
     public boolean cancelaTurno(Integer idTurno) {
@@ -106,6 +104,7 @@ public class TurnoService {
         dto.setId_profesional(entity.getProfesional().getIdUsuario());
         return dto;
     }
+
     /// pasa de entidad a dto
     private Turno toEntity(TurnoDTO dto, Mascota mascota, Profesional profesional) {
         Turno entity = new Turno();
