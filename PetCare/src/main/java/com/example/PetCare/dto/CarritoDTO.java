@@ -1,6 +1,7 @@
 package com.example.PetCare.dto;
 
 import com.example.PetCare.enums.Estado_Carrito;
+import com.example.PetCare.enums.Metodo_Pago;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,5 @@ public class CarritoDTO {
     private LocalDate fechaActualizacion;
     private List<CarritoProductoDTO> items;
     private double total;
+    private Metodo_Pago metodoPago;
 }

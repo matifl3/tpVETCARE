@@ -1,6 +1,7 @@
 package com.example.PetCare.model;
 
 import com.example.PetCare.enums.Estado_Carrito;
+import com.example.PetCare.enums.Metodo_Pago;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,5 +33,8 @@ public class Carrito {
     private List<CarritoProducto> items;
 
     private double total;
+
+    @Enumerated(EnumType.STRING)
+    private Metodo_Pago metodoPago;
 }
 
