@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
     List<Mascota> findByEspecieAndActivoTrue(String especie);
-    List<Mascota> findByRazaAndActivoTrue(String especie);
-    List<Mascota> findByNombreAndActivoTrue(String especie);
+    List<Mascota> findByRazaAndActivoTrue(String raza);
+    List<Mascota> findByNombreAndActivoTrue(String nombre);
 
     @Query("SELECT DISTINCT t.mascota FROM Turno t WHERE t.profesional.id = :idProfesional")
     List<Mascota> findMascotasAtendidasPorProfesional(@Param("idProfesional") int idProfesional);

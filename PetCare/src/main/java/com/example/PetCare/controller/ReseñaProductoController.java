@@ -29,8 +29,20 @@ public class ReseñaProductoController {
     }
 
     @PutMapping("/{id}")
-    public ReseñaProducto actualizar(@PathVariable Integer id, @RequestBody @Valid ReseñaProductoDTO dto) {
-        return reseñaproductoService.actualizar(id, dto);
+    public ReseñaProductoDTO actualizar(@PathVariable Integer id, @RequestBody @Valid ReseñaProductoDTO dto) {
+        return toReseñaProductoDTO(reseñaproductoService.actualizar(id, dto));
+    }
+
+    private ReseñaProductoDTO toReseñaProductoDTO(ReseñaProducto entity) {
+        ReseñaProductoDTO dto = new ReseñaProductoDTO();
+        dto.setId(entity.getId());
+        dto.setComentario(entity.getComentario());
+        dto.setActivo(entity.isActivo());
+        dto.setFecha(entity.getFecha());
+        dto.setPuntuacion(entity.getPuntuacion());
+        dto.setId_usuario(entity.getUsuario().getIdUsuario());
+        dto.setId_producto(entity.getProducto().getId());
+        return dto;
     }
 
     @PutMapping("/{id}/aprobar")

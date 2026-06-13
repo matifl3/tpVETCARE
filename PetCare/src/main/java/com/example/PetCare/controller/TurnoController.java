@@ -1,7 +1,6 @@
 package com.example.PetCare.controller;
 
 import com.example.PetCare.dto.TurnoDTO;
-import com.example.PetCare.model.Turno;
 import com.example.PetCare.service.TurnoService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -55,12 +54,12 @@ public class TurnoController {
     }
 
     @PostMapping
-    public Turno crear(@RequestBody @Valid TurnoDTO dto) {
+    public TurnoDTO crear(@RequestBody @Valid TurnoDTO dto) {
         return turnoService.crear(dto);
     }
 
     @PutMapping("/{id}")
-    public Turno actualizar(@PathVariable Integer id, @RequestBody @Valid TurnoDTO dto) {
+    public TurnoDTO actualizar(@PathVariable Integer id, @RequestBody @Valid TurnoDTO dto) {
         return turnoService.actualizar(id, dto);
     }
 

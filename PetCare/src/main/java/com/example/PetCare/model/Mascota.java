@@ -22,7 +22,8 @@ public class Mascota {
     private String raza;
     private String sexo;
     private double peso;
-    private LocalDate fecha_nacimiento;
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
     private String observaciones;
     private boolean activo;
 

@@ -170,6 +170,7 @@ public class CarritoService {
     private CarritoDTO toDTO(Carrito carrito) {
         List<CarritoProductoDTO> items = carrito.getItems().stream().map(a -> {
             CarritoProductoDTO dto = new CarritoProductoDTO();
+            dto.setId(a.getId());
             dto.setIdProducto(a.getProducto().getId());
             dto.setCantidad(a.getCantidad());
             dto.setPrecioUnitario(a.getPrecioUnitario());
@@ -187,6 +188,7 @@ public class CarritoService {
         dto.setFechaActualizacion(carrito.getFechaActualizacion());
         dto.setItems(items);
         dto.setTotal(total);
+        dto.setMetodoPago(carrito.getMetodoPago());
         return dto;
     }
 }

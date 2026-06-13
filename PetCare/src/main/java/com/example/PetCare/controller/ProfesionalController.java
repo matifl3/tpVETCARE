@@ -21,8 +21,8 @@ public class ProfesionalController {
 
     @PostMapping("/crear")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Profesional> crear(@RequestBody @Valid Profesional profesional){
-        return ResponseEntity.ok(profesionalService.crear(profesional));
+    public ResponseEntity<ProfesionalDTO> crear(@RequestBody @Valid Profesional profesional){
+        return ResponseEntity.ok(profesionalService.toDTO(profesionalService.crear(profesional)));
     }
 
     @DeleteMapping("/eliminar/{id}")
@@ -63,7 +63,7 @@ public class ProfesionalController {
 
     @PutMapping("/actualizar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Profesional> actualizar(@RequestBody @Valid Profesional profesional, @PathVariable int id){
-        return ResponseEntity.ok(profesionalService.actualizar(id, profesional));
+    public ResponseEntity<ProfesionalDTO> actualizar(@RequestBody @Valid Profesional profesional, @PathVariable int id){
+        return ResponseEntity.ok(profesionalService.toDTO(profesionalService.actualizar(id, profesional)));
     }
 }

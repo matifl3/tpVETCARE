@@ -12,7 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/mascotas/{idMascota}/historial")
+@RequestMapping("/api/mascotas/{idMascota}/historial")
 @PreAuthorize("isAuthenticated()")
 public class HistorialClinicoController {
 

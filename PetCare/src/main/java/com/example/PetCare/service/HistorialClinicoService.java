@@ -62,7 +62,7 @@ public class HistorialClinicoService {
         vacuna.setLote(request.getLote());
         vacuna.setObservaciones(request.getObservaciones());
         vacuna.setHistorialClinico(historial);
-        vacuna.setProfesional(profesional);
+        vacuna.setUsuario(profesional);
 
         return toVacunaDTO(vacunaRepository.save(vacuna));
     }
@@ -85,7 +85,7 @@ public class HistorialClinicoService {
         medicamento.setIndicaciones(request.getIndicaciones());
         medicamento.setActivo(true);
         medicamento.setHistorialClinico(historial);
-        medicamento.setProfesional(profesional);
+        medicamento.setUsuario(profesional);
 
         return toMedicamentoDTO(medicamentoRepository.save(medicamento));
     }
@@ -148,6 +148,7 @@ public class HistorialClinicoService {
         );
     }
 
+
     public VacunaDTO toVacunaDTO(Vacuna v) {
         return new VacunaDTO(
                 v.getId(),
@@ -156,27 +157,23 @@ public class HistorialClinicoService {
                 v.getFechaProximaDosis(),
                 v.getLote(),
                 v.getObservaciones(),
-                v.getProfesional() != null ? v.getProfesional().getIdUsuario() : 0,
-                v.getProfesional() != null
-                        ? v.getProfesional().getNombre() + " " + v.getProfesional().getApellido()
-                        : null
+                v.getUsuario() != null ? v.getUsuario().getIdUsuario() : 0,
+                v.getUsuario() != null ? v.getUsuario().getNombre() + " " + v.getUsuario().getApellido() : null
         );
     }
 
     public MedicamentoDTO toMedicamentoDTO(Medicamento m) {
-        return new MedicamentoDTO(
-                m.getId(),
-                m.getNombre(),
-                m.getDosis(),
-                m.getFrecuencia(),
-                m.getDuracion(),
-                m.getFechaPrescripcion(),
-                m.getIndicaciones(),
-                m.isActivo(),
-                m.getProfesional() != null ? m.getProfesional().getIdUsuario() : 0,
-                m.getProfesional() != null
-                        ? m.getProfesional().getNombre() + " " + m.getProfesional().getApellido()
-                        : null
-        );
+        MedicamentoDTO medicamentoDTO = new MedicamentoDTO();
+        medicamentoDTO.setId(m.getId());
+        medicamentoDTO.setNombre(m.getNombre());
+        medicamentoDTO.setActivo(m.isActivo());
+        medicamentoDTO.setFrecuencia(m.getFrecuencia());
+        medicamentoDTO.setDosis(m.getDosis());
+        medicamentoDTO.setDuracion(m.getDuracion());
+        medicamentoDTO.setIndicaciones(m.getIndicaciones());
+        medicamentoDTO.setFechaPrescripcion(m.getFechaPrescripcion());
+        medicamentoDTO.setIdProfesional(m.getUsuario().getIdUsuario());
+        medicamentoDTO.setNombreProfesional(m.getUsuario().getNombre());
+        return medicamentoDTO;
     }
 }

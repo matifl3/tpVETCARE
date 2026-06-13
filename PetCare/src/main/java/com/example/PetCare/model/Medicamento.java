@@ -29,6 +29,6 @@ public class Medicamento {
     private HistorialClinico historialClinico;
 
     @ManyToOne
-    @JoinColumn(name = "id_profesional")
-    private Usuario profesional;
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 }

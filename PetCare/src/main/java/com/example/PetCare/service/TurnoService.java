@@ -60,13 +60,13 @@ public class TurnoService {
                 .toList();
     }
 
-    public Turno crear(TurnoDTO dto) {
+    public TurnoDTO crear(TurnoDTO dto) {
         Mascota mascota = mascotaRepository.findById(dto.getId_mascota())
                 .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
         Profesional profesional = profesionalRepository.findById(dto.getId_profesional())
                 .orElseThrow(() -> new NoEncontradoException("Profesional no encontrado"));
         Turno entity = toEntity(dto, mascota, profesional);
-        return turnoRepository.save(entity);
+        return toDTO(turnoRepository.save(entity));
     }
 
     public boolean eliminar(Integer idturno) {
@@ -78,11 +78,11 @@ public class TurnoService {
     }
 
 
-    public Turno actualizar(Integer idTurno, TurnoDTO dto) {
+    public TurnoDTO actualizar(Integer idTurno, TurnoDTO dto) {
         Mascota mascota = mascotaRepository.findById(dto.getId_mascota()).orElseThrow(() -> new NoEncontradoException("Mascot no existe"));
         Profesional profesional = profesionalRepository.findById(dto.getId_profesional()).orElseThrow(() -> new NoEncontradoException("Profesional no existe"));
         Turno turno = turnoRepository.findById(idTurno).map(a -> toEntity(dto, mascota, profesional)).orElseThrow(() -> new NoEncontradoException("El turno no exite"));
-        return turnoRepository.save(turno);
+        return toDTO(turnoRepository.save(turno));
     }
 
     public boolean cancelaTurno(Integer idTurno) {
@@ -94,7 +94,7 @@ public class TurnoService {
     }
 
 
-    /// pasa de dto a entidad
+    /// pasa de entidad a dto
     private TurnoDTO toDTO(Turno entity) {
         TurnoDTO dto = new TurnoDTO();
         dto.setId(entity.getIdTurno());
@@ -102,10 +102,11 @@ public class TurnoService {
         dto.setFecha(entity.getFecha());
         dto.setId_mascota(entity.getMascota().getIdMascota());
         dto.setId_profesional(entity.getProfesional().getIdUsuario());
+        dto.setActivo(entity.isActivo());
         return dto;
     }
 
-    /// pasa de entidad a dto
+    /// pasa de dto a entidad
     private Turno toEntity(TurnoDTO dto, Mascota mascota, Profesional profesional) {
         Turno entity = new Turno();
         entity.setEstadoTurno(dto.getEstadoTurno());
@@ -113,6 +114,7 @@ public class TurnoService {
         entity.setIdTurno(dto.getId());
         entity.setMascota(mascota);
         entity.setProfesional(profesional);
+        entity.setActivo(Boolean.TRUE.equals(dto.getActivo()));
         return entity;
     }
 }

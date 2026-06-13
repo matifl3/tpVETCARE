@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 @Entity
@@ -27,6 +26,6 @@ public class Vacuna {
     private HistorialClinico historialClinico;
 
     @ManyToOne
-    @JoinColumn(name = "id_profesional")
-    private Usuario profesional;
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 }

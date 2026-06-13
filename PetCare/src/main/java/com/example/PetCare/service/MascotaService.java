@@ -92,7 +92,7 @@ public class MascotaService {
                     entity.setActivo(Boolean.TRUE.equals(dto.getActivo()));
                     entity.setObservaciones(dto.getObservaciones());
                     entity.setSexo(dto.getSexo());
-                    entity.setFecha_nacimiento(dto.getFecha_nacimiento());
+                    entity.setFechaNacimiento(dto.getFechaNacimiento());
                     entity.setPeso(dto.getPeso());
                     entity.setUsuario(usuario);
                     mascotaRepository.save(entity);
@@ -126,7 +126,7 @@ public class MascotaService {
         dto.setActivo(entity.isActivo());
         dto.setObservaciones(entity.getObservaciones());
         dto.setSexo(entity.getSexo());
-        dto.setFecha_nacimiento(entity.getFecha_nacimiento());
+        dto.setFechaNacimiento(entity.getFechaNacimiento());
         dto.setPeso(entity.getPeso());
         dto.setIdUsuario(entity.getUsuario().getIdUsuario());
         return dto;
@@ -138,7 +138,7 @@ public class MascotaService {
         entity.setNombre(dto.getNombre());
         entity.setEspecie(dto.getEspecie());
         entity.setRaza(dto.getRaza());
-        entity.setFecha_nacimiento(dto.getFecha_nacimiento());
+        entity.setFechaNacimiento(dto.getFechaNacimiento());
         entity.setSexo(dto.getSexo());
         entity.setObservaciones(dto.getObservaciones());
         entity.setActivo(dto.getActivo());

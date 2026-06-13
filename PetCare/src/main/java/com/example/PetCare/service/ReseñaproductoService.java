@@ -1,7 +1,6 @@
 package com.example.PetCare.service;
 
 import com.example.PetCare.dto.ReseñaProductoDTO;
-import com.example.PetCare.dto.ReseñaProfesionalDTO;
 import com.example.PetCare.exceptions.NoEncontradoException;
 import com.example.PetCare.model.*;
 import com.example.PetCare.repository.*;

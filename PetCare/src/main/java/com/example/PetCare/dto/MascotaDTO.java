@@ -27,7 +27,7 @@ public class MascotaDTO {
     @Positive
     private Double peso;
 
-    private LocalDate fecha_nacimiento;
+    private LocalDate fechaNacimiento;
     private String observaciones;
     private Boolean activo;
 
