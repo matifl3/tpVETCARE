@@ -24,8 +24,5 @@ public class ReseñaProfesional {
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "id_profesional")
-    private Profesional profesional;
 }
 
