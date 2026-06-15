@@ -2,6 +2,8 @@ package com.example.PetCare.service;
 
 import com.example.PetCare.dto.CarritoDTO;
 import com.example.PetCare.dto.CarritoProductoDTO;
+import com.example.PetCare.dto.GananciaMensualDTO;
+import com.example.PetCare.dto.ProductoMasVendidoDTO;
 import com.example.PetCare.enums.Estado_Carrito;
 import com.example.PetCare.exceptions.NoEncontradoException;
 import com.example.PetCare.model.Carrito;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -161,6 +164,82 @@ public class CarritoService {
             throw new NoEncontradoException("El carrito no está en estado de envío");
         }
         return carrito;
+    }
+
+    // ==================== FUNCIONALIDADES DE REPORTES ====================
+
+    /**
+     * Obtiene el historial completo de ventas en un rango de fechas.
+     * Retorna todos los carritos que estén en estado ENVIO o COMPLETADO dentro del rango.
+     * Útil para ver qué se vendió en un período determinado.
+     *
+     * @param fechaInicio Fecha de inicio del rango (inclusiva)
+     * @param fechaFin Fecha de fin del rango (inclusiva)
+     * @return Lista de carritos convertidos a DTO con sus items y totales
+     */
+    public List<CarritoDTO> obtenerHistorialVentas(LocalDate fechaInicio, LocalDate fechaFin) {
+        // Usa el query del repository que filtra por estado y rango de fechas
+        return carritoRepository.findVentasPorRangoFechas(fechaInicio, fechaFin)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    /**
+     * Calcula las ganancias de un mes específico.
+     * Retorna un DTO con el año, mes, cantidad de ventas y ganancia total.
+     *
+     * @param anio Año a consultar (ej: 2026)
+     * @param mes Mes a consultar (1-12, donde 1 = enero)
+     * @return DTO con las ganancias del mes
+     */
+    public GananciaMensualDTO obtenerGananciaMensual(int anio, int mes) {
+        // Valida que el mes sea válido
+        if (mes < 1 || mes > 12) {
+            throw new NoEncontradoException("El mes debe estar entre 1 y 12");
+        }
+
+        // Ejecuta el query que suma los totales de carritos completados en el mes
+        Object[] resultado = carritoRepository.calcularGananciaMensual(anio, mes);
+
+        // resultado[0] = cantidad de ventas (Long)
+        // resultado[1] = ganancia total (Double)
+        long cantidadVentas = (Long) resultado[0];
+        double gananciaTotal = (Double) resultado[1];
+
+        return new GananciaMensualDTO(anio, mes, cantidadVentas, gananciaTotal);
+    }
+
+    /**
+     * Obtiene los productos más vendidos en un mes específico.
+     * Retorna una lista ordenada de mayor a menor cantidad vendida.
+     *
+     * @param anio Año a consultar
+     * @param mes Mes a consultar (1-12)
+     * @return Lista de productos ordenados por cantidad vendida descendente
+     */
+    public List<ProductoMasVendidoDTO> obtenerProductosMasVendidos(int anio, int mes) {
+        // Valida que el mes sea válido
+        if (mes < 1 || mes > 12) {
+            throw new NoEncontradoException("El mes debe estar entre 1 y 12");
+        }
+
+        // Ejecuta el query que agrupa por producto y suma cantidades
+        List<Object[]> resultados = carritoRepository.findProductosMasVendidosPorMes(anio, mes);
+
+        // Convierte cada resultado a un DTO
+        List<ProductoMasVendidoDTO> productos = new ArrayList<>();
+        for (Object[] fila : resultados) {
+            ProductoMasVendidoDTO dto = new ProductoMasVendidoDTO();
+            dto.setIdProducto((Integer) fila[0]);       // ID del producto
+            dto.setNombreProducto((String) fila[1]);    // Nombre del producto
+            dto.setCategoria((String) fila[2]);          // Categoría del producto
+            dto.setCantidadVendida(((Long) fila[3]).intValue()); // Cantidad total vendida
+            dto.setGananciaTotal((Double) fila[4]);      // Ganancia total del producto
+            productos.add(dto);
+        }
+
+        return productos;
     }
 
     /**
