@@ -33,4 +33,8 @@ public class RegistroRequest {
 
     @NotNull
     private Rol rol;
+
+    // Solo requeridos si el rol es profesional (VETERINARIO, PASEADOR, PELUQUERO, ADIESTRADOR, CUIDADOR)
+    private String matricula;
+    private String experiencia;
 }
