@@ -42,7 +42,7 @@ public class ReseñaProfesionalService {
         }
         return false;
     }
-    public ReseñaProfesional actualizar(Integer id,ReseñaProfesionalDTO dto) {
+    public ReseñaProfesionalDTO actualizar(Integer id,ReseñaProfesionalDTO dto) {
         Usuario usuario =usuarioRepository.findById(dto.getId_usuario()).orElseThrow(()->new NoEncontradoException("El usuario no existe"));
         Profesional profesional =profesionalRepository.findById(dto.getId_profesional()).orElseThrow(()->new NoEncontradoException("El profesional no existe"));
         ReseñaProfesional reseñaProfesional=reseñaProfesionalRepository.findById(id).orElseThrow(()->new NoEncontradoException("La reseña no existe"));
@@ -52,7 +52,7 @@ public class ReseñaProfesionalService {
         reseñaProfesional.setTexto(dto.getTexto());
         reseñaProfesional.setPuntuacion(dto.getPuntuacion());
         reseñaProfesional.setActivo(Boolean.TRUE.equals(dto.getActivo()));
-        return reseñaProfesionalRepository.save(reseñaProfesional);
+        return toDTO(reseñaProfesionalRepository.save(reseñaProfesional));
     }
     // (Godoy) Lo mismo que en turnoService actualizar.
 

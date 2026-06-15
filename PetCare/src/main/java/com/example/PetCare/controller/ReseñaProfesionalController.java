@@ -1,7 +1,6 @@
 package com.example.PetCare.controller;
 
 import com.example.PetCare.dto.ReseñaProfesionalDTO;
-import com.example.PetCare.model.ReseñaProfesional;
 import com.example.PetCare.service.ReseñaProfesionalService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -55,9 +54,12 @@ public class ReseñaProfesionalController {
     }
 
     @PutMapping("/{id}")
-    public ReseñaProfesional actualizar(@PathVariable Integer id, @RequestBody @Valid ReseñaProfesionalDTO dto) {
+    public ReseñaProfesionalDTO actualizar(@PathVariable Integer id, @RequestBody @Valid ReseñaProfesionalDTO dto) {
         return reseñaProfesionalService.actualizar(id, dto);
     }
+
+    // (Godoy) Ahora el JSON que recibe el cliente solo tiene los campos seguros (id, texto, puntuacion, fecha, activo, id_usuario, id_profesional)
+    // sin exponer los objetos completos de Usuario ni Profesional.
 
     @PutMapping("/{id}/aprobar")
     public boolean aprobarReseña(@PathVariable Integer id) {
