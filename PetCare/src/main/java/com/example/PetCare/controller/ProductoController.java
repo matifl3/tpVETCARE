@@ -67,6 +67,7 @@ public class ProductoController {
     public void eliminar(@PathVariable Integer id) {
         productoService.eliminar(id);
     }
+
     @GetMapping("/stock/bajo")
     public List<Producto> listarStockBajo() {
         return productoService.findByStockBefore();

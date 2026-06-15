@@ -1,6 +1,6 @@
 package com.example.PetCare.controller;
 
-import com.example.PetCare.model.Usuario;
+import com.example.PetCare.dto.UsuarioDTO;
 import com.example.PetCare.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -22,13 +21,13 @@ public class UsuarioController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Usuario> listarTodos() {
+    public List<UsuarioDTO> listarTodos() {
         return usuarioService.listarTodos();
     }
 
     @GetMapping("/buscar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Integer id) {
         return usuarioService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -36,41 +35,41 @@ public class UsuarioController {
 
     @GetMapping("/buscar/email/{email}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Optional<Usuario> buscarPorEmail(@PathVariable String email) {
-        return usuarioService.findByEmail(email);
+    public UsuarioDTO buscarPorEmail(@PathVariable String email) {
+        return usuarioService.findByEmail(email).orElse(null);
     }
 
     @GetMapping("/buscar/nombre/{nombre}")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Usuario> findByNombre(@PathVariable String nombre) {
+    public List<UsuarioDTO> findByNombre(@PathVariable String nombre) {
         return usuarioService.findByNombre(nombre);
     }
 
     @GetMapping("/buscar/telefono/{telefono}")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Usuario> findByTelefono(@PathVariable String telefono) {
+    public List<UsuarioDTO> findByTelefono(@PathVariable String telefono) {
         return usuarioService.findByTelefono(telefono);
     }
 
     @GetMapping("/buscar/direccion/{direccion}")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Usuario> findByDireccion(@PathVariable String direccion) {
+    public List<UsuarioDTO> findByDireccion(@PathVariable String direccion) {
         return usuarioService.findByDireccion(direccion);
     }
 
     @GetMapping("/buscar/activo/{activo}")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Usuario> findByActivo(@PathVariable boolean activo) {
+    public List<UsuarioDTO> findByActivo(@PathVariable boolean activo) {
         return usuarioService.findByActivo(activo);
     }
 
     @PostMapping("/crear")
-    public Usuario crear(@RequestBody @Valid Usuario dto) {
+    public UsuarioDTO crear(@RequestBody @Valid UsuarioDTO dto) {
         return usuarioService.crear(dto);
     }
 
     @PutMapping("/actualizar")
-    public Usuario actualizar( @RequestBody @Valid Usuario dto) {
+    public UsuarioDTO actualizar(@RequestBody @Valid UsuarioDTO dto) {
         return usuarioService.actualizar(dto);
     }
 

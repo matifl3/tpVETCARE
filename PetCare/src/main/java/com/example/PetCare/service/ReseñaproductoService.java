@@ -41,7 +41,7 @@ public class ReseñaproductoService {
         }
         return false;
     }
-    public ReseñaProducto actualizar(Integer id,ReseñaProductoDTO dto) {
+    public ReseñaProductoDTO actualizar(Integer id,ReseñaProductoDTO dto) {
         Usuario usuario =usuarioRepository.findById(dto.getId_usuario()).orElseThrow(()->new NoEncontradoException("El usuario no existe"));
         Producto producto = productoRepository.findById(dto.getId_producto()).orElseThrow(()->new NoEncontradoException("El producto no existe"));
         ReseñaProducto reseñaProducto= repository.findById(id).orElseThrow(()->new NoEncontradoException("La reseña no existe"));
@@ -51,7 +51,7 @@ public class ReseñaproductoService {
         reseñaProducto.setPuntuacion(dto.getPuntuacion());
         reseñaProducto.setFecha(dto.getFecha());
         reseñaProducto.setActivo(Boolean.TRUE.equals(dto.getActivo()));
-        return repository.save(reseñaProducto);
+        return toDTO(repository.save(reseñaProducto));
     }
     // (Godoy) Lo mismo que en turnoService actualizar.
 

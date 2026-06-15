@@ -1,7 +1,6 @@
 package com.example.PetCare.controller;
 
 import com.example.PetCare.dto.ReseñaProductoDTO;
-import com.example.PetCare.model.ReseñaProducto;
 import com.example.PetCare.service.ReseñaproductoService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -30,19 +29,7 @@ public class ReseñaProductoController {
 
     @PutMapping("/{id}")
     public ReseñaProductoDTO actualizar(@PathVariable Integer id, @RequestBody @Valid ReseñaProductoDTO dto) {
-        return toReseñaProductoDTO(reseñaproductoService.actualizar(id, dto));
-    }
-
-    private ReseñaProductoDTO toReseñaProductoDTO(ReseñaProducto entity) {
-        ReseñaProductoDTO dto = new ReseñaProductoDTO();
-        dto.setId(entity.getId());
-        dto.setComentario(entity.getComentario());
-        dto.setActivo(entity.isActivo());
-        dto.setFecha(entity.getFecha());
-        dto.setPuntuacion(entity.getPuntuacion());
-        dto.setId_usuario(entity.getUsuario().getIdUsuario());
-        dto.setId_producto(entity.getProducto().getId());
-        return dto;
+        return reseñaproductoService.actualizar(id, dto);
     }
 
     @PutMapping("/{id}/aprobar")
