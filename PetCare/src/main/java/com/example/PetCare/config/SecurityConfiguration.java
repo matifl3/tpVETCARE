@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -18,8 +16,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -31,13 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
-
-    //- users(DataSource) — Crea un JdbcUserDetailsManager que usa la conexión a la base de datos (DataSource) para buscar usuarios en las tablas users y authorities.
-    // Spring Security ya sabe hacer las queries a esas tablas sin que las escribamos.
-    @Bean
-    public UserDetailsManager users(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
-    }
 
     //- passwordEncoder() — Crea un codificador de contraseñas que usa el prefijo automático.
     // Cuando guardas una contraseña con {bcrypt}..., al hacer login Spring compara usando el mismo algoritmo. {noop} significa sin codificar (solo para pruebas).
