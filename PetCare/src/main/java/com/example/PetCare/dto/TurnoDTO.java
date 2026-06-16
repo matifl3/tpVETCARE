@@ -28,5 +28,9 @@ public class TurnoDTO {
     @NotNull
     private Estado_Turno estadoTurno;
 
+    private Integer horas;
+
+    private Double precio;
+
     private Boolean activo;
 }

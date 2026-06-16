@@ -1,7 +1,9 @@
 package com.example.PetCare.controller;
 
 import com.example.PetCare.dto.TurnoDTO;
+import com.example.PetCare.model.Usuario;
 import com.example.PetCare.service.TurnoService;
+import com.example.PetCare.utils.AuthUtils;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +16,11 @@ import java.util.List;
 public class TurnoController {
 
     private final TurnoService turnoService;
+    private final AuthUtils authUtils;
 
-    public TurnoController(TurnoService turnoService) {
+    public TurnoController(TurnoService turnoService, AuthUtils authUtils) {
         this.turnoService = turnoService;
+        this.authUtils = authUtils;
     }
 
     // Listar turnos: solo ADMIN puede ver todos los turnos del sistema
@@ -24,6 +28,21 @@ public class TurnoController {
     @PreAuthorize("hasRole('ADMIN')")
     public List<TurnoDTO> listarTodos() {
         return turnoService.listarTodos();
+    }
+
+    // DUENIO: listar turnos de sus mascotas
+    @GetMapping("/mis-turnos")
+    @PreAuthorize("hasRole('DUENIO')")
+    public List<TurnoDTO> listarMisTurnos() {
+        Usuario user = authUtils.getCurrentUsuario();
+        return turnoService.listarPorDuenio(user.getIdUsuario());
+    }
+
+    // DUENIO: solicitar un turno con un profesional
+    @PostMapping("/solicitar")
+    @PreAuthorize("hasRole('DUENIO')")
+    public TurnoDTO solicitar(@RequestBody @Valid TurnoDTO dto) {
+        return turnoService.solicitar(dto);
     }
 
     // Listar turnos activos: ADMIN y PROFESIONALES pueden ver turnos activos

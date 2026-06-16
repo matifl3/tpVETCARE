@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <nav th:fragment="navbar" class="navbar">
+        <div class="container">
+            <a th:href="@{/}" class="nav-logo">
+                <span>🐾</span> PetCare
+            </a>
+
+            <ul class="nav-links" sec:authorize="!isAuthenticated()">
+                <li><a th:href="@{/#hero}">Inicio</a></li>
+                <li><a th:href="@{/#servicios}">Servicios</a></li>
+                <li><a th:href="@{/#trabaja}">Trabajá con nosotros</a></li>
+                <li><a th:href="@{/login}" class="nav-btn">Ingresar</a></li>
+            </ul>
+
+            <ul class="nav-links" sec:authorize="isAuthenticated()">
+                <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/mascotas}">Mascotas</a></li>
+                <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/profesionales}">Profesionales</a></li>
+                <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/tienda}">Tienda</a></li>
+                <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/carrito}">🛍️ Carrito</a></li>
+                <li><a th:href="@{/dashboard}">Dashboard</a></li>
+                <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/dashboard}">Admin</a></li>
+                <li>
+                    <form th:action="@{/logout}" method="post" style="display:inline">
+                        <button type="submit" class="nav-logout-btn">Cerrar sesión</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>
+</html>

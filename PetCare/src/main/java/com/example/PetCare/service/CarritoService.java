@@ -270,6 +270,7 @@ public class CarritoService {
             CarritoProductoDTO dto = new CarritoProductoDTO();
             dto.setId(a.getId());
             dto.setIdProducto(a.getProducto().getId());
+            dto.setProductoNombre(a.getProducto().getNombre());
             dto.setCantidad(a.getCantidad());
             dto.setPrecioUnitario(a.getPrecioUnitario());
             dto.setSubtotal(a.getCantidad() * a.getPrecioUnitario());

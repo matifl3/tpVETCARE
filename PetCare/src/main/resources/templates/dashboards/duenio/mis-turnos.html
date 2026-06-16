@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Turnos - PetCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="dashboard">
+        <h1>Mis Turnos</h1>
+        <p>Tus reservas con profesionales.</p>
+
+        <div id="alerta" class="alert" role="alert"></div>
+        <div id="listaTurnos" class="card-grid">
+            <p style="grid-column:1/-1;color:#888">Cargando...</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:inline="none">
+        const alerta = document.getElementById('alerta');
+
+        function mostrarAlerta(msg, tipo) {
+            alerta.textContent = msg;
+            alerta.className = 'alert ' + tipo + ' show';
+            setTimeout(() => { alerta.className = 'alert'; }, 3000);
+        }
+
+        async function cargarTurnos() {
+            const div = document.getElementById('listaTurnos');
+            try {
+                const res = await fetch('/api/turnos/mis-turnos');
+                const data = await res.json();
+                const turnos = Array.isArray(data) ? data : [];
+                if (turnos.length === 0) {
+                    div.innerHTML = '<p style="grid-column:1/-1;color:#888">No tenés turnos reservados.</p><a th:href="@{/dashboard/duenio/profesionales}" class="btn-primary" style="margin-top:16px">Buscar profesionales</a>';
+                    return;
+                }
+                div.innerHTML = turnos.map(t => `
+                    <div class="dash-card">
+                        <span class="dash-icon">📅</span>
+                        <h3>${t.fecha || ''}</h3>
+                        <p style="font-size:13px;color:#888">Mascota ID: ${t.id_mascota} · Profesional ID: ${t.id_profesional}</p>
+                        <p style="font-size:13px">Estado: <strong>${t.estadoTurno || ''}</strong></p>
+                        ${t.horas ? '<p style="font-size:13px;color:#888">Horas: ' + t.horas + '</p>' : ''}
+                        ${t.precio ? '<p style="font-size:18px;font-weight:700;color:#302b63">$' + t.precio.toFixed(2) + '</p>' : ''}
+                    </div>
+                `).join('');
+            } catch {
+                div.innerHTML = '<p style="grid-column:1/-1;color:#e74c3c">Error al cargar turnos.</p>';
+            }
+        }
+
+        cargarTurnos();
+    </script>
+</body>
+</html>

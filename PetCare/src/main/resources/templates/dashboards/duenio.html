@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PetCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="dashboard">
+        <h1>¡Bienvenido, <span th:text="${nombre}"></span>!</h1>
+        <p>Gestioná tus mascotas, turnos y más desde tu panel.</p>
+
+        <div class="card-grid">
+            <div class="dash-card">
+                <span class="dash-icon">🐕</span>
+                <h3>Mis Mascotas</h3>
+                <p>Registrá y administrá las mascotas a tu cargo.</p>
+                <a th:href="@{/dashboard/duenio/mascotas}" class="dash-link">Ver mascotas</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">👨‍⚕️</span>
+                <h3>Profesionales</h3>
+                <p>Buscá profesionales y solicitá turnos.</p>
+                <a th:href="@{/dashboard/duenio/profesionales}" class="dash-link">Ver profesionales</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">🛒</span>
+                <h3>Tienda</h3>
+                <p>Comprá productos para tu mascota.</p>
+                <a th:href="@{/dashboard/duenio/tienda}" class="dash-link">Ver tienda</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">🛍️</span>
+                <h3>Carrito</h3>
+                <p>Revisá y confirmá tus compras.</p>
+                <a th:href="@{/dashboard/duenio/carrito}" class="dash-link">Ver carrito</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">💳</span>
+                <h3>Métodos de pago</h3>
+                <p>Administrá tus tarjetas y medios de pago.</p>
+                <a th:href="@{/dashboard/duenio/tarjetas}" class="dash-link">Gestionar</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">📅</span>
+                <h3>Mis Turnos</h3>
+                <p>Revisá tus turnos y reservas activas.</p>
+                <a th:href="@{/dashboard/duenio/mis-turnos}" class="dash-link">Ver turnos</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

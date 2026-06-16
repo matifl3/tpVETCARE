@@ -18,6 +18,7 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
     @Query("SELECT DISTINCT t.mascota FROM Turno t WHERE t.profesional.id = :idProfesional")
     List<Mascota> findMascotasAtendidasPorProfesional(@Param("idProfesional") int idProfesional);
 
+    List<Mascota> findByUsuario_IdUsuario(Integer idUsuario);
 }
 
 

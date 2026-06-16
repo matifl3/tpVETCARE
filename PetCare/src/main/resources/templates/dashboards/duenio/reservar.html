@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservar Turno - PetCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="dashboard">
+        <h1>Reservar Turno</h1>
+        <div id="infoProfesional"></div>
+
+        <div id="alerta" class="alert" role="alert"></div>
+
+        <div class="dash-card" style="max-width:600px">
+            <form id="formReserva">
+                <div class="input-group">
+                    <label for="mascota">Mascota</label>
+                    <select id="mascota" required>
+                        <option value="">Seleccioná una mascota</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="fecha">Fecha del turno</label>
+                    <input type="date" id="fecha" required>
+                </div>
+
+                <div id="campoHoras" style="display:none">
+                    <div class="input-group">
+                        <label for="horas">Cantidad de horas</label>
+                        <input type="number" id="horas" min="1" max="12" value="1">
+                    </div>
+                </div>
+
+                <div id="detallePrecio" style="margin:16px 0;padding:16px;background:#f5f5fa;border-radius:12px">
+                    <p id="precioBase" style="font-size:14px;color:#888">Precio base: <span id="valorBase"></span></p>
+                    <p id="precioHoras" style="font-size:14px;color:#888">Precio por hora adicional: <span id="valorHora"></span></p>
+                    <p style="font-size:20px;font-weight:700;color:#302b63;margin-top:8px">Total: $<span id="totalPrecio">0.00</span></p>
+                </div>
+
+                <button type="submit" class="btn-primary" id="btnReservar">Confirmar reserva</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:inline="none">
+        const alerta = document.getElementById('alerta');
+        const idProfesional = /*[[${idProfesional}]]*/ null;
+        let profesional = null;
+        let mascotas = [];
+
+        const PRECIOS = {
+            VETERINARIO: { base: 5000, hora: 0 },
+            PASEADOR: { base: 3000, hora: 1500 },
+            PELUQUERO: { base: 4000, hora: 0 },
+            ADIESTRADOR: { base: 4500, hora: 0 },
+            CUIDADOR: { base: 2500, hora: 1000 }
+        };
+
+        function mostrarAlerta(msg, tipo) {
+            alerta.textContent = msg;
+            alerta.className = 'alert ' + tipo + ' show';
+            setTimeout(() => { alerta.className = 'alert'; }, 4000);
+        }
+
+        function calcularPrecio() {
+            if (!profesional) return;
+            const precios = PRECIOS[profesional.rol] || { base: 3000, hora: 0 };
+            const horas = parseInt(document.getElementById('horas').value) || 1;
+            const total = precios.base + (precios.hora * (horas - 1));
+            document.getElementById('valorBase').textContent = '$' + precios.base.toFixed(2);
+            document.getElementById('valorHora').textContent = precios.hora > 0 ? '$' + precios.hora.toFixed(2) + ' x hora' : 'No aplica';
+            document.getElementById('totalPrecio').textContent = total.toFixed(2);
+        }
+
+        async function init() {
+            try {
+                const [resProf, resMasc] = await Promise.all([
+                    fetch('/api/profesionales/' + idProfesional),
+                    fetch('/api/mascotas/mias')
+                ]);
+                profesional = await resProf.json();
+                mascotas = await resMasc.json();
+
+                const div = document.getElementById('infoProfesional');
+                div.innerHTML = '<div class="dash-card" style="margin-bottom:16px">' +
+                    '<span class="dash-icon">' + (profesional.rol === 'VETERINARIO' ? '👨‍⚕️' : profesional.rol === 'PASEADOR' ? '🐕' : profesional.rol === 'PELUQUERO' ? '✂️' : profesional.rol === 'ADIESTRADOR' ? '🎯' : '🏠') + '</span>' +
+                    '<h3>' + (profesional.nombre || '') + ' ' + (profesional.apellido || '') + '</h3>' +
+                    '<p style="font-size:13px;color:#888">' + profesional.rol + ' · ' + (profesional.experiencia || '') + '</p>' +
+                    '</div>';
+
+                const select = document.getElementById('mascota');
+                if (mascotas.length === 0) {
+                    select.innerHTML = '<option value="">No tenés mascotas registradas</option>';
+                    document.getElementById('btnReservar').disabled = true;
+                } else {
+                    select.innerHTML = '<option value="">Seleccioná una mascota</option>' +
+                        mascotas.map(m => '<option value="' + m.idMascota + '">' + m.nombre + ' (' + m.especie + ')</option>').join('');
+                }
+
+                const mostrarHoras = profesional.rol === 'PASEADOR' || profesional.rol === 'CUIDADOR';
+                document.getElementById('campoHoras').style.display = mostrarHoras ? 'block' : 'none';
+                if (mostrarHoras) {
+                    document.getElementById('horas').addEventListener('input', calcularPrecio);
+                }
+
+                calcularPrecio();
+
+            } catch {
+                mostrarAlerta('Error al cargar datos.', 'alert-error');
+            }
+        }
+
+        document.getElementById('formReserva').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnReservar');
+            const idMascota = document.getElementById('mascota').value;
+            const fecha = document.getElementById('fecha').value;
+
+            if (!idMascota || !fecha) {
+                mostrarAlerta('Seleccioná una mascota y una fecha.', 'alert-error');
+                return;
+            }
+
+            const precios = PRECIOS[profesional.rol] || { base: 3000, hora: 0 };
+            const horas = parseInt(document.getElementById('horas').value) || 1;
+            const total = precios.base + (precios.hora * (horas - 1));
+
+            btn.disabled = true;
+            btn.textContent = 'Reservando...';
+
+            try {
+                const res = await fetch('/api/turnos/solicitar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fecha: fecha,
+                        id_mascota: parseInt(idMascota),
+                        id_profesional: idProfesional,
+                        estadoTurno: 'CONFIRMADO',
+                        activo: true,
+                        horas: horas,
+                        precio: total
+                    })
+                });
+                if (res.ok) {
+                    mostrarAlerta('Turno reservado con éxito.', 'alert-success');
+                    setTimeout(() => { window.location.href = '/dashboard/duenio/mis-turnos'; }, 1500);
+                } else {
+                    const json = await res.json();
+                    mostrarAlerta(json.error || json.message || 'Error al reservar.', 'alert-error');
+                }
+            } catch {
+                mostrarAlerta('Error de conexión.', 'alert-error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Confirmar reserva';
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

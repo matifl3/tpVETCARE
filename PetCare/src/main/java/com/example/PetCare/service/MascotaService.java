@@ -68,6 +68,18 @@ public class MascotaService {
                 .toList();
     }
 
+    public List<MascotaDTO> listarPorDuenio(Integer idUsuario) {
+        return mascotaRepository.findByUsuario_IdUsuario(idUsuario).stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    public MascotaDTO crearParaUsuario(MascotaDTO dto, Usuario duenio) {
+        Mascota entity = toEntity(dto, duenio);
+        entity.setActivo(true);
+        return toDTO(mascotaRepository.save(entity));
+    }
+
     /// ABM
     public boolean crear(MascotaDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);

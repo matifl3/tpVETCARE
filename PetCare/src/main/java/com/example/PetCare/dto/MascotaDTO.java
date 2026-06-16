@@ -31,6 +31,5 @@ public class MascotaDTO {
     private String observaciones;
     private Boolean activo;
 
-    @NotNull
     private Integer idUsuario;
 }

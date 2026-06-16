@@ -61,6 +61,41 @@ public class TurnoService {
                 .toList();
     }
 
+    public List<TurnoDTO> listarPorDuenio(Integer idDuenio) {
+        return turnoRepository.findByMascota_Usuario_IdUsuario(idDuenio).stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    public TurnoDTO solicitar(TurnoDTO dto) {
+        Mascota mascota = mascotaRepository.findById(dto.getId_mascota())
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        Profesional profesional = profesionalRepository.findById(dto.getId_profesional())
+                .orElseThrow(() -> new NoEncontradoException("Profesional no encontrado"));
+
+        Profesional fullProf = profesionalRepository.findById(profesional.getIdUsuario())
+                .orElseThrow(() -> new NoEncontradoException("Profesional no encontrado"));
+
+        double precioBase = switch (fullProf.getRol()) {
+            case VETERINARIO -> 5000.0;
+            case PASEADOR -> 3000.0;
+            case PELUQUERO -> 4000.0;
+            case ADIESTRADOR -> 4500.0;
+            case CUIDADOR -> 2500.0;
+            default -> 3000.0;
+        };
+        double precioHora = (fullProf.getRol() == Rol.PASEADOR || fullProf.getRol() == Rol.CUIDADOR) ? 1500.0 : 0.0;
+        int horas = dto.getHoras() != null ? dto.getHoras() : 1;
+        double total = precioBase + (precioHora * (horas - 1));
+
+        dto.setEstadoTurno(Estado_Turno.CONFIRMADO);
+        dto.setActivo(true);
+        dto.setHoras(horas);
+        dto.setPrecio(total);
+        Turno entity = toEntity(dto, mascota, profesional);
+        return toDTO(turnoRepository.save(entity));
+    }
+
     public TurnoDTO crear(TurnoDTO dto) {
         Mascota mascota = mascotaRepository.findById(dto.getId_mascota())
                 .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
@@ -110,6 +145,8 @@ public class TurnoService {
         dto.setFecha(entity.getFecha());
         dto.setId_mascota(entity.getMascota().getIdMascota());
         dto.setId_profesional(entity.getProfesional().getIdUsuario());
+        dto.setHoras(entity.getHoras());
+        dto.setPrecio(entity.getPrecio());
         dto.setActivo(entity.isActivo());
         return dto;
     }
@@ -122,6 +159,8 @@ public class TurnoService {
         if (dto.getId() != null) entity.setIdTurno(dto.getId());
         entity.setMascota(mascota);
         entity.setProfesional(profesional);
+        entity.setHoras(dto.getHoras());
+        entity.setPrecio(dto.getPrecio());
         entity.setActivo(Boolean.TRUE.equals(dto.getActivo()));
         return entity;
     }

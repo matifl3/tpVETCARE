@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class CarritoProductoDTO {
     private int id;
     private int idProducto;
+    private String productoNombre;
     private int cantidad;
     private double precioUnitario;
     private double subtotal;

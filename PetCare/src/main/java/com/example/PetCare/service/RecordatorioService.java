@@ -44,14 +44,14 @@ public class RecordatorioService {
     }
 
     public List<RecordatorioDTO> listarPorDuenio(Integer idDuenio){
-        return recordatorioRepository.findbyDuenioIdUsuario(idDuenio)
+        return recordatorioRepository.findByDuenioIdUsuario(idDuenio)
                 .stream()
                 .map(this::toDTO)
                 .toList();
     }
 
     public List<RecordatorioDTO> listarPorVeterinario(Integer idVeterinario){
-        return recordatorioRepository.findbyDuenioIdUsuario(idVeterinario)
+        return recordatorioRepository.findByDuenioIdUsuario(idVeterinario)
                 .stream()
                 .map(this::toDTO)
                 .toList();

@@ -44,29 +44,26 @@ public class SecurityConfiguration {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    //- filterChain() — Configura las reglas de acceso:
-    //- csrf().disable() — Deshabilita CSRF porque es una API REST (no usa formularios HTML).
-    //- requestMatchers(HttpMethod.POST, "/api/auth/registro").permitAll() — El endpoint de registro es público, cualquiera puede crear usuario.
-    //- anyRequest().authenticated() — Todo lo demás requiere estar autenticado.
-    //- httpBasic() — Usa Basic Auth para autenticar (username + password en el header).
-
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Habilita CORS para que los navegadores permitan peticiones cross-origin.
-            // Sin esto, un frontend en otro puerto/dominio no podría llamar a la API.
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // CSRF se deshabilita porque es una API REST que no usa formularios HTML.
-            // Los tokens CSRF solo son necesarios cuando el navegador envía cookies automáticamente.
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // El endpoint de registro es público (no requiere autenticación)
+                .requestMatchers("/", "/login", "/css/**", "/js/**", "/img/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/registro").permitAll()
-                // Todos los demás endpoints requieren autenticación
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            // HTTP Basic Auth: envía username:password en cada request via header.
-            // IMPORTANTE: Solo es seguro si se usa HTTPS, ya que el base64 no es encriptación.
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl("/")
+                .permitAll()
+            )
             .httpBasic(Customizer.withDefaults());
         return http.build();
     }

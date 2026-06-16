@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - PetCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="dashboard">
+        <h1>Panel de Administración</h1>
+        <p>Bienvenido, <span th:text="${nombre}"></span>. Gestioná la plataforma PetCare.</p>
+
+        <div class="card-grid">
+            <div class="dash-card" sec:authorize="hasRole('ADMIN')">
+                <span class="dash-icon">👥</span>
+                <h3>Usuarios</h3>
+                <p>Gestioná todos los usuarios registrados en la plataforma.</p>
+                <a th:href="@{/admin/usuarios}" class="dash-link">Ver usuarios</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">📋</span>
+                <h3>Postulaciones <span th:if="${profesionalesPendientes > 0}" class="nav-role" th:text="${profesionalesPendientes + ' pendientes'}"></span></h3>
+                <p>Revisá y aprobá las solicitudes de profesionales.</p>
+                <a th:href="@{/admin/postulaciones}" class="dash-link">Gestionar</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">🐾</span>
+                <h3>Mascotas</h3>
+                <p>Administrá las mascotas registradas en el sistema.</p>
+                <a th:href="@{/admin/mascotas}" class="dash-link">Ver mascotas</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">📅</span>
+                <h3>Turnos</h3>
+                <p>Visualizá todos los turnos de la plataforma.</p>
+                <a th:href="@{/admin/turnos}" class="dash-link">Ver turnos</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">🛒</span>
+                <h3>Productos</h3>
+                <p>Administrá el catálogo de productos y ventas.</p>
+                <a th:href="@{/admin/productos}" class="dash-link">Gestionar</a>
+            </div>
+
+            <div class="dash-card">
+                <span class="dash-icon">📊</span>
+                <h3>Reportes</h3>
+                <p>Visualizá estadísticas y ganancias mensuales.</p>
+                <a th:href="@{/admin/reportes}" class="dash-link">Ver reportes</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

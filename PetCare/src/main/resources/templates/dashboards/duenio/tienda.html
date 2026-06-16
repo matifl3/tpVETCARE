@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda - PetCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="dashboard">
+        <h1>Tienda</h1>
+        <p>Encontrá productos para tu mascota.</p>
+
+        <div id="alerta" class="alert" role="alert"></div>
+
+        <div id="listaProductos" class="card-grid">
+            <p style="grid-column:1/-1;color:#888">Cargando...</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:inline="none">
+        const alerta = document.getElementById('alerta');
+
+        function mostrarAlerta(msg, tipo) {
+            alerta.textContent = msg;
+            alerta.className = 'alert ' + tipo + ' show';
+            setTimeout(() => { alerta.className = 'alert'; }, 3000);
+        }
+
+        async function cargarProductos() {
+            const div = document.getElementById('listaProductos');
+            try {
+                const res = await fetch('/api/productos');
+                const data = await res.json();
+                const productos = Array.isArray(data) ? data.filter(p => p.activo !== false) : [];
+                if (productos.length === 0) {
+                    div.innerHTML = '<p style="grid-column:1/-1;color:#888">No hay productos disponibles.</p>';
+                    return;
+                }
+                div.innerHTML = productos.map(p => `
+                    <div class="dash-card">
+                        <span class="dash-icon">📦</span>
+                        <h3>${p.nombre}</h3>
+                        <p>${p.descripcion || ''}</p>
+                        <p style="font-size:20px;font-weight:700;color:#302b63;margin:8px 0">$${p.precio ? p.precio.toFixed(2) : '0.00'}</p>
+                        <p style="font-size:12px;color:#888">Stock: ${p.stock || 0}</p>
+                        <button class="btn-primary" onclick="agregarAlCarrito(${p.id})" style="padding:8px 18px;font-size:13px;margin-top:8px" ${p.stock < 1 ? 'disabled' : ''}>${p.stock < 1 ? 'Sin stock' : 'Agregar al carrito'}</button>
+                    </div>
+                `).join('');
+            } catch {
+                div.innerHTML = '<p style="grid-column:1/-1;color:#e74c3c">Error al cargar productos.</p>';
+            }
+        }
+
+        async function agregarAlCarrito(idProducto) {
+            try {
+                const res = await fetch('/api/carrito/agregar?idProducto=' + idProducto + '&cantidad=1', {
+                    method: 'POST'
+                });
+                if (res.ok) {
+                    mostrarAlerta('Producto agregado al carrito.', 'alert-success');
+                } else {
+                    const json = await res.json();
+                    mostrarAlerta(json.error || json.message || 'Error al agregar.', 'alert-error');
+                }
+            } catch {
+                mostrarAlerta('Error de conexión.', 'alert-error');
+            }
+        }
+
+        cargarProductos();
+    </script>
+</body>
+</html>

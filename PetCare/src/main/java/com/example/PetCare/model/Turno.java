@@ -27,5 +27,10 @@ public class Turno {
     @ManyToOne
     @JoinColumn(name = "id_profesional")
     private Profesional profesional;
+
+    private Integer horas;
+
+    private Double precio;
+
     private boolean activo;
 }

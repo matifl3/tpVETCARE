@@ -21,6 +21,8 @@ public interface TurnoRepository extends JpaRepository<Turno, Integer> {
     List<Turno> findByFechaAfter(LocalDate fecha);    // turnos después de una fecha
     List<Turno> findByFecha(LocalDate fecha);         // turnos en una fecha exacta
 
+    List<Turno> findByMascota_Usuario_IdUsuario(Integer idUsuario);
+
 
     @Modifying
     @Query("UPDATE Turno t SET t.estadoTurno = :estado WHERE t.idTurno = :idTurno")

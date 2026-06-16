@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - PetCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="dashboard">
+        <h1>Mi Carrito</h1>
+        <p>Revisá los productos antes de comprar.</p>
+
+        <div id="alerta" class="alert" role="alert"></div>
+
+        <div id="contenidoCarrito">
+            <p style="color:#888">Cargando...</p>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:inline="none">
+        const alerta = document.getElementById('alerta');
+
+        function mostrarAlerta(msg, tipo) {
+            alerta.textContent = msg;
+            alerta.className = 'alert ' + tipo + ' show';
+            setTimeout(() => { alerta.className = 'alert'; }, 3000);
+        }
+
+        async function cargarCarrito() {
+            const div = document.getElementById('contenidoCarrito');
+            try {
+                const res = await fetch('/api/carrito');
+                const data = await res.json();
+
+                if (!data || !data.items || data.items.length === 0) {
+                    div.innerHTML = '<p style="color:#888">Tu carrito está vacío.</p><a th:href="@{/dashboard/duenio/tienda}" class="btn-primary" style="margin-top:16px;display:inline-block">Ir a la tienda</a>';
+                    return;
+                }
+
+                let html = '<div style="display:flex;flex-direction:column;gap:12px">';
+
+                data.items.forEach(item => {
+                    const sub = item.subtotal || (item.precioUnitario * item.cantidad) || 0;
+                    html += `
+                        <div style="display:flex;align-items:center;justify-content:space-between;background:white;padding:16px 20px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.04)">
+                            <div>
+                                <strong>${item.productoNombre}</strong>
+                                <p style="font-size:13px;color:#888">$${(item.precioUnitario || 0).toFixed(2)} x ${item.cantidad}</p>
+                            </div>
+                            <div style="text-align:right">
+                                <p style="font-weight:600">$${sub.toFixed(2)}</p>
+                                <button onclick="eliminarItem(${item.idProducto})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+
+                html += `
+                    <div style="margin-top:24px;text-align:right">
+                        <p style="font-size:18px;font-weight:700">Total: $${(data.total || 0).toFixed(2)}</p>
+                        <button class="btn-primary" onclick="comprar()" style="margin-top:12px">Confirmar compra</button>
+                    </div>
+                `;
+
+                div.innerHTML = html;
+            } catch {
+                div.innerHTML = '<p style="color:#e74c3c">Error al cargar el carrito.</p>';
+            }
+        }
+
+        async function eliminarItem(idProducto) {
+            try {
+                const res = await fetch('/api/carrito/eliminar?idProducto=' + idProducto, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    mostrarAlerta('Producto eliminado.', 'alert-success');
+                    await cargarCarrito();
+                } else {
+                    mostrarAlerta('Error al eliminar.', 'alert-error');
+                }
+            } catch {
+                mostrarAlerta('Error de conexión.', 'alert-error');
+            }
+        }
+
+        async function comprar() {
+            try {
+                const res = await fetch('/api/carrito/comprar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ metodoPago: 'TARJETA' })
+                });
+                if (res.ok) {
+                    mostrarAlerta('Compra realizada con éxito.', 'alert-success');
+                    setTimeout(() => { window.location.href = '/dashboard/duenio/carrito'; }, 1500);
+                } else {
+                    const json = await res.json();
+                    mostrarAlerta(json.error || json.message || 'Error al comprar.', 'alert-error');
+                }
+            } catch {
+                mostrarAlerta('Error de conexión.', 'alert-error');
+            }
+        }
+
+        cargarCarrito();
+    </script>
+</body>
+</html>
