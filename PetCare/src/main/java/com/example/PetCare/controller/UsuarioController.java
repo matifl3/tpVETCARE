@@ -1,5 +1,6 @@
 package com.example.PetCare.controller;
 
+import com.example.PetCare.dto.ResetPasswordRequest;
 import com.example.PetCare.dto.UsuarioDTO;
 import com.example.PetCare.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -8,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -89,5 +91,28 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     public void eliminar(@PathVariable Integer id) {
         usuarioService.eliminar(id);
+    }
+
+    // ==================== RESTABLECER CONTRASEÑA (SOLO ADMIN) ====================
+
+    /**
+     * Permite al admin restablecer la contraseña de cualquier usuario.
+     * El usuario queda con la nueva contraseña y la anterior queda invalidada.
+     *
+     * Flujo: El usuario olvidó su contraseña → contacta al admin →
+     *        admin busca al usuario → hace este endpoint con la nueva contraseña →
+     *        el usuario puede loguearse con la nueva contraseña.
+     *
+     * Ejemplo: PUT /api/usuarios/3/reset-password
+     * Body: { "nuevaPassword": "micontrasegura123" }
+     */
+    @PutMapping("/{id}/reset-password")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, String>> resetPassword(
+            @PathVariable int id,
+            @RequestBody @Valid ResetPasswordRequest request) {
+        // Llama al service para que actualice la contraseña en Spring Security
+        usuarioService.resetPassword(id, request.getNuevaPassword());
+        return ResponseEntity.ok(Map.of("mensaje", "Contraseña restablecida exitosamente"));
     }
 }

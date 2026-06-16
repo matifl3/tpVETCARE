@@ -5,6 +5,9 @@ import com.example.PetCare.enums.Rol;
 import com.example.PetCare.exceptions.NoEncontradoException;
 import com.example.PetCare.model.Usuario;
 import com.example.PetCare.repository.UsuarioRepository;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +19,17 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    // UserDetailsManager: gestiona usuarios en las tablas users/authorities de Spring Security
+    private final UserDetailsManager userDetailsManager;
+    // PasswordEncoder: hashea las contraseñas con bcrypt
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          UserDetailsManager userDetailsManager,
+                          PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.userDetailsManager = userDetailsManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioDTO> listarTodos() {
@@ -90,6 +101,52 @@ public class UsuarioService {
             return true;
         }
         return false;
+    }
+
+    // ==================== RESTABLECER CONTRASEÑA ====================
+
+    /**
+     * Restablece la contraseña de un usuario.
+     * El admin envía la nueva contraseña y el sistema la actualiza en las tablas de Spring Security.
+     *
+     * Flujo:
+     * 1. Se busca el usuario en la tabla JPA (para obtener email y rol)
+     * 2. Se elimina el usuario viejo de la tabla `users` de Spring Security
+     * 3. Se crea el usuario nuevo con la contraseña hasheada
+     * 4. La contraseña anterior queda invalidada automáticamente
+     *
+     * @param idUsuario ID del usuario cuya contraseña se va a cambiar
+     * @param nuevaPassword La nueva contraseña en texto plano (se hasheará con bcrypt)
+     */
+    public void resetPassword(int idUsuario, String nuevaPassword) {
+        // 1. Busca el usuario en la tabla de JPA para obtener sus datos
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new NoEncontradoException("Usuario no encontrado"));
+
+        // 2. El email es el username en Spring Security (se usa para login)
+        String username = usuario.getEmail();
+
+        // 3. Verifica que el usuario exista en las tablas de Spring Security
+        if (!userDetailsManager.userExists(username)) {
+            throw new NoEncontradoException("El usuario no existe en el sistema de autenticación");
+        }
+
+        // 4. Elimina el usuario viejo de la tabla `users` y `authorities`
+        // Esto borra tanto la contraseña como los roles asignados
+        userDetailsManager.deleteUser(username);
+
+        // 5. Hashea la nueva contraseña con bcrypt (el prefijo {bcrypt} se agrega automáticamente)
+        String hash = passwordEncoder.encode(nuevaPassword);
+
+        // 6. Crea el usuario nuevo con la misma contraseña hasheada y el mismo rol
+        // El rol se obtiene del enum Rol y se convierte a "ROLE_" + nombre (formato de Spring Security)
+        userDetailsManager.createUser(
+                User.builder()
+                        .username(username)
+                        .password(hash)
+                        .roles(usuario.getRol().name())
+                        .build()
+        );
     }
 
     public UsuarioDTO toDTO(Usuario entity) {
