@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare - Cuidado Integral para Mascotas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif;
+            background: #fafafe;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ========== NAVBAR ========== */
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+            z-index: 1000;
+            height: 68px;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-logo span { font-size: 26px; -webkit-text-fill-color: initial; }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            transition: color 0.3s;
+            letter-spacing: 0.3px;
+        }
+
+        .nav-links a:hover { color: #667eea; }
+
+        .nav-btn {
+            padding: 8px 22px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white !important;
+            border-radius: 10px;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+        }
+
+        /* ========== HERO ========== */
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 68px;
+            background: linear-gradient(135deg, #f5f0ff 0%, #e8f0fe 50%, #f0f5ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(102,126,234,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(118,75,162,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content { flex: 1; }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(102,126,234,0.1);
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.15;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: #888;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 500px;
+        }
+
+        .hero-buttons { display: flex; gap: 14px; }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 14px 32px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #e8e8ef;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.1);
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-illustration {
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 140px;
+            position: relative;
+        }
+
+        .hero-illustration::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 44px;
+            border: 2px solid rgba(102,126,234,0.1);
+        }
+
+        /* ========== SECTION COMMON ========== */
+
+        section { padding: 100px 0; }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 15px;
+            color: #888;
+            margin-bottom: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ========== SERVICIOS ========== */
+
+        #servicios { background: white; }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .service-card {
+            background: #fafafe;
+            border: 2px solid #f0f0f5;
+            border-radius: 20px;
+            padding: 32px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(102,126,234,0.1);
+        }
+
+        .service-icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .service-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        /* ========== LOGIN / REGISTER SECTIONS ========== */
+
+        .auth-section { background: #f5f0ff; }
+
+        .auth-wrapper {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+        }
+
+        .auth-card h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .auth-card > p {
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: #f0f0f5;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #302b63;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-container { display: none; }
+        .form-container.active { display: block; }
+
+        .role-selector { margin-bottom: 24px; }
+
+        .role-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-options { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .role-card { cursor: pointer; }
+        .role-card input { display: none; }
+
+        .role-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 8px;
+            min-width: 72px;
+            border: 2px solid #e8e8ef;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            background: #fafafe;
+        }
+
+        .role-card input:checked + .role-content {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+            box-shadow: 0 4px 15px rgba(102,126,234,0.2);
+            transform: translateY(-2px);
+        }
+
+        .role-card:hover .role-content {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .role-icon { font-size: 22px; }
+        .role-text { font-size: 11px; font-weight: 600; color: #444; }
+
+        .role-card input:checked + .role-content .role-text { color: #302b63; }
+
+        .input-group { margin-bottom: 18px; }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8e8ef;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #fafafe;
+            color: #333;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102,126,234,0.15);
+            background: white;
+        }
+
+        .input-group input::placeholder { color: #bbb; }
+
+        .forgot-password { text-align: right; margin-bottom: 22px; }
+
+        .forgot-password a {
+            color: #667eea;
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-password a:hover { color: #764ba2; text-decoration: underline; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .register-note {
+            background: rgba(102,126,234,0.08);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .register-note strong { color: #667eea; }
+
+        /* ========== TRABAJÁ CON NOSOTROS ========== */
+
+        #trabaja { background: white; }
+
+        .trabaja-content {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .trabaja-content p {
+            font-size: 15px;
+            color: #888;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .profesiones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .profesion-card {
+            background: #fafafe;
+            border: 2px solid #f0f0f5;
+            border-radius: 16px;
+            padding: 20px 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .profesion-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .profesion-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+        .profesion-card span:last-child {
+            font-size: 13px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .btn-placeholder {
+            display: inline-block;
+            padding: 14px 36px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            opacity: 0.7;
+        }
+
+        .btn-placeholder:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+            opacity: 1;
+        }
+
+        .coming-soon {
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        /* ========== FOOTER ========== */
+
+        footer {
+            background: #1a1a2e;
+            color: #aaa;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        footer .nav-logo {
+            display: inline-flex;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        footer p { font-size: 13px; }
+
+        /* ========== RESPONSIVE ========== */
+
+        @media (max-width: 900px) {
+            .hero .container { flex-direction: column; text-align: center; }
+            .hero p { max-width: 100%; }
+            .hero-buttons { justify-content: center; }
+            .hero h1 { font-size: 36px; }
+            .hero-illustration { max-width: 300px; font-size: 100px; }
+
+            .auth-wrapper { flex-direction: column; align-items: center; }
+            .auth-card { max-width: 100%; }
+        }
+
+        @media (max-width: 600px) {
+            .nav-links a:not(.nav-btn) { display: none; }
+            .hero h1 { font-size: 28px; }
+            section { padding: 60px 0; }
+            .section-title { font-size: 26px; }
+            .services-grid { grid-template-columns: repeat(2, 1fr); }
+            .auth-card { padding: 28px 20px; }
+            .role-content { min-width: 60px; padding: 8px 6px; }
+            .role-icon { font-size: 18px; }
+            .role-text { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#hero" class="nav-logo">
+                <span>🐾</span> PetCare
+            </a>
+            <ul class="nav-links">
+                <li><a href="#hero">Inicio</a></li>
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#auth">Iniciar Sesión</a></li>
+                <li><a href="#auth">Registrarse</a></li>
+                <li><a href="#trabaja">Trabajá con nosotros</a></li>
+                <li><a href="#auth" class="nav-btn">Ingresar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">🐶 Cuidado integral</div>
+                <h1>El mejor cuidado para <span>tu mejor amigo</span></h1>
+                <p>
+                    En PetCare ofrecemos servicios completos de veterinaria, paseo, peluquería,
+                    adiestramiento y cuidado para que tu mascota reciba todo el amor y la atención
+                    que merece.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#auth" class="btn-primary">Comenzar ahora</a>
+                    <a href="#servicios" class="btn-secondary">Conocé nuestros servicios</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-illustration">🐾</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SERVICIOS ========== -->
+    <section id="servicios">
+        <div class="container">
+            <h2 class="section-title">Nuestros Servicios</h2>
+            <p class="section-subtitle">
+                Ofrecemos una amplia gama de servicios para el bienestar de tu mascota,
+                con profesionales capacitados y dedicados.
+            </p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <span class="service-icon">👨‍⚕️</span>
+                    <h3>Veterinaria</h3>
+                    <p>Atención clínica general, vacunación, análisis y cirugías menores.</p>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">🐕</span>
+                    <h3>Paseo</h3>
+                    <p>Paseos diarios supervisados para que tu perro haga ejercicio y se divierta.</p>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">✂️</span>
+                    <h3>Peluquería</h3>
+                    <p>Corte, baño, cepillado y cuidados estéticos para todo tipo de mascotas.</p>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">🎯</span>
+                    <h3>Adiestramiento</h3>
+                    <p>Entrenamiento profesional en obediencia básica, avanzada y modificación de conducta.</p>
+                </div>
+                <div class="service-card">
+                    <span class="service-icon">🏠</span>
+                    <h3>Cuidado</h3>
+                    <p>Hospedaje y cuidado temporal en un ambiente seguro y afectuoso.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== LOGIN / REGISTER ========== -->
+    <section class="auth-section" id="auth">
+        <div class="container">
+            <h2 class="section-title">Accedé a PetCare</h2>
+            <p class="section-subtitle">
+                Iniciá sesión si ya tenés cuenta o registrate para acceder a todos los servicios.
+            </p>
+
+            <div th:if="${mensaje}" class="alert alert-success" style="max-width: 480px; margin: 0 auto 24px;" th:text="${mensaje}"></div>
+            <div th:if="${errorLogin}" class="alert alert-error" style="max-width: 480px; margin: 0 auto 24px;" th:text="${errorLogin}"></div>
+            <div th:if="${errorRegistro}" class="alert alert-error" style="max-width: 480px; margin: 0 auto 24px;" th:text="${errorRegistro}"></div>
+
+            <div class="auth-wrapper">
+                <!-- LOGIN CARD -->
+                <div class="auth-card" id="loginCard">
+                    <h3>Iniciar Sesión</h3>
+                    <p>Ingresá con tu cuenta existente</p>
+
+                    <div class="tab-buttons" style="margin-bottom: 0;">
+                        <button class="tab-btn active" onclick="showTab('login')">Iniciar Sesión</button>
+                        <button class="tab-btn" onclick="showTab('register')">Registrarse</button>
+                    </div>
+
+                    <div id="loginForm" class="form-container active" style="margin-top: 24px;">
+                        <form th:action="@{/login}" method="post">
+                            <div class="role-selector">
+                                <label class="role-label">Ingresar como</label>
+                                <div class="role-options">
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="usuario" checked>
+                                        <div class="role-content">
+                                            <span class="role-icon">👤</span>
+                                            <span class="role-text">Usuario</span>
+                                        </div>
+                                    </label>
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="dueno">
+                                        <div class="role-content">
+                                            <span class="role-icon">👤</span>
+                                            <span class="role-text">Dueño</span>
+                                        </div>
+                                    </label>
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="administrador">
+                                        <div class="role-content">
+                                            <span class="role-icon">⚙️</span>
+                                            <span class="role-text">Admin</span>
+                                        </div>
+                                    </label>
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="veterinario">
+                                        <div class="role-content">
+                                            <span class="role-icon">👨‍⚕️</span>
+                                            <span class="role-text">Veterinario</span>
+                                        </div>
+                                    </label>
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="paseador">
+                                        <div class="role-content">
+                                            <span class="role-icon">🐕</span>
+                                            <span class="role-text">Paseador</span>
+                                        </div>
+                                    </label>
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="peluquero">
+                                        <div class="role-content">
+                                            <span class="role-icon">✂️</span>
+                                            <span class="role-text">Peluquero</span>
+                                        </div>
+                                    </label>
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="adiestrador">
+                                        <div class="role-content">
+                                            <span class="role-icon">🎯</span>
+                                            <span class="role-text">Adiestrador</span>
+                                        </div>
+                                    </label>
+                                    <label class="role-card">
+                                        <input type="radio" name="rol" value="cuidador">
+                                        <div class="role-content">
+                                            <span class="role-icon">🏠</span>
+                                            <span class="role-text">Cuidador</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="email">Correo electrónico</label>
+                                <input type="email" id="email" name="email" placeholder="tu@correo.com" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="password">Contraseña</label>
+                                <input type="password" id="password" name="password" placeholder="••••••••" required>
+                            </div>
+
+                            <div class="forgot-password">
+                                <a href="#">¿Olvidaste tu contraseña?</a>
+                            </div>
+
+                            <button type="submit" class="btn-submit">Iniciar Sesión</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- REGISTER CARD -->
+                <div class="auth-card" id="registerCard">
+                    <h3>Crear Cuenta</h3>
+                    <p>Registrate como usuario de PetCare</p>
+
+                    <div class="tab-buttons" style="margin-bottom: 0;">
+                        <button class="tab-btn" onclick="showTab('login')">Iniciar Sesión</button>
+                        <button class="tab-btn active" onclick="showTab('register')">Registrarse</button>
+                    </div>
+
+                    <div id="registerForm" class="form-container active" style="margin-top: 24px;">
+                        <div class="register-note">
+                            💡 <strong>Registro para usuarios.</strong>
+                            ¿Sos veterinario, paseador, peluquero, adiestrador o cuidador?
+                            Completá el formulario en la sección <a href="#trabaja" style="color: #667eea; font-weight: 600;">"Trabajá con nosotros"</a>.
+                        </div>
+                        <form th:action="@{/register}" method="post">
+                            <input type="hidden" name="rol" value="usuario">
+
+                            <div class="input-group">
+                                <label for="reg-nombre">Nombre</label>
+                                <input type="text" id="reg-nombre" name="nombre" placeholder="Juan" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="reg-apellido">Apellido</label>
+                                <input type="text" id="reg-apellido" name="apellido" placeholder="Pérez" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="reg-email">Correo electrónico</label>
+                                <input type="email" id="reg-email" name="email" placeholder="tu@correo.com" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="reg-password">Contraseña</label>
+                                <input type="password" id="reg-password" name="password" placeholder="Mínimo 6 caracteres" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="reg-confirm">Confirmar contraseña</label>
+                                <input type="password" id="reg-confirm" name="confirmPassword" placeholder="Repite la contraseña" required>
+                            </div>
+
+                            <button type="submit" class="btn-submit">Crear Cuenta</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== TRABAJÁ CON NOSOTROS ========== -->
+    <section id="trabaja">
+        <div class="container">
+            <div class="trabaja-content">
+                <h2 class="section-title">Trabajá con nosotros</h2>
+                <p class="section-subtitle" style="margin-bottom: 32px;">
+                    Somos una red en crecimiento y buscamos profesionales comprometidos
+                    para sumarse a PetCare. Si te apasiona el cuidado animal, ¡te esperamos!
+                </p>
+
+                <div class="profesiones-grid">
+                    <div class="profesion-card">
+                        <span class="profesion-icon">👨‍⚕️</span>
+                        <span>Veterinario</span>
+                    </div>
+                    <div class="profesion-card">
+                        <span class="profesion-icon">🐕</span>
+                        <span>Paseador</span>
+                    </div>
+                    <div class="profesion-card">
+                        <span class="profesion-icon">✂️</span>
+                        <span>Peluquero</span>
+                    </div>
+                    <div class="profesion-card">
+                        <span class="profesion-icon">🎯</span>
+                        <span>Adiestrador</span>
+                    </div>
+                    <div class="profesion-card">
+                        <span class="profesion-icon">🏠</span>
+                        <span>Cuidador</span>
+                    </div>
+                </div>
+
+                <p>
+                    Completá tu postulación y el equipo de PetCare la revisará.
+                    Si tu perfil es seleccionado, te contactaremos a la brevedad.
+                </p>
+
+                <br><br>
+                <a href="/postular" class="btn-placeholder" style="text-decoration: none; display: inline-block;">
+                    📋 Postulate ahora
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer>
+        <div class="container">
+            <div class="nav-logo" style="display: inline-flex; margin-bottom: 12px;">
+                <span>🐾</span> PetCare
+            </div>
+            <p>&copy; 2026 PetCare — Cuidado Integral para Mascotas. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        function showTab(tab) {
+            var loginForm = document.getElementById('loginForm');
+            var registerForm = document.getElementById('registerForm');
+            var cards = document.querySelectorAll('#loginCard, #registerCard');
+            var allBtns = document.querySelectorAll('.tab-btn');
+
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+            } else {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+
+            allBtns.forEach(function(btn) {
+                var isActiveLogin = tab === 'login' && btn.textContent.trim() === 'Iniciar Sesión';
+                var isActiveRegister = tab === 'register' && btn.textContent.trim() === 'Registrarse';
+                btn.classList.toggle('active', isActiveLogin || isActiveRegister);
+            });
+        }
+
+        var errorRegistro = /*[[${errorRegistro}]]*/ null;
+        if (errorRegistro) {
+            showTab('register');
+        }
+    </script>
+</body>
+</html>

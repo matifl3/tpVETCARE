@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
+
 // @Configuration — Le dice a Spring que esta clase define beans (objetos que Spring maneja y inyecta donde se necesiten).
 // @EnableWebSecurity — Activa la configuración de seguridad web de Spring Security.
 // @EnableMethodSecurity — Activa las anotaciones @PreAuthorize y @PostAuthorize en los controllers y services.
@@ -68,21 +70,37 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    /**
-     * Configuración CORS: define qué orígenes, métodos HTTP y headers están permitidos.
-     * En producción, reemplizá "*" por los dominios específicos de tu frontend.
-     */
+    @Value("${CORS_ALLOWED_ORIGINS}")
+    private String corsAllowedOrigins;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Permitir todos los orígenes en desarrollo. En producción, especificá dominios concretos.
-        config.setAllowedOrigins(List.of("*"));
-        // Métodos HTTP que el frontend puede usar
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        // Headers que el frontend puede enviar (incluye Authorization para Basic Auth)
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        config.setAllowedOrigins(
+            Arrays.stream(corsAllowedOrigins.split(","))
+                  .map(String::trim)
+                  .toList()
+        );
+
+        config.setAllowedMethods(Arrays.asList(
+            "GET", "POST", "PUT", "DELETE", "OPTIONS"
+        ));
+
+        config.setAllowedHeaders(Arrays.asList(
+            "Authorization",
+            "Content-Type",
+            "Accept",
+            "X-Requested-With"
+        ));
+
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+            new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }
