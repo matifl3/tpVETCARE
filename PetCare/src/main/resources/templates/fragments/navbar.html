@@ -23,6 +23,7 @@
                 <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/profesionales}">Profesionales</a></li>
                 <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/tienda}">Tienda</a></li>
                 <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/carrito}">🛍️ Carrito</a></li>
+                <li sec:authorize="hasRole('DUENIO')"><a th:href="@{/dashboard/duenio/mis-turnos}">📅 Mis Turnos</a></li>
                 <li><a th:href="@{/dashboard}">Dashboard</a></li>
                 <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/dashboard}">Admin</a></li>
                 <li>

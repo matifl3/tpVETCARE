@@ -5,10 +5,17 @@
 }
 
 html {
+    height: 100%;
     scroll-behavior: smooth;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
+    display: flex;
+    flex-direction: column;
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #fafafe;
     color: #333;
@@ -691,11 +698,12 @@ body:has(.login-container) {
 /* ========== DASHBOARD ========== */
 
 body:has(.dashboard) {
-    display: block;
     background: #f5f5fa;
 }
 
 .dashboard {
+    flex: 1;
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 90px 20px 40px;
@@ -769,6 +777,7 @@ body:has(.dashboard) {
 /* ========== FOOTER ========== */
 
 footer {
+    margin-top: auto;
     background: #1a1a2e;
     color: #aaa;
     padding: 40px 0;

@@ -19,19 +19,13 @@
                 <span class="dash-icon">📅</span>
                 <h3>Mis Turnos</h3>
                 <p>Gestioná tus turnos y disponibilidad.</p>
-                <a th:href="@{/api/turnos}" class="dash-link">Ver turnos</a>
+                <a th:href="@{/dashboard/mis-turnos}" class="dash-link">Ver turnos</a>
             </div>
             <div class="dash-card">
                 <span class="dash-icon">🐾</span>
                 <h3>Mascotas</h3>
                 <p>Consultá las mascotas a tu cargo.</p>
-                <a th:href="@{/api/mascotas}" class="dash-link">Ver mascotas</a>
-            </div>
-            <div class="dash-card" th:if="${rol == 'ADIESTRADOR'}">
-                <span class="dash-icon">🎯</span>
-                <h3>Entrenamiento</h3>
-                <p>Registrá el progreso de adiestramiento.</p>
-                <a th:href="@{/api/seguimientos}" class="dash-link">Ver seguimientos</a>
+                <a th:href="@{/dashboard/mis-pacientes}" class="dash-link">Ver mascotas</a>
             </div>
         </div>
     </div>

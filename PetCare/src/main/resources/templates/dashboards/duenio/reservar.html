@@ -50,9 +50,10 @@
 
     <div th:replace="~{fragments/footer :: footer}"></div>
 
+    <input type="hidden" id="hiddenIdProfesional" th:value="${idProfesional}">
     <script th:inline="none">
         const alerta = document.getElementById('alerta');
-        const idProfesional = /*[[${idProfesional}]]*/ null;
+        const idProfesional = parseInt(document.getElementById('hiddenIdProfesional').value);
         let profesional = null;
         let mascotas = [];
 
@@ -81,6 +82,10 @@
         }
 
         async function init() {
+            if (!idProfesional || isNaN(idProfesional)) {
+                mostrarAlerta('Error: no se pudo identificar al profesional.', 'alert-error');
+                return;
+            }
             try {
                 const [resProf, resMasc] = await Promise.all([
                     fetch('/api/profesionales/' + idProfesional),
@@ -124,6 +129,10 @@
             const idMascota = document.getElementById('mascota').value;
             const fecha = document.getElementById('fecha').value;
 
+            if (!idProfesional || isNaN(idProfesional)) {
+                mostrarAlerta('Error: no se pudo identificar al profesional.', 'alert-error');
+                return;
+            }
             if (!idMascota || !fecha) {
                 mostrarAlerta('Seleccioná una mascota y una fecha.', 'alert-error');
                 return;
@@ -137,25 +146,23 @@
             btn.textContent = 'Reservando...';
 
             try {
-                const res = await fetch('/api/turnos/solicitar', {
+                const res = await fetch('/api/carrito/agregar-turno', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        idProfesional: idProfesional,
+                        idMascota: parseInt(idMascota),
                         fecha: fecha,
-                        id_mascota: parseInt(idMascota),
-                        id_profesional: idProfesional,
-                        estadoTurno: 'CONFIRMADO',
-                        activo: true,
                         horas: horas,
                         precio: total
                     })
                 });
                 if (res.ok) {
-                    mostrarAlerta('Turno reservado con éxito.', 'alert-success');
-                    setTimeout(() => { window.location.href = '/dashboard/duenio/mis-turnos'; }, 1500);
+                    mostrarAlerta('Reserva agregada al carrito.', 'alert-success');
+                    setTimeout(() => { window.location.href = '/dashboard/duenio/carrito'; }, 1500);
                 } else {
                     const json = await res.json();
-                    mostrarAlerta(json.error || json.message || 'Error al reservar.', 'alert-error');
+                    mostrarAlerta(json.error || json.message || 'Error al agregar al carrito.', 'alert-error');
                 }
             } catch {
                 mostrarAlerta('Error de conexión.', 'alert-error');

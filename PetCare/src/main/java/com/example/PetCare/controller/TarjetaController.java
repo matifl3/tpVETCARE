@@ -6,6 +6,7 @@ import com.example.PetCare.model.Tarjeta;
 import com.example.PetCare.model.Usuario;
 import com.example.PetCare.service.TarjetaService;
 import com.example.PetCare.utils.AuthUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class TarjetaController {
     private final AuthUtils authUtils;
 
     @PostMapping("/agregar")
-    public ResponseEntity<Tarjeta> agregarTarjeta(@RequestBody TarjetaRequestDTO dto){
+    public ResponseEntity<Tarjeta> agregarTarjeta(@Valid @RequestBody TarjetaRequestDTO dto){
         Usuario usuario = authUtils.getCurrentUsuario();
         dto.setIdUsuario(usuario.getIdUsuario());
         return ResponseEntity.ok(tarjetaService.agregarTarjeta(dto));

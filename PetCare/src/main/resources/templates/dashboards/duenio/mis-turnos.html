@@ -38,14 +38,17 @@
                 const data = await res.json();
                 const turnos = Array.isArray(data) ? data : [];
                 if (turnos.length === 0) {
-                    div.innerHTML = '<p style="grid-column:1/-1;color:#888">No tenés turnos reservados.</p><a th:href="@{/dashboard/duenio/profesionales}" class="btn-primary" style="margin-top:16px">Buscar profesionales</a>';
+                    div.innerHTML = '<p style="grid-column:1/-1;color:#888">No tenés turnos reservados.</p><a href="/dashboard/duenio/profesionales" class="btn-primary" style="margin-top:16px;text-decoration:none">Buscar profesionales</a>';
                     return;
                 }
+                const ROLE_ICONS = {
+                    VETERINARIO: '👨‍⚕️', PASEADOR: '🐕', PELUQUERO: '✂️', ADIESTRADOR: '🎯', CUIDADOR: '🏠'
+                };
                 div.innerHTML = turnos.map(t => `
                     <div class="dash-card">
                         <span class="dash-icon">📅</span>
                         <h3>${t.fecha || ''}</h3>
-                        <p style="font-size:13px;color:#888">Mascota ID: ${t.id_mascota} · Profesional ID: ${t.id_profesional}</p>
+                        <p style="font-size:13px;color:#888">${t.nombreMascota || 'Mascota ID: ' + t.id_mascota} · ${t.nombreProfesional || 'Profesional ID: ' + t.id_profesional}</p>
                         <p style="font-size:13px">Estado: <strong>${t.estadoTurno || ''}</strong></p>
                         ${t.horas ? '<p style="font-size:13px;color:#888">Horas: ' + t.horas + '</p>' : ''}
                         ${t.precio ? '<p style="font-size:18px;font-weight:700;color:#302b63">$' + t.precio.toFixed(2) + '</p>' : ''}

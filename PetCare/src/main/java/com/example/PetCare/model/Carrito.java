@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,8 +30,11 @@ public class Carrito {
     private LocalDate fechaCreacion;
     private LocalDate fechaActualizacion;
 
-    @OneToMany (mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CarritoProducto> items;
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarritoProducto> items = new ArrayList<>();
+
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarritoTurno> turnos = new ArrayList<>();
 
     private double total;
 

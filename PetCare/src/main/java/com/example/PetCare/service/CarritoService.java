@@ -2,10 +2,13 @@ package com.example.PetCare.service;
 
 import com.example.PetCare.dto.*;
 import com.example.PetCare.enums.Estado_Carrito;
+import com.example.PetCare.enums.Estado_Turno;
 import com.example.PetCare.enums.Metodo_Pago;
 import com.example.PetCare.exceptions.NoEncontradoException;
 import com.example.PetCare.model.*;
 import com.example.PetCare.repository.CarritoRepository;
+import com.example.PetCare.repository.MascotaRepository;
+import com.example.PetCare.repository.ProfesionalRepository;
 import com.example.PetCare.repository.TarjetaRepository;
 import com.example.PetCare.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,9 @@ public class CarritoService {
     private final ProductoService productoService;
     private final CarritoProductoService carritoProductoService;
     private final TarjetaService tarjetaService;
+    private final TurnoService turnoService;
+    private final ProfesionalRepository profesionalRepository;
+    private final MascotaRepository mascotaRepository;
 
     /**
      * Busca el carrito activo (estado CARRITO) del usuario. Si no existe, lo crea y lo asocia al usuario.
@@ -79,6 +85,46 @@ public class CarritoService {
     }
 
     /**
+     * Agrega un turno (reserva de servicio) al carrito activo.
+     */
+    public CarritoDTO agregarTurno(int idUsuario, Integer idProfesional, Integer idMascota,
+                                    LocalDate fecha, Integer horas, Double precio) {
+        Carrito carrito = obtenerOCrearCarrito(idUsuario);
+
+        Profesional prof = profesionalRepository.findById(idProfesional)
+                .orElseThrow(() -> new NoEncontradoException("Profesional no encontrado"));
+        Mascota masc = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+
+        turnoService.verificarDisponibilidad(idProfesional, fecha);
+
+        CarritoTurno ct = new CarritoTurno();
+        ct.setCarrito(carrito);
+        ct.setIdProfesional(idProfesional);
+        ct.setNombreProfesional(prof.getNombre() + " " + prof.getApellido());
+        ct.setRolProfesional(prof.getRol().name());
+        ct.setIdMascota(idMascota);
+        ct.setNombreMascota(masc.getNombre());
+        ct.setFecha(fecha);
+        ct.setHoras(horas);
+        ct.setPrecio(precio);
+
+        carrito.getTurnos().add(ct);
+        carrito.setFechaActualizacion(LocalDate.now());
+        return toDTO(carritoRepository.save(carrito));
+    }
+
+    /**
+     * Elimina un turno del carrito activo.
+     */
+    public CarritoDTO eliminarTurno(int idUsuario, int idCarritoTurno) {
+        Carrito carrito = obtenerOCrearCarrito(idUsuario);
+        carrito.getTurnos().removeIf(t -> t.getId().equals(idCarritoTurno));
+        carrito.setFechaActualizacion(LocalDate.now());
+        return toDTO(carritoRepository.save(carrito));
+    }
+
+    /**
      * Modifica la cantidad de un producto en el carrito activo. Si la cantidad es menor o igual a 0,
      * elimina el producto. Valida el stock antes de aplicar el nuevo valor.
      */
@@ -104,7 +150,7 @@ public class CarritoService {
     public CarritoDTO confirmarCompra(CompraRequestDTO dto){
         Carrito carrito = obtenerOCrearCarrito(dto.getId_usuario());
 
-        if(carrito.getItems().isEmpty()){
+        if(carrito.getItems().isEmpty() && carrito.getTurnos().isEmpty()){
             throw new NoEncontradoException("El carrito está vacío");
         }
 
@@ -123,11 +169,23 @@ public class CarritoService {
         confirmarCompra(dto);
         Carrito carrito = obtenerOCrearCarrito(dto.getId_usuario());
 
-
         for(CarritoProducto productos : carrito.getItems()){
             productoService.restaStock(productos.getProducto().getId(), productos.getCantidad());
         }
 
+        for(CarritoTurno ct : carrito.getTurnos()){
+            TurnoDTO turnoDTO = new TurnoDTO();
+            turnoDTO.setFecha(ct.getFecha());
+            turnoDTO.setId_mascota(ct.getIdMascota());
+            turnoDTO.setId_profesional(ct.getIdProfesional());
+            turnoDTO.setEstadoTurno(Estado_Turno.CONFIRMADO);
+            turnoDTO.setActivo(true);
+            turnoDTO.setHoras(ct.getHoras());
+            turnoDTO.setPrecio(ct.getPrecio());
+            turnoService.solicitar(turnoDTO);
+        }
+
+        carrito.getTurnos().clear();
         carrito.setEstado(Estado_Carrito.ENVIO);
         carrito.setMetodoPago(dto.getMetodoPago());
         carrito.setFechaActualizacion(LocalDate.now());
@@ -266,7 +324,9 @@ public class CarritoService {
      * calculando subtotales por producto y el precio total general de la compra.
      */
     private CarritoDTO toDTO(Carrito carrito) {
-        List<CarritoProductoDTO> items = carrito.getItems().stream().map(a -> {
+        List<CarritoProducto> itemList = carrito.getItems();
+        if (itemList == null) itemList = new ArrayList<>();
+        List<CarritoProductoDTO> items = itemList.stream().map(a -> {
             CarritoProductoDTO dto = new CarritoProductoDTO();
             dto.setId(a.getId());
             dto.setIdProducto(a.getProducto().getId());
@@ -277,7 +337,24 @@ public class CarritoService {
             return dto;
         }).toList();
 
-        double total = items.stream().mapToDouble(CarritoProductoDTO::getSubtotal).sum();
+        List<CarritoTurno> turnoList = carrito.getTurnos();
+        if (turnoList == null) turnoList = new ArrayList<>();
+        List<CarritoTurnoDTO> turnos = turnoList.stream().map(t -> {
+            CarritoTurnoDTO dto = new CarritoTurnoDTO();
+            dto.setId(t.getId());
+            dto.setIdProfesional(t.getIdProfesional());
+            dto.setNombreProfesional(t.getNombreProfesional());
+            dto.setRolProfesional(t.getRolProfesional());
+            dto.setIdMascota(t.getIdMascota());
+            dto.setNombreMascota(t.getNombreMascota());
+            dto.setFecha(t.getFecha());
+            dto.setHoras(t.getHoras());
+            dto.setPrecio(t.getPrecio());
+            return dto;
+        }).toList();
+
+        double totalItems = items.stream().mapToDouble(CarritoProductoDTO::getSubtotal).sum();
+        double totalTurnos = turnos.stream().mapToDouble(CarritoTurnoDTO::getPrecio).sum();
 
         CarritoDTO dto = new CarritoDTO();
         dto.setId(carrito.getId());
@@ -286,7 +363,8 @@ public class CarritoService {
         dto.setFechaCreacion(carrito.getFechaCreacion());
         dto.setFechaActualizacion(carrito.getFechaActualizacion());
         dto.setItems(items);
-        dto.setTotal(total);
+        dto.setTurnos(turnos);
+        dto.setTotal(totalItems + totalTurnos);
         dto.setMetodoPago(carrito.getMetodoPago());
         return dto;
     }

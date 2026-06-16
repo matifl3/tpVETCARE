@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mascotas - Admin PetCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div class="dashboard">
+        <h1>Mascotas</h1>
+        <p>Todas las mascotas registradas en PetCare.</p>
+        <div id="alerta" class="alert" role="alert"></div>
+        <div id="loading" style="color:#888">Cargando...</div>
+        <div id="listaMascotas"></div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script th:inline="none">
+        const alerta = document.getElementById('alerta');
+        const loading = document.getElementById('loading');
+        function mostrarAlerta(msg, tipo) { alerta.textContent = msg; alerta.className = 'alert ' + tipo + ' show'; setTimeout(() => { alerta.className = 'alert'; }, 3000); }
+        function mostrarLoading(v) { loading.style.display = v ? 'block' : 'none'; }
+        async function cargarMascotas() {
+            mostrarLoading(true);
+            try {
+                const res = await fetch('/api/mascotas');
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                const div = document.getElementById('listaMascotas');
+                if (!data || data.length === 0) { div.innerHTML = '<p style="color:#888">No hay mascotas registradas.</p>'; return; }
+                div.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px">' +
+                    data.map(m => `
+                        <div style="display:flex;align-items:center;justify-content:space-between;background:white;padding:14px 18px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+                            <div>
+                                <strong>${m.nombre}</strong>
+                                <p style="font-size:12px;color:#888">${m.especie || ''}${m.raza ? ' · ' + m.raza : ''} · Dueño ID: ${m.idDuenio || '-'}</p>
+                            </div>
+                            <span style="font-size:12px;color:#888">${m.fechaNacimiento || ''}</span>
+                        </div>
+                    `).join('') + '</div>';
+            } catch { mostrarAlerta('Error al cargar mascotas.', 'alert-error'); }
+            finally { mostrarLoading(false); }
+        }
+        cargarMascotas();
+    </script>
+</body>
+</html>

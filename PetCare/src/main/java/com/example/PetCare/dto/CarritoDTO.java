@@ -19,6 +19,7 @@ public class CarritoDTO {
     private LocalDate fechaCreacion;
     private LocalDate fechaActualizacion;
     private List<CarritoProductoDTO> items;
+    private List<CarritoTurnoDTO> turnos;
     private double total;
     private Metodo_Pago metodoPago;
 }

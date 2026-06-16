@@ -70,6 +70,30 @@ public class CarritoController {
     }
 
     /**
+     * Agrega un turno (reserva de servicio) al carrito del usuario autenticado.
+     */
+    @PostMapping("/agregar-turno")
+    public CarritoDTO agregarTurno(@RequestBody Map<String, Object> body) {
+        Usuario usuario = authUtils.getCurrentUsuario();
+        Integer idProfesional = Integer.parseInt(body.get("idProfesional").toString());
+        Integer idMascota = Integer.parseInt(body.get("idMascota").toString());
+        String fechaStr = (String) body.get("fecha");
+        LocalDate fecha = LocalDate.parse(fechaStr);
+        Integer horas = body.containsKey("horas") ? Integer.parseInt(body.get("horas").toString()) : 1;
+        Double precio = body.containsKey("precio") ? Double.parseDouble(body.get("precio").toString()) : 0.0;
+        return carritoService.agregarTurno(usuario.getIdUsuario(), idProfesional, idMascota, fecha, horas, precio);
+    }
+
+    /**
+     * Elimina un turno del carrito del usuario autenticado.
+     */
+    @DeleteMapping("/eliminar-turno/{idCarritoTurno}")
+    public CarritoDTO eliminarTurno(@PathVariable int idCarritoTurno) {
+        Usuario usuario = authUtils.getCurrentUsuario();
+        return carritoService.eliminarTurno(usuario.getIdUsuario(), idCarritoTurno);
+    }
+
+    /**
      * Confirma la compra: descuenta stock, cambia estado a ENVIO y crea un carrito nuevo vacío.
      */
     @PostMapping("/comprar")

@@ -82,7 +82,7 @@
                         <h3>**** **** **** ${t.ultimosDigitos || '****'}</h3>
                         <p style="font-size:13px;color:#888">${t.titular || ''}</p>
                         <p style="font-size:13px;color:#888">Vence: ${t.vencimiento || ''}</p>
-                        <button onclick="eliminarTarjeta(${t.id})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:13px;font-family:Poppins;padding:0;margin-top:8px">Eliminar</button>
+                        <button onclick="eliminarTarjeta(${t.idTarjeta})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:13px;font-family:Poppins;padding:0;margin-top:8px">Eliminar</button>
                     </div>
                 `).join('');
             } catch {
@@ -109,21 +109,21 @@
             const btn = document.getElementById('btnGuardarTarjeta');
             const raw = document.getElementById('numero').value.replace(/\s/g, '');
             const data = {
-                numero: raw,
+                numeroTarjeta: raw,
                 titular: document.getElementById('titular').value.trim(),
                 vencimiento: document.getElementById('vencimiento').value.trim(),
-                codigoSeguridad: document.getElementById('codigo').value.trim()
+                cvv: document.getElementById('codigo').value.trim()
             };
 
             if (raw.length < 13 || raw.length > 16) {
                 mostrarAlerta('Número de tarjeta inválido.', 'alert-error');
                 return;
             }
-            if (!data.titular || !data.vencimiento || !data.codigoSeguridad) {
+            if (!data.titular || !data.vencimiento || !data.cvv) {
                 mostrarAlerta('Completá todos los campos.', 'alert-error');
                 return;
             }
-            if (data.codigoSeguridad.length < 3) {
+            if (data.cvv.length < 3) {
                 mostrarAlerta('Código de seguridad inválido.', 'alert-error');
                 return;
             }
@@ -143,7 +143,8 @@
                     await cargarTarjetas();
                 } else {
                     const json = await res.json();
-                    mostrarAlerta(json.error || json.message || 'Error al agregar.', 'alert-error');
+                    const msgs = json.errores ? json.errores.map(e => e.mensaje).join('. ') : null;
+                    mostrarAlerta(msgs || json.error || json.message || 'Error al agregar.', 'alert-error');
                 }
             } catch {
                 mostrarAlerta('Error de conexión.', 'alert-error');

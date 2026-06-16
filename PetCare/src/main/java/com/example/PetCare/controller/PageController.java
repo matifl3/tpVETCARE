@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -112,6 +113,70 @@ public class PageController {
     public String duenioTarjetas(Authentication auth, Model model) {
         addUserInfo(auth, model);
         return "dashboards/duenio/tarjetas";
+    }
+
+    @GetMapping("/dashboard/duenio/pagar")
+    public String duenioPagar(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "dashboards/duenio/pagar";
+    }
+
+    @GetMapping("/compra-exitosa")
+    public String compraExitosa(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "compra-exitosa";
+    }
+
+    // ============ ADMIN PAGES ============
+
+    @GetMapping("/admin/usuarios")
+    public String adminUsuarios(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "admin/usuarios";
+    }
+
+    @GetMapping("/admin/postulaciones")
+    public String adminPostulaciones(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "admin/postulaciones";
+    }
+
+    @GetMapping("/admin/mascotas")
+    public String adminMascotas(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "admin/mascotas";
+    }
+
+    @GetMapping("/admin/turnos")
+    public String adminTurnos(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "admin/turnos";
+    }
+
+    @GetMapping("/admin/productos")
+    public String adminProductos(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "admin/productos";
+    }
+
+    @GetMapping("/admin/reportes")
+    public String adminReportes(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "admin/reportes";
+    }
+
+    // ============ PROFESSIONAL PAGES ============
+
+    @GetMapping("/dashboard/mis-turnos")
+    public String profesionalMisTurnos(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "profesional/mis-turnos";
+    }
+
+    @GetMapping("/dashboard/mis-pacientes")
+    public String profesionalMascotas(Authentication auth, Model model) {
+        addUserInfo(auth, model);
+        return "profesional/mascotas";
     }
 
     @GetMapping("/dashboard/duenio/reservar/{idProfesional}")

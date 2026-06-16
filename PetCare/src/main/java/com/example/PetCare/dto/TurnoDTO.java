@@ -25,6 +25,9 @@ public class TurnoDTO {
     @NotNull
     private Integer id_profesional;
 
+    private String nombreProfesional;
+    private String nombreMascota;
+
     @NotNull
     private Estado_Turno estadoTurno;
 

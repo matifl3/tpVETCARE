@@ -12,7 +12,7 @@
 
     <div class="dashboard">
         <h1>Mi Carrito</h1>
-        <p>Revisá los productos antes de comprar.</p>
+        <p>Revisá los productos y servicios antes de comprar.</p>
 
         <div id="alerta" class="alert" role="alert"></div>
 
@@ -32,20 +32,29 @@
             setTimeout(() => { alerta.className = 'alert'; }, 3000);
         }
 
+        const ROLE_ICONS = {
+            VETERINARIO: '👨‍⚕️', PASEADOR: '🐕', PELUQUERO: '✂️', ADIESTRADOR: '🎯', CUIDADOR: '🏠'
+        };
+
         async function cargarCarrito() {
             const div = document.getElementById('contenidoCarrito');
             try {
                 const res = await fetch('/api/carrito');
                 const data = await res.json();
 
-                if (!data || !data.items || data.items.length === 0) {
-                    div.innerHTML = '<p style="color:#888">Tu carrito está vacío.</p><a th:href="@{/dashboard/duenio/tienda}" class="btn-primary" style="margin-top:16px;display:inline-block">Ir a la tienda</a>';
+                const items = data.items || [];
+                const turnos = data.turnos || [];
+
+                if (items.length === 0 && turnos.length === 0) {
+                    div.innerHTML = '<p style="color:#888">Tu carrito está vacío.</p>' +
+                        '<a href="/dashboard/duenio/tienda" class="btn-primary" style="margin-top:16px;display:inline-block;margin-right:10px;text-decoration:none">Ir a la tienda</a>' +
+                        '<a href="/dashboard/duenio/profesionales" class="btn-secondary" style="margin-top:16px;display:inline-block;text-decoration:none">Ver profesionales</a>';
                     return;
                 }
 
                 let html = '<div style="display:flex;flex-direction:column;gap:12px">';
 
-                data.items.forEach(item => {
+                items.forEach(item => {
                     const sub = item.subtotal || (item.precioUnitario * item.cantidad) || 0;
                     html += `
                         <div style="display:flex;align-items:center;justify-content:space-between;background:white;padding:16px 20px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.04)">
@@ -55,7 +64,26 @@
                             </div>
                             <div style="text-align:right">
                                 <p style="font-weight:600">$${sub.toFixed(2)}</p>
-                                <button onclick="eliminarItem(${item.idProducto})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px">Eliminar</button>
+                                <button onclick="eliminarProducto(${item.idProducto})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (turnos.length > 0 && items.length > 0) {
+                    html += '<hr style="border:none;border-top:1px solid #eee;margin:8px 0"><p style="font-size:13px;color:#888;font-weight:500">SERVICIOS</p>';
+                }
+
+                turnos.forEach(t => {
+                    html += `
+                        <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#f5f0ff,#e8f0fe);padding:16px 20px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.04)">
+                            <div>
+                                <strong>${ROLE_ICONS[t.rolProfesional] || '📅'} ${t.nombreProfesional}</strong>
+                                <p style="font-size:13px;color:#888">${t.rolProfesional} · ${t.nombreMascota} · ${t.fecha}${t.horas ? ' · ' + t.horas + 'h' : ''}</p>
+                            </div>
+                            <div style="text-align:right">
+                                <p style="font-weight:600">$${(t.precio || 0).toFixed(2)}</p>
+                                <button onclick="eliminarTurno(${t.id})" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px">Eliminar</button>
                             </div>
                         </div>
                     `;
@@ -76,7 +104,7 @@
             }
         }
 
-        async function eliminarItem(idProducto) {
+        async function eliminarProducto(idProducto) {
             try {
                 const res = await fetch('/api/carrito/eliminar?idProducto=' + idProducto, {
                     method: 'DELETE'
@@ -92,23 +120,24 @@
             }
         }
 
-        async function comprar() {
+        async function eliminarTurno(idCarritoTurno) {
             try {
-                const res = await fetch('/api/carrito/comprar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ metodoPago: 'TARJETA' })
+                const res = await fetch('/api/carrito/eliminar-turno/' + idCarritoTurno, {
+                    method: 'DELETE'
                 });
                 if (res.ok) {
-                    mostrarAlerta('Compra realizada con éxito.', 'alert-success');
-                    setTimeout(() => { window.location.href = '/dashboard/duenio/carrito'; }, 1500);
+                    mostrarAlerta('Reserva eliminada.', 'alert-success');
+                    await cargarCarrito();
                 } else {
-                    const json = await res.json();
-                    mostrarAlerta(json.error || json.message || 'Error al comprar.', 'alert-error');
+                    mostrarAlerta('Error al eliminar.', 'alert-error');
                 }
             } catch {
                 mostrarAlerta('Error de conexión.', 'alert-error');
             }
+        }
+
+        async function comprar() {
+            window.location.href = '/dashboard/duenio/pagar';
         }
 
         cargarCarrito();

@@ -2,6 +2,7 @@ package com.example.PetCare.service;
 
 import com.example.PetCare.dto.TurnoDTO;
 import com.example.PetCare.enums.Estado_Turno;
+import com.example.PetCare.enums.Rol;
 import com.example.PetCare.exceptions.NoEncontradoException;
 import com.example.PetCare.model.Mascota;
 import com.example.PetCare.model.Profesional;
@@ -67,6 +68,14 @@ public class TurnoService {
                 .toList();
     }
 
+    public void verificarDisponibilidad(Integer idProfesional, LocalDate fecha) {
+        List<Turno> existentes = turnoRepository.findByProfesionalIdUsuarioAndFecha(idProfesional, fecha);
+        if (!existentes.isEmpty()) {
+            throw new IllegalArgumentException(
+                "El profesional no tiene disponibilidad para la fecha " + fecha);
+        }
+    }
+
     public TurnoDTO solicitar(TurnoDTO dto) {
         Mascota mascota = mascotaRepository.findById(dto.getId_mascota())
                 .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
@@ -75,6 +84,8 @@ public class TurnoService {
 
         Profesional fullProf = profesionalRepository.findById(profesional.getIdUsuario())
                 .orElseThrow(() -> new NoEncontradoException("Profesional no encontrado"));
+
+        verificarDisponibilidad(dto.getId_profesional(), dto.getFecha());
 
         double precioBase = switch (fullProf.getRol()) {
             case VETERINARIO -> 5000.0;
@@ -145,6 +156,8 @@ public class TurnoService {
         dto.setFecha(entity.getFecha());
         dto.setId_mascota(entity.getMascota().getIdMascota());
         dto.setId_profesional(entity.getProfesional().getIdUsuario());
+        dto.setNombreProfesional(entity.getProfesional().getNombre() + " " + entity.getProfesional().getApellido());
+        dto.setNombreMascota(entity.getMascota().getNombre());
         dto.setHoras(entity.getHoras());
         dto.setPrecio(entity.getPrecio());
         dto.setActivo(entity.isActivo());
