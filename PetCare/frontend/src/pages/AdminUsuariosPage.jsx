@@ -30,11 +30,14 @@ function AdminUsuariosPage() {
 
   return (
     <div className="dashboard">
-      <h1>Usuarios</h1>
+      <div className="admin-header">
+        <h1>Usuarios</h1>
+        <Link to="/dashboard" className="btn-secondary" style={{ padding: '8px 20px', fontSize: 13 }}>← Volver al Dashboard</Link>
+      </div>
       {error && <div className="alert alert-error show">{error}</div>}
       {success && <div className="alert alert-success show">{success}</div>}
 
-      <div style={{ overflowX: 'auto', marginTop: 24 }}>
+      <div className="admin-card">
         <table className="admin-table">
           <thead>
             <tr>
@@ -55,7 +58,7 @@ function AdminUsuariosPage() {
                 <td><span className="nav-role">{u.rol}</span></td>
                 <td>{u.activo ? '✅' : '❌'}</td>
                 <td>
-                  <button className="btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }}
+                  <button className="btn-secondary btn-sm"
                     onClick={() => toggleActivo(u)}>
                     {u.activo ? 'Desactivar' : 'Activar'}
                   </button>
@@ -65,8 +68,6 @@ function AdminUsuariosPage() {
           </tbody>
         </table>
       </div>
-
-      <Link to="/dashboard" className="btn-secondary" style={{ marginTop: 24, display: 'inline-block' }}>← Volver al Dashboard</Link>
     </div>
   )
 }

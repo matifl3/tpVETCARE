@@ -492,6 +492,73 @@ section {
   font-size: 14px;
 }
 
+/* Admin pages */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-header h1 {
+  margin-bottom: 0 !important;
+}
+
+.admin-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 24px;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.admin-table thead th {
+  background: #f8f9fa;
+  color: #555;
+  font-weight: 600;
+  padding: 14px 16px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 2px solid #e0e0e0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover {
+  background: #f8f9ff;
+}
+
+.admin-table .actions {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn-sm {
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+}
+
 /* Footer */
 .footer {
   background: #333;

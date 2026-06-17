@@ -18,10 +18,13 @@ function AdminTurnosPage() {
 
   return (
     <div className="dashboard">
-      <h1>Turnos</h1>
+      <div className="admin-header">
+        <h1>Turnos</h1>
+        <Link to="/dashboard" className="btn-secondary" style={{ padding: '8px 20px', fontSize: 13 }}>← Volver al Dashboard</Link>
+      </div>
       {error && <div className="alert alert-error show">{error}</div>}
 
-      <div style={{ overflowX: 'auto', marginTop: 24 }}>
+      <div className="admin-card">
         <table className="admin-table">
           <thead>
             <tr>
@@ -47,8 +50,6 @@ function AdminTurnosPage() {
           </tbody>
         </table>
       </div>
-
-      <Link to="/dashboard" className="btn-secondary" style={{ marginTop: 24, display: 'inline-block' }}>← Volver al Dashboard</Link>
     </div>
   )
 }

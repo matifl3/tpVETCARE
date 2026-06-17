@@ -38,14 +38,19 @@ function AdminPostulacionesPage() {
 
   return (
     <div className="dashboard">
-      <h1>Postulaciones</h1>
+      <div className="admin-header">
+        <h1>Postulaciones</h1>
+        <Link to="/dashboard" className="btn-secondary" style={{ padding: '8px 20px', fontSize: 13 }}>← Volver al Dashboard</Link>
+      </div>
       {error && <div className="alert alert-error show">{error}</div>}
       {success && <div className="alert alert-success show">{success}</div>}
 
       {postulaciones.length === 0 ? (
-        <p style={{ color: '#777', marginTop: 24 }}>No hay postulaciones pendientes.</p>
+        <div className="admin-card">
+          <p style={{ color: '#777', textAlign: 'center', padding: 32 }}>No hay postulaciones pendientes.</p>
+        </div>
       ) : (
-        <div style={{ overflowX: 'auto', marginTop: 24 }}>
+        <div className="admin-card">
           <table className="admin-table">
             <thead>
               <tr>
@@ -60,18 +65,21 @@ function AdminPostulacionesPage() {
             </thead>
             <tbody>
               {postulaciones.map((p) => (
-                <tr key={p.idUsuario}>
-                  <td>{p.idUsuario}</td>
+                <tr key={p.id}>
+                  <td>{p.id}</td>
                   <td>{p.nombre} {p.apellido}</td>
                   <td>{p.email}</td>
                   <td><span className="nav-role">{p.rol}</span></td>
-                  <td>{p.matricula}</td>
-                  <td>{p.experiencia}</td>
-                  <td style={{ display: 'flex', gap: 8 }}>
-                    <button className="btn-primary" style={{ padding: '4px 12px', fontSize: 13 }}
-                      onClick={() => aprobar(p.idUsuario)}>Aprobar</button>
-                    <button className="btn-secondary" style={{ padding: '4px 12px', fontSize: 13, color: '#d32f2f', borderColor: '#d32f2f' }}
-                      onClick={() => rechazar(p.idUsuario)}>Rechazar</button>
+                  <td>{p.matricula || '—'}</td>
+                  <td>{p.experiencia || '—'}</td>
+                  <td>
+                    <div className="actions">
+                      <button className="btn-primary btn-sm"
+                        onClick={() => aprobar(p.id)}>Aprobar</button>
+                      <button className="btn-secondary btn-sm"
+                        style={{ color: '#d32f2f', borderColor: '#d32f2f' }}
+                        onClick={() => rechazar(p.id)}>Rechazar</button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -79,8 +87,6 @@ function AdminPostulacionesPage() {
           </table>
         </div>
       )}
-
-      <Link to="/dashboard" className="btn-secondary" style={{ marginTop: 24, display: 'inline-block' }}>← Volver al Dashboard</Link>
     </div>
   )
 }

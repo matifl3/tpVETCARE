@@ -8,7 +8,7 @@ function AdminProductosPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [editId, setEditId] = useState(null)
-  const [form, setForm] = useState({ nombre: '', categoria: '', precio: '', stock: '', activo: true })
+  const [form, setForm] = useState({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '', activo: true })
 
   const cargar = () => {
     setLoading(true)
@@ -33,14 +33,14 @@ function AdminProductosPage() {
         setSuccess('Producto creado')
       }
       setEditId(null)
-      setForm({ nombre: '', categoria: '', precio: '', stock: '', activo: true })
+      setForm({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '', activo: true })
       cargar()
     } catch (err) { setError(err.message) }
   }
 
   const editar = (p) => {
     setEditId(p.id)
-    setForm({ nombre: p.nombre, categoria: p.categoria, precio: String(p.precio), stock: String(p.stock), activo: p.activo })
+    setForm({ nombre: p.nombre, descripcion: p.descripcion || '', categoria: p.categoria, precio: String(p.precio), stock: String(p.stock), activo: p.activo })
   }
 
   const eliminar = async (id) => {
@@ -56,41 +56,58 @@ function AdminProductosPage() {
 
   return (
     <div className="dashboard">
-      <h1>Productos</h1>
+      <div className="admin-header">
+        <h1>Productos</h1>
+        <Link to="/dashboard" className="btn-secondary" style={{ padding: '8px 20px', fontSize: 13 }}>← Volver al Dashboard</Link>
+      </div>
       {error && <div className="alert alert-error show">{error}</div>}
       {success && <div className="alert alert-success show">{success}</div>}
 
-      <form onSubmit={handleSubmit} style={{ background: '#f8f9fa', padding: 24, borderRadius: 12, marginBottom: 32, marginTop: 24 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, alignItems: 'end' }}>
-          <div className="input-group">
+      <form onSubmit={handleSubmit} className="admin-card" style={{ marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+          <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Nombre</label>
             <input required value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} />
           </div>
-          <div className="input-group">
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label>Descripción</label>
+            <input required value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
+          </div>
+          <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Categoría</label>
             <input required value={form.categoria} onChange={(e) => setForm({ ...form, categoria: e.target.value })} />
           </div>
-          <div className="input-group">
-            <label>Precio</label>
-            <input type="number" step="0.01" required value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} />
-          </div>
-          <div className="input-group">
-            <label>Stock</label>
-            <input type="number" required value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="input-group" style={{ marginBottom: 0 }}>
+              <label>Precio</label>
+              <input type="number" step="0.01" required value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} />
+            </div>
+            <div className="input-group" style={{ marginBottom: 0 }}>
+              <label>Stock</label>
+              <input type="number" required value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} />
+            </div>
           </div>
         </div>
-        <button type="submit" className="btn-primary" style={{ marginTop: 12 }}>
-          {editId ? 'Guardar cambios' : 'Crear producto'}
-        </button>
-        {editId && <button type="button" className="btn-secondary" style={{ marginLeft: 8 }} onClick={() => { setEditId(null); setForm({ nombre: '', categoria: '', precio: '', stock: '', activo: true }) }}>Cancelar</button>}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="submit" className="btn-primary">
+            {editId ? 'Guardar cambios' : 'Crear producto'}
+          </button>
+          {editId && (
+            <button type="button" className="btn-secondary"
+              onClick={() => { setEditId(null); setForm({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '', activo: true }) }}>
+              Cancelar
+            </button>
+          )}
+        </div>
       </form>
 
-      <div style={{ overflowX: 'auto' }}>
+      <div className="admin-card">
         <table className="admin-table">
           <thead>
             <tr>
               <th>ID</th>
               <th>Nombre</th>
+              <th>Descripción</th>
               <th>Categoría</th>
               <th>Precio</th>
               <th>Stock</th>
@@ -103,21 +120,24 @@ function AdminProductosPage() {
               <tr key={p.id}>
                 <td>{p.id}</td>
                 <td>{p.nombre}</td>
+                <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.descripcion || '—'}</td>
                 <td>{p.categoria}</td>
                 <td>${p.precio?.toFixed(2)}</td>
                 <td>{p.stock}</td>
                 <td>{p.activo ? '✅' : '❌'}</td>
-                <td style={{ display: 'flex', gap: 8 }}>
-                  <button className="btn-secondary" style={{ padding: '4px 12px', fontSize: 13 }} onClick={() => editar(p)}>Editar</button>
-                  <button className="btn-secondary" style={{ padding: '4px 12px', fontSize: 13, color: '#d32f2f', borderColor: '#d32f2f' }} onClick={() => eliminar(p.id)}>Eliminar</button>
+                <td>
+                  <div className="actions">
+                    <button className="btn-secondary btn-sm" onClick={() => editar(p)}>Editar</button>
+                    <button className="btn-secondary btn-sm"
+                      style={{ color: '#d32f2f', borderColor: '#d32f2f' }}
+                      onClick={() => eliminar(p.id)}>Eliminar</button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <Link to="/dashboard" className="btn-secondary" style={{ marginTop: 24, display: 'inline-block' }}>← Volver al Dashboard</Link>
     </div>
   )
 }
