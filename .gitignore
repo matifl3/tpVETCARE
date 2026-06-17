@@ -28,6 +28,11 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
+node_modules/
+PetCare/frontend/node_modules/
+PetCare/frontend/dist/
+dist/
+target/
+.idea/
 ### VS Code ###
 .vscode/
