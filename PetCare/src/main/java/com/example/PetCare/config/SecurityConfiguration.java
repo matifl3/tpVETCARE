@@ -59,7 +59,7 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    @Value("${CORS_ALLOWED_ORIGINS}")
+    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:8080}")
     private String corsAllowedOrigins;
 
     @Bean

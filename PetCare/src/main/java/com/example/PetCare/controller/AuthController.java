@@ -9,8 +9,10 @@ import com.example.PetCare.repository.ProfesionalRepository;
 import com.example.PetCare.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +44,26 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.usuarioRepository = usuarioRepository;
         this.profesionalRepository = profesionalRepository;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("error", "No autenticado"));
+        }
+        Usuario usuario = usuarioRepository.findByEmail(authentication.getName()).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Usuario no encontrado"));
+        }
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("nombre", usuario.getNombre());
+        response.put("email", usuario.getEmail());
+        response.put("rol", usuario.getRol().name());
+        if (usuario.getRol() == Rol.ADMIN) {
+            long pendientes = profesionalRepository.findByEstado(EstadoProfesional.PENDIENTE).size();
+            response.put("pendientes", pendientes);
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/registro")
