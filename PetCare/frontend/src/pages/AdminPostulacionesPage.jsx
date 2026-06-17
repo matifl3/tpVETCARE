@@ -7,6 +7,7 @@ function AdminPostulacionesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [procesando, setProcesando] = useState(null)
 
   const cargar = () => {
     setLoading(true)
@@ -19,19 +20,33 @@ function AdminPostulacionesPage() {
   useEffect(() => { cargar() }, [])
 
   const aprobar = async (id) => {
+    setError('')
+    setSuccess('')
+    setProcesando(id)
     try {
-      await api.profesionales.aprobar(id)
-      setSuccess('Profesional aprobado exitosamente')
-      cargar()
-    } catch (err) { setError(err.message) }
+      const res = await api.profesionales.aprobar(id)
+      setSuccess(res.mensaje || 'Profesional aprobado correctamente')
+      setPostulaciones((prev) => prev.filter((p) => p.id !== id))
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setProcesando(null)
+    }
   }
 
   const rechazar = async (id) => {
+    setError('')
+    setSuccess('')
+    setProcesando(id)
     try {
-      await api.profesionales.rechazar(id)
-      setSuccess('Profesional rechazado')
-      cargar()
-    } catch (err) { setError(err.message) }
+      const res = await api.profesionales.rechazar(id)
+      setSuccess(res.mensaje || 'Profesional rechazado correctamente')
+      setPostulaciones((prev) => prev.filter((p) => p.id !== id))
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setProcesando(null)
+    }
   }
 
   if (loading) return <div className="dashboard"><p>Cargando...</p></div>
@@ -75,10 +90,16 @@ function AdminPostulacionesPage() {
                   <td>
                     <div className="actions">
                       <button className="btn-primary btn-sm"
-                        onClick={() => aprobar(p.id)}>Aprobar</button>
+                        disabled={procesando === p.id}
+                        onClick={() => aprobar(p.id)}>
+                        {procesando === p.id ? '...' : 'Aprobar'}
+                      </button>
                       <button className="btn-secondary btn-sm"
                         style={{ color: '#d32f2f', borderColor: '#d32f2f' }}
-                        onClick={() => rechazar(p.id)}>Rechazar</button>
+                        disabled={procesando === p.id}
+                        onClick={() => rechazar(p.id)}>
+                        {procesando === p.id ? '...' : 'Rechazar'}
+                      </button>
                     </div>
                   </td>
                 </tr>

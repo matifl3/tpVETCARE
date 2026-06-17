@@ -5,11 +5,13 @@ import com.example.PetCare.model.Usuario;
 import com.example.PetCare.service.TurnoService;
 import com.example.PetCare.utils.AuthUtils;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/turnos")
@@ -64,6 +66,21 @@ public class TurnoController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO') or hasRole('PASEADOR') or hasRole('PELUQUERO') or hasRole('ADIESTRADOR') or hasRole('CUIDADOR')")
     public List<TurnoDTO> listarPorProfesional(@PathVariable Integer idProfesional) {
         return turnoService.listarTurnoXProfesional(idProfesional);
+    }
+
+    // DUENIO: verificar disponibilidad de un profesional en una fecha
+    @GetMapping("/disponibilidad/{idProfesional}")
+    public ResponseEntity<Map<String, Object>> verificarDisponibilidad(
+            @PathVariable Integer idProfesional,
+            @RequestParam String fecha) {
+        LocalDate fechaParsed = LocalDate.parse(fecha);
+        boolean disponible = turnoService.estaDisponible(idProfesional, fechaParsed);
+        return ResponseEntity.ok(Map.of(
+            "disponible", disponible,
+            "mensaje", disponible
+                ? "El profesional está disponible en esa fecha"
+                : "El profesional no tiene disponibilidad para la fecha " + fecha
+        ));
     }
 
     // Filtros por fecha: solo ADMIN y PROFESIONALES (son vistas de gestión)

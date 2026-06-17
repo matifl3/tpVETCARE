@@ -105,7 +105,7 @@ public class MascotaService {
                     entity.setObservaciones(dto.getObservaciones());
                     entity.setSexo(dto.getSexo());
                     entity.setFechaNacimiento(dto.getFechaNacimiento());
-                    entity.setPeso(dto.getPeso());
+                    entity.setPeso(dto.getPeso() != null ? dto.getPeso() : 0.0);
                     entity.setUsuario(usuario);
                     mascotaRepository.save(entity);
                     return true;
@@ -153,8 +153,8 @@ public class MascotaService {
         entity.setFechaNacimiento(dto.getFechaNacimiento());
         entity.setSexo(dto.getSexo());
         entity.setObservaciones(dto.getObservaciones());
-        entity.setActivo(dto.getActivo());
-        entity.setPeso(dto.getPeso());
+        entity.setActivo(dto.getActivo() != null ? dto.getActivo() : true);
+        entity.setPeso(dto.getPeso() != null ? dto.getPeso() : 0.0);
         entity.setUsuario(usuario);
         return entity;
     }

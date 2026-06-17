@@ -100,16 +100,13 @@ public class ProfesionalService {
      * @return true si se aprobó correctamente
      */
     public boolean aprobar(int id) {
-        // Verifica que el profesional exista
         Profesional profesional = profesionalRepository.findById(id)
                 .orElseThrow(() -> new NoEncontradoException("El profesional no fue encontrado"));
 
-        // No se puede aprobar un profesional que ya está aprobado
         if (profesional.getEstado() == EstadoProfesional.APROBADO) {
-            throw new NoEncontradoException("El profesional ya está aprobado");
+            return true;
         }
 
-        // Actualiza estado a APROBADO y activo a true
         return profesionalRepository.actualizarEstado(id, EstadoProfesional.APROBADO, true) > 0;
     }
 
@@ -121,16 +118,13 @@ public class ProfesionalService {
      * @return true si se rechazó correctamente
      */
     public boolean rechazar(int id) {
-        // Verifica que el profesional exista
         Profesional profesional = profesionalRepository.findById(id)
                 .orElseThrow(() -> new NoEncontradoException("El profesional no fue encontrado"));
 
-        // No se puede rechazar un profesional que ya está rechazado
         if (profesional.getEstado() == EstadoProfesional.RECHAZADO) {
-            throw new NoEncontradoException("El profesional ya está rechazado");
+            return true;
         }
 
-        // Actualiza estado a RECHAZADO y activo a false
         return profesionalRepository.actualizarEstado(id, EstadoProfesional.RECHAZADO, false) > 0;
     }
 
@@ -150,6 +144,22 @@ public class ProfesionalService {
         dto.setMatricula(p.getMatricula());
         dto.setExperiencia(p.getExperiencia());
         dto.setEstado(p.getEstado());
+        double[] precios = calcularPrecios(p.getRol());
+        dto.setPrecioBase(precios[0]);
+        dto.setPrecioHora(precios[1]);
         return dto;
+    }
+
+    public static double[] calcularPrecios(Rol rol) {
+        double precioBase = switch (rol) {
+            case VETERINARIO -> 5000.0;
+            case PASEADOR -> 3000.0;
+            case PELUQUERO -> 4000.0;
+            case ADIESTRADOR -> 4500.0;
+            case CUIDADOR -> 2500.0;
+            default -> 3000.0;
+        };
+        double precioHora = (rol == Rol.PASEADOR || rol == Rol.CUIDADOR) ? 1500.0 : 0.0;
+        return new double[]{precioBase, precioHora};
     }
 }

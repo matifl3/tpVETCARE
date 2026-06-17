@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/profesionales")
@@ -102,12 +103,12 @@ public class ProfesionalController {
      */
     @PutMapping("/{id}/aprobar")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> aprobar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> aprobar(@PathVariable int id) {
         boolean aprobado = profesionalService.aprobar(id);
         if (aprobado) {
-            return ResponseEntity.ok("Profesional aprobado exitosamente");
+            return ResponseEntity.ok(Map.of("mensaje", "Profesional aprobado correctamente"));
         }
-        return ResponseEntity.badRequest().body("No se pudo aprobar al profesional");
+        return ResponseEntity.badRequest().body(Map.of("error", "No se pudo aprobar al profesional"));
     }
 
     /**
@@ -118,11 +119,11 @@ public class ProfesionalController {
      */
     @PutMapping("/{id}/rechazar")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> rechazar(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> rechazar(@PathVariable int id) {
         boolean rechazado = profesionalService.rechazar(id);
         if (rechazado) {
-            return ResponseEntity.ok("Profesional rechazado exitosamente");
+            return ResponseEntity.ok(Map.of("mensaje", "Profesional rechazado correctamente"));
         }
-        return ResponseEntity.badRequest().body("No se pudo rechazar al profesional");
+        return ResponseEntity.badRequest().body(Map.of("error", "No se pudo rechazar al profesional"));
     }
 }

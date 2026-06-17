@@ -71,6 +71,13 @@ public class MascotaController {
         return mascotaService.crearParaUsuario(dto, user);
     }
 
+    // PROFESIONALES: listar mascotas atendidas por un profesional
+    @GetMapping("/atendidas/{idProfesional}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO') or hasRole('PASEADOR') or hasRole('PELUQUERO') or hasRole('ADIESTRADOR') or hasRole('CUIDADOR')")
+    public List<MascotaDTO> listarAtendidasPorProfesional(@PathVariable int idProfesional) {
+        return mascotaService.buscaMascotasAtendidasPorProfesional(idProfesional);
+    }
+
     // Solo ADMIN y VETERINARIO pueden crear mascotas (DUENIO no debería crear directamente,
     // debería asociar una mascota existente o ser creado por un profesional)
     @PostMapping

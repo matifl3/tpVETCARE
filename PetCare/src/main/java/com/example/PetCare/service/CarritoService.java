@@ -185,13 +185,16 @@ public class CarritoService {
             turnoService.solicitar(turnoDTO);
         }
 
-        carrito.getTurnos().clear();
         carrito.setEstado(Estado_Carrito.ENVIO);
         carrito.setMetodoPago(dto.getMetodoPago());
         carrito.setFechaActualizacion(LocalDate.now());
         carritoRepository.save(carrito);
+
+        CarritoDTO result = toDTO(carrito);
+
+        carrito.getTurnos().clear();
         obtenerOCrearCarrito(dto.getId_usuario());
-        return toDTO(carrito);
+        return result;
     }
 
     /**

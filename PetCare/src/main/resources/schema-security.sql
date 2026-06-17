@@ -1,5 +1,5 @@
 -- Tablas por defecto de Spring Security
--- Ejecutar en MySQL/MariaDB antes de iniciar la aplicacion
+-- Ejecutar en MySQL antes de iniciar la aplicacion
 
 CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL PRIMARY KEY,

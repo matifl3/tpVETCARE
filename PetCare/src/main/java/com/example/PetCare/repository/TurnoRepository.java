@@ -25,6 +25,9 @@ public interface TurnoRepository extends JpaRepository<Turno, Integer> {
 
     List<Turno> findByProfesionalIdUsuarioAndFecha(Integer idProfesional, LocalDate fecha);
 
+    List<Turno> findByProfesionalIdUsuarioAndFechaAndActivoTrueAndEstadoTurno(
+        Integer idProfesional, LocalDate fecha, Estado_Turno estadoTurno);
+
 
     @Modifying
     @Query("UPDATE Turno t SET t.estadoTurno = :estado WHERE t.idTurno = :idTurno")

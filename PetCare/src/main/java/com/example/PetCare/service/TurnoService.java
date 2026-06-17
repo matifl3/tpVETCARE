@@ -2,7 +2,6 @@ package com.example.PetCare.service;
 
 import com.example.PetCare.dto.TurnoDTO;
 import com.example.PetCare.enums.Estado_Turno;
-import com.example.PetCare.enums.Rol;
 import com.example.PetCare.exceptions.NoEncontradoException;
 import com.example.PetCare.model.Mascota;
 import com.example.PetCare.model.Profesional;
@@ -69,11 +68,16 @@ public class TurnoService {
     }
 
     public void verificarDisponibilidad(Integer idProfesional, LocalDate fecha) {
-        List<Turno> existentes = turnoRepository.findByProfesionalIdUsuarioAndFecha(idProfesional, fecha);
-        if (!existentes.isEmpty()) {
+        if (!estaDisponible(idProfesional, fecha)) {
             throw new IllegalArgumentException(
                 "El profesional no tiene disponibilidad para la fecha " + fecha);
         }
+    }
+
+    public boolean estaDisponible(Integer idProfesional, LocalDate fecha) {
+        List<Turno> existentes = turnoRepository.findByProfesionalIdUsuarioAndFechaAndActivoTrueAndEstadoTurno(
+            idProfesional, fecha, Estado_Turno.CONFIRMADO);
+        return existentes.isEmpty();
     }
 
     public TurnoDTO solicitar(TurnoDTO dto) {
@@ -87,15 +91,9 @@ public class TurnoService {
 
         verificarDisponibilidad(dto.getId_profesional(), dto.getFecha());
 
-        double precioBase = switch (fullProf.getRol()) {
-            case VETERINARIO -> 5000.0;
-            case PASEADOR -> 3000.0;
-            case PELUQUERO -> 4000.0;
-            case ADIESTRADOR -> 4500.0;
-            case CUIDADOR -> 2500.0;
-            default -> 3000.0;
-        };
-        double precioHora = (fullProf.getRol() == Rol.PASEADOR || fullProf.getRol() == Rol.CUIDADOR) ? 1500.0 : 0.0;
+        double[] precios = ProfesionalService.calcularPrecios(fullProf.getRol());
+        double precioBase = precios[0];
+        double precioHora = precios[1];
         int horas = dto.getHoras() != null ? dto.getHoras() : 1;
         double total = precioBase + (precioHora * (horas - 1));
 

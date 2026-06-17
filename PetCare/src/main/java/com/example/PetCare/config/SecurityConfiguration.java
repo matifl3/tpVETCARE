@@ -43,9 +43,8 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/registro", "/api/auth/login").permitAll()
-                .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
             )
             .formLogin(form -> form.disable())
             .httpBasic(httpBasic -> httpBasic.disable())
@@ -61,7 +60,7 @@ public class SecurityConfiguration {
         return authConfig.getAuthenticationManager();
     }
 
-    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:8080}")
+    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:5174,http://localhost:8080}")
     private String corsAllowedOrigins;
 
     @Bean

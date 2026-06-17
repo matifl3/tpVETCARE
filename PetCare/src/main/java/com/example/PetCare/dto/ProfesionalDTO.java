@@ -25,6 +25,7 @@ public class ProfesionalDTO {
     private boolean activo;
     private String matricula;
     private String experiencia;
-    // Estado de aprobación: indica si el profesional está pendiente, aprobado o rechazado
     private EstadoProfesional estado;
+    private Double precioBase;
+    private Double precioHora;
 }

@@ -79,9 +79,18 @@ public class AuthController {
             Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
             Map<String, Object> response = new java.util.HashMap<>();
             response.put("mensaje", "Inicio de sesión exitoso");
+            response.put("id", usuario.getIdUsuario());
             response.put("nombre", usuario.getNombre());
             response.put("email", usuario.getEmail());
             response.put("rol", usuario.getRol().name());
+
+            if (ROLES_PROFESIONALES.contains(usuario.getRol())) {
+                Profesional profesional = (Profesional) usuario;
+                response.put("estado", profesional.getEstado().name());
+                response.put("aprobado", profesional.getEstado() == EstadoProfesional.APROBADO);
+            } else {
+                response.put("aprobado", true);
+            }
 
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
@@ -99,13 +108,23 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("error", "Usuario no encontrado"));
         }
         Map<String, Object> response = new java.util.HashMap<>();
+        response.put("id", usuario.getIdUsuario());
         response.put("nombre", usuario.getNombre());
         response.put("email", usuario.getEmail());
         response.put("rol", usuario.getRol().name());
+
         if (usuario.getRol() == Rol.ADMIN) {
             long pendientes = profesionalRepository.findByEstado(EstadoProfesional.PENDIENTE).size();
             response.put("pendientes", pendientes);
+            response.put("aprobado", true);
+        } else if (ROLES_PROFESIONALES.contains(usuario.getRol())) {
+            Profesional profesional = (Profesional) usuario;
+            response.put("estado", profesional.getEstado().name());
+            response.put("aprobado", profesional.getEstado() == EstadoProfesional.APROBADO);
+        } else {
+            response.put("aprobado", true);
         }
+
         return ResponseEntity.ok(response);
     }
 

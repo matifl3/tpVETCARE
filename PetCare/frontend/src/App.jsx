@@ -17,6 +17,10 @@ import AdminMascotasPage from './pages/AdminMascotasPage'
 import AdminTurnosPage from './pages/AdminTurnosPage'
 import AdminProductosPage from './pages/AdminProductosPage'
 import AdminReportesPage from './pages/AdminReportesPage'
+import ProfesionalDashboard from './pages/ProfesionalDashboard'
+import MisTurnosProfesionalPage from './pages/MisTurnosProfesionalPage'
+import MisPacientesProfesionalPage from './pages/MisPacientesProfesionalPage'
+import PerfilProfesionalPage from './pages/PerfilProfesionalPage'
 
 function App() {
   return (
@@ -39,6 +43,10 @@ function App() {
         <Route path="admin/turnos" element={<AdminTurnosPage />} />
         <Route path="admin/productos" element={<AdminProductosPage />} />
         <Route path="admin/reportes" element={<AdminReportesPage />} />
+        <Route path="profesional" element={<ProfesionalDashboard />} />
+        <Route path="profesional/mis-turnos" element={<MisTurnosProfesionalPage />} />
+        <Route path="profesional/mis-pacientes" element={<MisPacientesProfesionalPage />} />
+        <Route path="profesional/perfil" element={<PerfilProfesionalPage />} />
       </Route>
     </Routes>
   )

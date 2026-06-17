@@ -93,21 +93,14 @@ function DashboardHome() {
 
       {['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'].includes(user.rol) && (
         <div className="card-grid">
-          <DashboardCard icon="📅" title="Mis Turnos" desc="Gestioná tus turnos y horarios." />
-          <DashboardCard icon="🐾" title="Mis Pacientes" desc="Revisá las mascotas a tu cargo." />
+          <Link to="/dashboard/profesional" className="dash-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <span className="dash-icon">📅</span>
+            <h3>Panel Profesional</h3>
+            <p>Gestioná tus turnos, pacientes y perfil.</p>
+            <span className="dash-link">Ir al panel →</span>
+          </Link>
         </div>
       )}
-    </div>
-  )
-}
-
-function DashboardCard({ icon, title, desc, badge }) {
-  return (
-    <div className="dash-card">
-      <span className="dash-icon">{icon}</span>
-      <h3>{title} {badge && <span className="nav-role">{badge}</span>}</h3>
-      <p>{desc}</p>
-      <span className="dash-link">Ver más →</span>
     </div>
   )
 }

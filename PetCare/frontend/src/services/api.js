@@ -55,6 +55,7 @@ export const api = {
   mascotas: {
     misMascotas: () => api.get('/api/mascotas/mias'),
     listarTodos: () => api.get('/api/mascotas'),
+    atendidasPor: (idProfesional) => api.get(`/api/mascotas/atendidas/${idProfesional}`),
     crear: (data) => api.post('/api/mascotas/mias', data),
     actualizar: (id, data) => api.put(`/api/mascotas/${id}`, data),
     eliminar: (id) => api.delete(`/api/mascotas/${id}`),
@@ -85,6 +86,7 @@ export const api = {
   turnos: {
     misTurnos: () => api.get('/api/turnos/mis-turnos'),
     listarTodos: () => api.get('/api/turnos'),
+    porProfesional: (idProfesional) => api.get(`/api/turnos/profesional/${idProfesional}`),
     solicitar: (data) => api.post('/api/turnos/solicitar', data),
     disponibilidad: (idProfesional, fecha) =>
       api.get(`/api/turnos/disponibilidad/${idProfesional}?fecha=${fecha}`),
