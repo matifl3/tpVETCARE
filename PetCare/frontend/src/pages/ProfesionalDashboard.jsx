@@ -30,6 +30,14 @@ function ProfesionalDashboard() {
           <p>Revisá las mascotas a tu cargo.</p>
           <span className="dash-link">Ver más →</span>
         </Link>
+        {user.rol === 'PASEADOR' && (
+          <Link to="/dashboard/paseos/mis-paseos" className="dash-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <span className="dash-icon">📍</span>
+            <h3>Mis Paseos</h3>
+            <p>Iniciá y gestioná paseos con seguimiento GPS en vivo.</p>
+            <span className="dash-link">Ir →</span>
+          </Link>
+        )}
         <Link to="/dashboard/profesional/perfil" className="dash-card" style={{ textDecoration: 'none', color: 'inherit' }}>
           <span className="dash-icon">👤</span>
           <h3>Perfil Profesional</h3>

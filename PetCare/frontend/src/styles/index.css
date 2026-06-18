@@ -638,6 +638,71 @@ section {
   font-size: 14px;
 }
 
+/* Paseo pages */
+.paseo-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.estado-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.estado-badge.en-curso {
+  background: #27ae60;
+  color: #fff;
+  animation: pulse 1.5s infinite;
+}
+
+.estado-badge.finalizado {
+  background: #95a5a6;
+  color: #fff;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.paseo-activo {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.paseo-info {
+  margin-bottom: 1rem;
+}
+
+.paseo-info p {
+  margin: 0.3rem 0;
+}
+
+.ws-conectado {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.ws-desconectado, .ws-error {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.mapa-container {
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.text-muted {
+  color: #7f8c8d;
+}
+
 /* Animations */
 @keyframes fadeInUp {
   from {

@@ -21,6 +21,9 @@ import ProfesionalDashboard from './pages/ProfesionalDashboard'
 import MisTurnosProfesionalPage from './pages/MisTurnosProfesionalPage'
 import MisPacientesProfesionalPage from './pages/MisPacientesProfesionalPage'
 import PerfilProfesionalPage from './pages/PerfilProfesionalPage'
+import MisPaseosPage from './pages/paseos/MisPaseosPage'
+import MisPaseosClientePage from './pages/paseos/MisPaseosClientePage'
+import SeguirPaseoPage from './pages/paseos/SeguirPaseoPage'
 
 function App() {
   return (
@@ -47,6 +50,9 @@ function App() {
         <Route path="profesional/mis-turnos" element={<MisTurnosProfesionalPage />} />
         <Route path="profesional/mis-pacientes" element={<MisPacientesProfesionalPage />} />
         <Route path="profesional/perfil" element={<PerfilProfesionalPage />} />
+        <Route path="paseos/mis-paseos" element={<MisPaseosPage />} />
+        <Route path="paseos/mis-paseos-cliente" element={<MisPaseosClientePage />} />
+        <Route path="seguir-paseo/:idPaseo" element={<SeguirPaseoPage />} />
       </Route>
     </Routes>
   )

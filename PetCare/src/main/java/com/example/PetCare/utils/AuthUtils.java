@@ -38,4 +38,8 @@ public class AuthUtils {
         return usuarioRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new NoEncontradoException("Usuario autenticado no encontrado en la base de datos"));
     }
+
+    public Integer getCurrentUserId() {
+        return getCurrentUsuario().getIdUsuario();
+    }
 }

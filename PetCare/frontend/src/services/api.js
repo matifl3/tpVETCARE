@@ -87,6 +87,7 @@ export const api = {
     misTurnos: () => api.get('/api/turnos/mis-turnos'),
     listarTodos: () => api.get('/api/turnos'),
     porProfesional: (idProfesional) => api.get(`/api/turnos/profesional/${idProfesional}`),
+    pendientesPaseador: () => api.get('/api/turnos/profesional-pendientes'),
     solicitar: (data) => api.post('/api/turnos/solicitar', data),
     disponibilidad: (idProfesional, fecha) =>
       api.get(`/api/turnos/disponibilidad/${idProfesional}?fecha=${fecha}`),
@@ -121,6 +122,17 @@ export const api = {
       api.get(`/api/carrito/reportes/ganancias?anio=${anio}&mes=${mes}`),
     productosMasVendidos: (anio, mes) =>
       api.get(`/api/carrito/reportes/productos-mas-vendidos?anio=${anio}&mes=${mes}`),
+  },
+
+  paseos: {
+    iniciar: (data) => api.post('/api/paseos', data),
+    iniciarDesdeTurno: (idTurno) => api.post(`/api/paseos/desde-turno/${idTurno}`),
+    finalizar: (id) => api.put(`/api/paseos/${id}/finalizar`),
+    obtener: (id) => api.get(`/api/paseos/${id}`),
+    misPaseosActivos: () => api.get('/api/paseos/mis-paseos-activos'),
+    enviarUbicacion: (id, data) => api.post(`/api/paseos/${id}/ubicacion`, data),
+    obtenerUbicaciones: (id) => api.get(`/api/paseos/${id}/ubicacion`),
+    paseosDelCliente: () => api.get('/api/paseos/cliente'),
   },
 }
 

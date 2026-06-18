@@ -27,6 +27,7 @@ public class TurnoDTO {
 
     private String nombreProfesional;
     private String nombreMascota;
+    private String nombreCliente;
 
     @NotNull
     private Estado_Turno estadoTurno;

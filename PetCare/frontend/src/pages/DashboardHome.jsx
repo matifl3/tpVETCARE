@@ -47,6 +47,12 @@ function DashboardHome() {
             <p>Revisá tus turnos y reservas activas.</p>
             <span className="dash-link">Ver más →</span>
           </Link>
+          <Link to="/dashboard/paseos/mis-paseos-cliente" className="dash-card" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <span className="dash-icon">📍</span>
+            <h3>Mis Paseos en Vivo</h3>
+            <p>Seguí en tiempo real los paseos de tus mascotas.</p>
+            <span className="dash-link">Ver más →</span>
+          </Link>
         </div>
       )}
 

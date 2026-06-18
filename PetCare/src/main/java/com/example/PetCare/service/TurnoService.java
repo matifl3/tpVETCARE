@@ -67,6 +67,14 @@ public class TurnoService {
                 .toList();
     }
 
+    public List<TurnoDTO> listarPendientesPaseador(Integer idPaseador) {
+        return turnoRepository
+                .findByProfesionalIdUsuarioAndEstadoTurnoAndActivoTrue(idPaseador, Estado_Turno.CONFIRMADO)
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
     public void verificarDisponibilidad(Integer idProfesional, LocalDate fecha) {
         if (!estaDisponible(idProfesional, fecha)) {
             throw new IllegalArgumentException(
@@ -156,6 +164,7 @@ public class TurnoService {
         dto.setId_profesional(entity.getProfesional().getIdUsuario());
         dto.setNombreProfesional(entity.getProfesional().getNombre() + " " + entity.getProfesional().getApellido());
         dto.setNombreMascota(entity.getMascota().getNombre());
+        dto.setNombreCliente(entity.getMascota().getUsuario().getNombre() + " " + entity.getMascota().getUsuario().getApellido());
         dto.setHoras(entity.getHoras());
         dto.setPrecio(entity.getPrecio());
         dto.setActivo(entity.isActivo());

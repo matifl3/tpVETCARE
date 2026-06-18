@@ -68,6 +68,13 @@ public class TurnoController {
         return turnoService.listarTurnoXProfesional(idProfesional);
     }
 
+    // PASEADOR: listar turnos pendientes (CONFIRMADO) del paseador actual
+    @GetMapping("/profesional-pendientes")
+    @PreAuthorize("hasRole('PASEADOR')")
+    public List<TurnoDTO> listarPendientesPaseador() {
+        return turnoService.listarPendientesPaseador(authUtils.getCurrentUserId());
+    }
+
     // DUENIO: verificar disponibilidad de un profesional en una fecha
     @GetMapping("/disponibilidad/{idProfesional}")
     public ResponseEntity<Map<String, Object>> verificarDisponibilidad(
