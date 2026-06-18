@@ -53,6 +53,9 @@ public class ProductoService {
 
     /// AbM
     public Producto crear(Producto producto) {
+        if (productoRepository.existsByNombreIgnoreCase(producto.getNombre())) {
+            throw new IllegalArgumentException("Ya existe un producto con el nombre: " + producto.getNombre());
+        }
         return productoRepository.save(producto);
     }
 

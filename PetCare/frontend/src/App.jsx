@@ -11,6 +11,7 @@ import MisTurnosPage from './pages/MisTurnosPage'
 import TarjetasPage from './pages/TarjetasPage'
 import ReservarTurnoPage from './pages/ReservarTurnoPage'
 import CompraExitosaPage from './pages/CompraExitosaPage'
+import SeguimientoPage from './pages/SeguimientoPage'
 import AdminUsuariosPage from './pages/AdminUsuariosPage'
 import AdminPostulacionesPage from './pages/AdminPostulacionesPage'
 import AdminMascotasPage from './pages/AdminMascotasPage'
@@ -35,6 +36,7 @@ function App() {
         <Route path="tienda" element={<TiendaPage />} />
         <Route path="carrito" element={<CarritoPage />} />
         <Route path="mis-turnos" element={<MisTurnosPage />} />
+        <Route path="mascotas/:idMascota/seguimiento" element={<SeguimientoPage />} />
         <Route path="tarjetas" element={<TarjetasPage />} />
         <Route path="compra-exitosa" element={<CompraExitosaPage />} />
         <Route path="admin/usuarios" element={<AdminUsuariosPage />} />

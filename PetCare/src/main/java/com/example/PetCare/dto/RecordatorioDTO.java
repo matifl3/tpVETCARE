@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RecordatorioDTO {
     private Integer idVeterinario;
-    private Integer idDuenio;
+    private Integer idCliente;
     private Integer idMascota;
     private String titulo;
     private String descripcion;

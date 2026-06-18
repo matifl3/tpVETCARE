@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 import api from '../services/api'
 
 function MascotasPage() {
+  const { user } = useOutletContext()
   const [mascotas, setMascotas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [mostrarForm, setMostrarForm] = useState(false)
+  const [editandoId, setEditandoId] = useState(null)
   const [form, setForm] = useState({
     nombre: '', especie: 'PERRO', raza: '', sexo: '', peso: '', fechaNacimiento: '',
   })
@@ -21,27 +23,50 @@ function MascotasPage() {
 
   useEffect(() => { cargarMascotas() }, [])
 
-  const handleCrear = async (e) => {
+  const resetForm = () => {
+    setForm({ nombre: '', especie: 'PERRO', raza: '', sexo: '', peso: '', fechaNacimiento: '' })
+    setEditandoId(null)
+    setMostrarForm(false)
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
-      await api.mascotas.crear({
+      const data = {
         ...form,
         peso: form.peso ? parseFloat(form.peso) : null,
         fechaNacimiento: form.fechaNacimiento || null,
-      })
-      setMostrarForm(false)
-      setForm({ nombre: '', especie: 'PERRO', raza: '', sexo: '', peso: '', fechaNacimiento: '' })
+      }
+      if (editandoId) {
+        await api.mascotas.actualizarMia(editandoId, data)
+      } else {
+        await api.mascotas.crear(data)
+      }
+      resetForm()
       cargarMascotas()
     } catch (err) {
       setError(err.message)
     }
   }
 
+  const handleEditar = (m) => {
+    setForm({
+      nombre: m.nombre,
+      especie: m.especie,
+      raza: m.raza || '',
+      sexo: m.sexo || '',
+      peso: m.peso ? String(m.peso) : '',
+      fechaNacimiento: m.fechaNacimiento || '',
+    })
+    setEditandoId(m.idMascota)
+    setMostrarForm(true)
+  }
+
   const handleEliminar = async (id) => {
     if (!confirm('¿Eliminar esta mascota?')) return
     try {
-      await api.mascotas.eliminar(id)
+      await api.mascotas.eliminarMia(id)
       cargarMascotas()
     } catch (err) {
       setError(err.message)
@@ -54,7 +79,7 @@ function MascotasPage() {
     <div className="dashboard">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h1>Mis Mascotas</h1>
-        <button className="btn-primary" onClick={() => setMostrarForm(!mostrarForm)}>
+        <button className="btn-primary" onClick={() => mostrarForm ? resetForm() : setMostrarForm(true)}>
           {mostrarForm ? 'Cancelar' : '+ Nueva Mascota'}
         </button>
       </div>
@@ -62,7 +87,8 @@ function MascotasPage() {
       {error && <div className="alert alert-error show">{error}</div>}
 
       {mostrarForm && (
-        <form onSubmit={handleCrear} style={{ background: '#f8f9fa', padding: 24, borderRadius: 12, marginBottom: 32 }}>
+        <form onSubmit={handleSubmit} style={{ background: '#f8f9fa', padding: 24, borderRadius: 12, marginBottom: 32 }}>
+          <h3 style={{ marginTop: 0 }}>{editandoId ? 'Editar Mascota' : 'Nueva Mascota'}</h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div className="input-group">
               <label>Nombre</label>
@@ -100,7 +126,9 @@ function MascotasPage() {
               <input type="date" value={form.fechaNacimiento} onChange={(e) => setForm({ ...form, fechaNacimiento: e.target.value })} />
             </div>
           </div>
-          <button type="submit" className="btn-primary" style={{ marginTop: 16 }}>Guardar Mascota</button>
+          <button type="submit" className="btn-primary" style={{ marginTop: 16 }}>
+            {editandoId ? 'Guardar Cambios' : 'Guardar Mascota'}
+          </button>
         </form>
       )}
 
@@ -115,12 +143,25 @@ function MascotasPage() {
               <p><strong>Especie:</strong> {m.especie}</p>
               {m.raza && <p><strong>Raza:</strong> {m.raza}</p>}
               {m.sexo && <p><strong>Sexo:</strong> {m.sexo === 'MACHO' ? 'Macho' : 'Hembra'}</p>}
-              {m.peso && <p><strong>Peso:</strong> {m.peso} kg</p>}
-              <button
-                onClick={() => handleEliminar(m.idMascota)}
-                style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: '#d32f2f' }}
-                title="Eliminar"
-              >✕</button>
+              {m.peso > 0 && <p><strong>Peso:</strong> {m.peso} kg</p>}
+              {m.fechaNacimiento && <p><strong>Nacimiento:</strong> {m.fechaNacimiento}</p>}
+              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                <button
+                  onClick={() => handleEditar(m)}
+                  className="btn-sm"
+                  style={{ flex: 1 }}
+                >Editar</button>
+                <button
+                  onClick={() => handleEliminar(m.idMascota)}
+                  className="btn-sm"
+                  style={{ flex: 1, background: '#d32f2f', color: '#fff' }}
+                >Eliminar</button>
+                <Link to={`/dashboard/mascotas/${m.idMascota}/seguimiento`}
+                  className="btn-sm"
+                  style={{ flex: 1, textDecoration: 'none', textAlign: 'center', background: '#667eea', color: '#fff' }}>
+                  Seguimiento
+                </Link>
+              </div>
             </div>
           ))}
         </div>

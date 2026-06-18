@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Controller para el seguimiento de adiestramiento de mascotas.
  * Permite al adiestrador registrar el progreso de cada sesión,
- * y al dueño ver cómo avanza el entrenamiento de su mascota.
+ * y al cliente ver cómo avanza el entrenamiento de su mascota.
  *
  * Base URL: /api/mascotas/{idMascota}/seguimiento
  */
@@ -36,7 +36,7 @@ public class SeguimientoEntrenamientoController {
      * Incluye todos los registros de progreso ordenados por fecha.
      *
      * Acceso:
-     * - DUENIO: solo sus propias mascotas
+     * - CLIENTE: solo sus propias mascotas
      * - ADIESTRADOR: mascotas con turno propio
      * - ADMIN: todas las mascotas
      *

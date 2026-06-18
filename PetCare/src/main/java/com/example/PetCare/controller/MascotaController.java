@@ -54,21 +54,37 @@ public class MascotaController {
         return mascotaService.buscarPorNombre(nombre);
     }
 
-    // DUENIO: listar mis propias mascotas
+    // CLIENTE: listar mis propias mascotas
     @GetMapping("/mias")
-    @PreAuthorize("hasRole('DUENIO')")
+    @PreAuthorize("hasRole('CLIENTE')")
     public List<MascotaDTO> listarMias() {
         Usuario user = authUtils.getCurrentUsuario();
-        return mascotaService.listarPorDuenio(user.getIdUsuario());
+        return mascotaService.listarPorCliente(user.getIdUsuario());
     }
 
-    // DUENIO: registrar una nueva mascota (se asigna automáticamente al dueño actual)
+    // CLIENTE: registrar una nueva mascota (se asigna automáticamente al cliente actual)
     @PostMapping("/mias")
-    @PreAuthorize("hasRole('DUENIO')")
+    @PreAuthorize("hasRole('CLIENTE')")
     public MascotaDTO crearMia(@RequestBody @Valid MascotaDTO dto) {
         Usuario user = authUtils.getCurrentUsuario();
         dto.setIdUsuario(user.getIdUsuario());
         return mascotaService.crearParaUsuario(dto, user);
+    }
+
+    // CLIENTE: actualizar una de sus propias mascotas
+    @PutMapping("/mias/{id}")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public MascotaDTO actualizarMia(@PathVariable Integer id, @RequestBody @Valid MascotaDTO dto) {
+        Usuario user = authUtils.getCurrentUsuario();
+        return mascotaService.actualizarParaUsuario(id, dto, user);
+    }
+
+    // CLIENTE: dar de baja (soft delete) una de sus propias mascotas
+    @DeleteMapping("/mias/{id}")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public void eliminarMia(@PathVariable Integer id) {
+        Usuario user = authUtils.getCurrentUsuario();
+        mascotaService.eliminarParaUsuario(id, user);
     }
 
     // PROFESIONALES: listar mascotas atendidas por un profesional
@@ -78,7 +94,7 @@ public class MascotaController {
         return mascotaService.buscaMascotasAtendidasPorProfesional(idProfesional);
     }
 
-    // Solo ADMIN y VETERINARIO pueden crear mascotas (DUENIO no debería crear directamente,
+    // Solo ADMIN y VETERINARIO pueden crear mascotas (CLIENTE no debería crear directamente,
     // debería asociar una mascota existente o ser creado por un profesional)
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO')")

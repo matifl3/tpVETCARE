@@ -44,7 +44,7 @@ public class SeguimientoEntrenamientoService {
      * Valida que el usuario actual tenga permiso para verlo.
      *
      * Reglas de acceso:
-     * - DUENIO: solo puede ver el seguimiento de sus propias mascotas
+     * - CLIENTE: solo puede ver el seguimiento de sus propias mascotas
      * - ADIESTRADOR: puede ver el seguimiento de mascotas que tienen turno con él
      * - ADMIN: puede ver el seguimiento de cualquier mascota
      */
@@ -170,7 +170,7 @@ public class SeguimientoEntrenamientoService {
 
     /**
      * Valida que el usuario actual tenga acceso al seguimiento de la mascota.
-     * DUENIO: solo sus propias mascotas.
+     * CLIENTE: solo sus propias mascotas.
      * ADIESTRADOR: mascotas con turno propio.
      * ADMIN: acceso total.
      */
@@ -183,8 +183,8 @@ public class SeguimientoEntrenamientoService {
             return;
         }
 
-        // DUENIO solo puede ver el seguimiento de sus propias mascotas
-        if (rol == Rol.DUENIO) {
+        // CLIENTE solo puede ver el seguimiento de sus propias mascotas
+        if (rol == Rol.CLIENTE) {
             if (mascota.getUsuario() == null
                     || !Objects.equals(mascota.getUsuario().getIdUsuario(), currentUser.getIdUsuario())) {
                 throw new NoEncontradoException("Mascota no encontrada");

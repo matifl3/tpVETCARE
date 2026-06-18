@@ -22,8 +22,8 @@ public class Recordatorio {
     private Profesional veterinario;
 
     @ManyToOne
-    @JoinColumn(name = "id_duenio")
-    private Usuario duenio;
+    @JoinColumn(name = "id_cliente")
+    private Usuario cliente;
 
     @ManyToOne
     @JoinColumn(name = "id_mascota")

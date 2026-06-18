@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * DTO del seguimiento de adiestramiento completo.
  * Contiene la información del contenedor y todos los registros de progreso anidados.
- * Se usa para mostrar el historial completo al dueño o al adiestrador.
+ * Se usa para mostrar el historial completo al cliente o al adiestrador.
  */
 @Data
 @NoArgsConstructor

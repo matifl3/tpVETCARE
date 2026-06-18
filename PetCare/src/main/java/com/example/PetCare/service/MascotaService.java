@@ -68,16 +68,36 @@ public class MascotaService {
                 .toList();
     }
 
-    public List<MascotaDTO> listarPorDuenio(Integer idUsuario) {
-        return mascotaRepository.findByUsuario_IdUsuario(idUsuario).stream()
+    public List<MascotaDTO> listarPorCliente(Integer idUsuario) {
+        return mascotaRepository.findByUsuario_IdUsuarioAndActivoTrue(idUsuario).stream()
                 .map(this::toDTO)
                 .toList();
     }
 
-    public MascotaDTO crearParaUsuario(MascotaDTO dto, Usuario duenio) {
-        Mascota entity = toEntity(dto, duenio);
+    public MascotaDTO crearParaUsuario(MascotaDTO dto, Usuario cliente) {
+        Mascota entity = toEntity(dto, cliente);
         entity.setActivo(true);
         return toDTO(mascotaRepository.save(entity));
+    }
+
+    public MascotaDTO actualizarParaUsuario(Integer idMascota, MascotaDTO dto, Usuario cliente) {
+        Mascota entity = mascotaRepository.findByIdMascotaAndUsuario_IdUsuario(idMascota, cliente.getIdUsuario())
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada o no te pertenece"));
+        entity.setNombre(dto.getNombre());
+        entity.setEspecie(dto.getEspecie());
+        entity.setRaza(dto.getRaza());
+        entity.setSexo(dto.getSexo());
+        entity.setPeso(dto.getPeso() != null ? dto.getPeso() : 0.0);
+        entity.setFechaNacimiento(dto.getFechaNacimiento());
+        entity.setObservaciones(dto.getObservaciones());
+        return toDTO(mascotaRepository.save(entity));
+    }
+
+    public void eliminarParaUsuario(Integer idMascota, Usuario cliente) {
+        Mascota entity = mascotaRepository.findByIdMascotaAndUsuario_IdUsuario(idMascota, cliente.getIdUsuario())
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada o no te pertenece"));
+        entity.setActivo(false);
+        mascotaRepository.save(entity);
     }
 
     /// ABM
@@ -140,7 +160,9 @@ public class MascotaService {
         dto.setSexo(entity.getSexo());
         dto.setFechaNacimiento(entity.getFechaNacimiento());
         dto.setPeso(entity.getPeso());
-        dto.setIdUsuario(entity.getUsuario().getIdUsuario());
+        if (entity.getUsuario() != null) {
+            dto.setIdUsuario(entity.getUsuario().getIdUsuario());
+        }
         return dto;
     }
 

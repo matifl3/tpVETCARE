@@ -28,7 +28,7 @@ public class Mascota {
     private boolean activo;
 
     @ManyToOne
-    @JoinColumn(name = "id_dueño")
+    @JoinColumn(name = "id_cliente")
     private Usuario usuario;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)

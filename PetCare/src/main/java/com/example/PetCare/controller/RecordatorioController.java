@@ -27,10 +27,10 @@ public class RecordatorioController {
         return ResponseEntity.ok(recordatorioService.crearRecordatorio(dto));
     }
 
-    @GetMapping("/duenio")
-    public ResponseEntity<List<RecordatorioDTO>> listarPorDuenio(){
-        Usuario duenio = authUtils.getCurrentUsuario();
-        return ResponseEntity.ok(recordatorioService.listarPorDuenio(duenio.getIdUsuario()));
+    @GetMapping("/cliente")
+    public ResponseEntity<List<RecordatorioDTO>> listarPorCliente(){
+        Usuario cliente = authUtils.getCurrentUsuario();
+        return ResponseEntity.ok(recordatorioService.listarPorCliente(cliente.getIdUsuario()));
     }
 
     @GetMapping("/veterinario")

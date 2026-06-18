@@ -9,7 +9,7 @@ function DashboardHome() {
       <h1>{user.rol === 'ADMIN' ? 'Panel de Administración' : `¡Bienvenido, ${user.nombre}!`}</h1>
       <p>{user.rol === 'ADMIN' ? `Bienvenido, ${user.nombre}. Gestioná la plataforma PetCare.` : 'Gestioná tus mascotas, turnos y más desde tu panel.'}</p>
 
-      {user.rol === 'DUENIO' && (
+      {user.rol === 'CLIENTE' && (
         <div className="card-grid">
           <Link to="/dashboard/mascotas" className="dash-card" style={{ textDecoration: 'none', color: 'inherit' }}>
             <span className="dash-icon">🐕</span>

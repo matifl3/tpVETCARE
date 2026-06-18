@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
@@ -18,7 +19,9 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
     @Query("SELECT DISTINCT t.mascota FROM Turno t WHERE t.profesional.id = :idProfesional")
     List<Mascota> findMascotasAtendidasPorProfesional(@Param("idProfesional") int idProfesional);
 
-    List<Mascota> findByUsuario_IdUsuario(Integer idUsuario);
+    List<Mascota> findByUsuario_IdUsuarioAndActivoTrue(Integer idUsuario);
+
+    Optional<Mascota> findByIdMascotaAndUsuario_IdUsuario(int idMascota, int idUsuario);
 }
 
 

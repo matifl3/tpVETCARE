@@ -39,6 +39,7 @@ function MisPacientesProfesionalPage() {
                 <th>Especie</th>
                 <th>Raza</th>
                 <th>Sexo</th>
+                {user.rol === 'ADIESTRADOR' && <th>Acción</th>}
               </tr>
             </thead>
             <tbody>
@@ -49,6 +50,13 @@ function MisPacientesProfesionalPage() {
                   <td>{m.especie}</td>
                   <td>{m.raza || '—'}</td>
                   <td>{m.sexo || '—'}</td>
+                  {user.rol === 'ADIESTRADOR' && (
+                    <td>
+                      <Link to={`/dashboard/mascotas/${m.idMascota}/seguimiento`} className="btn-primary btn-sm" style={{ textDecoration: 'none' }}>
+                        Seguimiento
+                      </Link>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

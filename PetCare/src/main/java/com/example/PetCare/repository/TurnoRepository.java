@@ -30,7 +30,7 @@ public interface TurnoRepository extends JpaRepository<Turno, Integer> {
 
 
     @Modifying
-    @Query("UPDATE Turno t SET t.estadoTurno = :estado WHERE t.idTurno = :idTurno")
+    @Query("UPDATE Turno t SET t.estadoTurno = :estado, t.activo = false WHERE t.idTurno = :idTurno")
     int cancelarTurno(@Param("idTurno") Integer idTurno, @Param("estado") Estado_Turno estado);
 
     @Modifying

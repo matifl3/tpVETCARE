@@ -61,8 +61,8 @@ public class TurnoService {
                 .toList();
     }
 
-    public List<TurnoDTO> listarPorDuenio(Integer idDuenio) {
-        return turnoRepository.findByMascota_Usuario_IdUsuario(idDuenio).stream()
+    public List<TurnoDTO> listarPorCliente(Integer idCliente) {
+        return turnoRepository.findByMascota_Usuario_IdUsuario(idCliente).stream()
                 .map(this::toDTO)
                 .toList();
     }

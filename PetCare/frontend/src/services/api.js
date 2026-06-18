@@ -15,12 +15,12 @@ async function request(endpoint, options = {}) {
 
   const res = await fetch(url, config)
 
-  if (res.status === 204) return null
-
-  const data = await res.json()
+  const text = await res.text()
+  const data = text ? JSON.parse(text) : null
 
   if (!res.ok) {
-    throw new Error(data.error || data.message || 'Error en la solicitud')
+    const msg = data?.error || data?.message || res.statusText || 'Error en la solicitud'
+    throw new Error(msg)
   }
 
   return data
@@ -58,7 +58,9 @@ export const api = {
     atendidasPor: (idProfesional) => api.get(`/api/mascotas/atendidas/${idProfesional}`),
     crear: (data) => api.post('/api/mascotas/mias', data),
     actualizar: (id, data) => api.put(`/api/mascotas/${id}`, data),
+    actualizarMia: (id, data) => api.put(`/api/mascotas/mias/${id}`, data),
     eliminar: (id) => api.delete(`/api/mascotas/${id}`),
+    eliminarMia: (id) => api.delete(`/api/mascotas/mias/${id}`),
     buscarPorId: (id) => api.get(`/api/mascotas/${id}`),
   },
 
@@ -88,6 +90,7 @@ export const api = {
     listarTodos: () => api.get('/api/turnos'),
     porProfesional: (idProfesional) => api.get(`/api/turnos/profesional/${idProfesional}`),
     solicitar: (data) => api.post('/api/turnos/solicitar', data),
+    cancelar: (id) => api.put(`/api/turnos/${id}/cancelar`),
     disponibilidad: (idProfesional, fecha) =>
       api.get(`/api/turnos/disponibilidad/${idProfesional}?fecha=${fecha}`),
   },
@@ -112,6 +115,11 @@ export const api = {
     buscarPorId: (id) => api.get(`/api/usuarios/buscar/${id}`),
     actualizar: (data) => api.put('/api/usuarios/actualizar', data),
     eliminar: (id) => api.delete(`/api/usuarios/eliminar/${id}`),
+  },
+
+  seguimiento: {
+    obtener: (idMascota) => api.get(`/api/mascotas/${idMascota}/seguimiento`),
+    registrarProgreso: (idMascota, data) => api.post(`/api/mascotas/${idMascota}/seguimiento`, data),
   },
 
   reportes: {

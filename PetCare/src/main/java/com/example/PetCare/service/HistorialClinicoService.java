@@ -94,7 +94,7 @@ public class HistorialClinicoService {
         Usuario currentUser = authUtils.getCurrentUsuario();
         Rol rol = currentUser.getRol();
 
-        if (rol == Rol.DUENIO) {
+        if (rol == Rol.CLIENTE) {
             if (mascota.getUsuario() == null
                     || !Objects.equals(mascota.getUsuario().getIdUsuario(), currentUser.getIdUsuario())) {
                 throw new NoEncontradoException("Mascota no encontrada");

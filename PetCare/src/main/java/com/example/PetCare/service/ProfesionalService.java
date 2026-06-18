@@ -41,6 +41,7 @@ public class ProfesionalService {
     public List<ProfesionalDTO> listarTodosDTO(){
         return profesionalRepository.findAll()
                 .stream()
+                .filter(p -> p.getEstado() == EstadoProfesional.APROBADO)
                 .map(this::toDTO)
                 .toList();
     }
@@ -53,6 +54,7 @@ public class ProfesionalService {
     public List<ProfesionalDTO> buscarPorRol(Rol rol){
         return profesionalRepository.findByRol(rol)
                 .stream()
+                .filter(p -> p.getEstado() == EstadoProfesional.APROBADO)
                 .map(this::toDTO)
                 .toList();
     }

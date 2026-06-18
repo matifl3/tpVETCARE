@@ -158,7 +158,7 @@ public class AuthController {
 
             // Guarda el usuario en JPA con la contraseña hasheada
             // Si el rol es profesional, crea un Profesional (con matrícula y experiencia)
-            // Si el rol es DUENIO, crea un Usuario normal
+            // Si el rol es CLIENTE, crea un Usuario normal
             if (esProfesional) {
                 Profesional profesional = new Profesional();
                 profesional.setNombre(request.getNombre());

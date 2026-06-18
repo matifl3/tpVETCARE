@@ -11,7 +11,7 @@ function Login() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' })
   const [regForm, setRegForm] = useState({
     nombre: '', apellido: '', email: '', telefono: '', password: '',
-    rol: 'DUENIO', matricula: '', experiencia: '',
+    rol: 'CLIENTE', matricula: '', experiencia: '',
   })
   const [mostrarProfesional, setMostrarProfesional] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -36,13 +36,13 @@ function Login() {
     setLoading(true)
     try {
       const data = { ...regForm }
-      if (data.rol === 'DUENIO') {
+      if (data.rol === 'CLIENTE') {
         delete data.matricula
         delete data.experiencia
       }
       const json = await api.auth.registro(data)
       setSuccess(json.mensaje || 'Registro exitoso')
-      setRegForm({ nombre: '', apellido: '', email: '', telefono: '', password: '', rol: 'DUENIO', matricula: '', experiencia: '' })
+      setRegForm({ nombre: '', apellido: '', email: '', telefono: '', password: '', rol: 'CLIENTE', matricula: '', experiencia: '' })
       setMostrarProfesional(false)
       setTimeout(() => setTab('login'), 1500)
     } catch (err) {
@@ -135,9 +135,9 @@ function Login() {
                 </div>
 
                 <p className="form-footer">
-                  Te estás registrando como <strong>Dueño de mascota</strong>.{' '}
+                  Te estás registrando como <strong>Cliente</strong>.{' '}
                   <span className="link" onClick={() => setMostrarProfesional(!mostrarProfesional)}>
-                    {mostrarProfesional ? 'Soy dueño de mascota' : '¿Sos profesional?'}
+                    {mostrarProfesional ? 'Soy cliente' : '¿Sos profesional?'}
                   </span>
                 </p>
 

@@ -280,12 +280,13 @@ public class CarritoService {
         }
 
         // Ejecuta el query que suma los totales de carritos completados en el mes
-        Object[] resultado = carritoRepository.calcularGananciaMensual(anio, mes);
+        List<Object[]> resultados = carritoRepository.calcularGananciaMensual(anio, mes);
+        Object[] resultado = resultados.isEmpty() ? new Object[]{0L, 0.0} : resultados.get(0);
 
-        // resultado[0] = cantidad de ventas (Long)
-        // resultado[1] = ganancia total (Double)
-        long cantidadVentas = (Long) resultado[0];
-        double gananciaTotal = (Double) resultado[1];
+        // resultado[0] = cantidad de ventas (Long o Number)
+        // resultado[1] = ganancia total (Double o Number)
+        long cantidadVentas = ((Number) resultado[0]).longValue();
+        double gananciaTotal = ((Number) resultado[1]).doubleValue();
 
         return new GananciaMensualDTO(anio, mes, cantidadVentas, gananciaTotal);
     }

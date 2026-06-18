@@ -32,17 +32,17 @@ public class TurnoController {
         return turnoService.listarTodos();
     }
 
-    // DUENIO: listar turnos de sus mascotas
+    // CLIENTE: listar turnos de sus mascotas
     @GetMapping("/mis-turnos")
-    @PreAuthorize("hasRole('DUENIO')")
+    @PreAuthorize("hasRole('CLIENTE')")
     public List<TurnoDTO> listarMisTurnos() {
         Usuario user = authUtils.getCurrentUsuario();
-        return turnoService.listarPorDuenio(user.getIdUsuario());
+        return turnoService.listarPorCliente(user.getIdUsuario());
     }
 
-    // DUENIO: solicitar un turno con un profesional
+    // CLIENTE: solicitar un turno con un profesional
     @PostMapping("/solicitar")
-    @PreAuthorize("hasRole('DUENIO')")
+    @PreAuthorize("hasRole('CLIENTE')")
     public TurnoDTO solicitar(@RequestBody @Valid TurnoDTO dto) {
         return turnoService.solicitar(dto);
     }
@@ -54,7 +54,7 @@ public class TurnoController {
         return turnoService.listarTodosTurnosActivos();
     }
 
-    // Listar turnos por mascota: ADMIN, VETERINARIO o el DUENIO de la mascota
+    // Listar turnos por mascota: ADMIN, VETERINARIO o el CLIENTE de la mascota
     @GetMapping("/mascota/{idMascota}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO')")
     public List<TurnoDTO> listarPorMascota(@PathVariable Integer idMascota) {
@@ -68,7 +68,7 @@ public class TurnoController {
         return turnoService.listarTurnoXProfesional(idProfesional);
     }
 
-    // DUENIO: verificar disponibilidad de un profesional en una fecha
+    // CLIENTE: verificar disponibilidad de un profesional en una fecha
     @GetMapping("/disponibilidad/{idProfesional}")
     public ResponseEntity<Map<String, Object>> verificarDisponibilidad(
             @PathVariable Integer idProfesional,
@@ -103,7 +103,7 @@ public class TurnoController {
     }
 
     // Crear turno: solo PROFESIONALES y ADMIN pueden crear turnos
-    // (un DUENIO no debería crear turnos directamente, debería solicitarlos)
+    // (un CLIENTE no debería crear turnos directamente, debería solicitarlos)
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO') or hasRole('PASEADOR') or hasRole('PELUQUERO') or hasRole('ADIESTRADOR') or hasRole('CUIDADOR')")
     public TurnoDTO crear(@RequestBody @Valid TurnoDTO dto) {

@@ -28,7 +28,7 @@ public class CarritoController {
         this.authUtils = authUtils;
     }
 
-    // ==================== OPERACIONES DEL CARRITO (DUENIO) ====================
+    // ==================== OPERACIONES DEL CARRITO (CLIENTE) ====================
 
     /**
      * Obtiene el carrito activo del usuario autenticado.

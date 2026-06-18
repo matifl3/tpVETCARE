@@ -25,8 +25,8 @@ public class RecordatorioService {
     private final ProfesionalRepository profesionalRepository;
 
     public RecordatorioDTO crearRecordatorio(RecordatorioDTO dto){
-        Usuario duenio = usuarioRepository.findById(dto.getIdDuenio())
-                .orElseThrow(() -> new NoEncontradoException("Dueño no encontrado"));
+        Usuario cliente = usuarioRepository.findById(dto.getIdCliente())
+                .orElseThrow(() -> new NoEncontradoException("Cliente no encontrado"));
         Profesional veterinario = profesionalRepository.findById(dto.getIdVeterinario())
                 .orElseThrow(() -> new NoEncontradoException("Veterinario no encontrado"));
         Mascota mascota = mascotaRepository.findById(dto.getIdMascota())
@@ -34,7 +34,7 @@ public class RecordatorioService {
 
         Recordatorio recordatorio = new Recordatorio();
         recordatorio.setVeterinario(veterinario);
-        recordatorio.setDuenio(duenio);
+        recordatorio.setCliente(cliente);
         recordatorio.setMascota(mascota);
         recordatorio.setTitulo(dto.getTitulo());
         recordatorio.setDescripcion(dto.getDescripcion());
@@ -43,15 +43,15 @@ public class RecordatorioService {
         return toDTO(recordatorioRepository.save(recordatorio));
     }
 
-    public List<RecordatorioDTO> listarPorDuenio(Integer idDuenio){
-        return recordatorioRepository.findByDuenioIdUsuario(idDuenio)
+    public List<RecordatorioDTO> listarPorCliente(Integer idCliente){
+        return recordatorioRepository.findByClienteIdUsuario(idCliente)
                 .stream()
                 .map(this::toDTO)
                 .toList();
     }
 
     public List<RecordatorioDTO> listarPorVeterinario(Integer idVeterinario){
-        return recordatorioRepository.findByDuenioIdUsuario(idVeterinario)
+        return recordatorioRepository.findByVeterinarioIdUsuario(idVeterinario)
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -88,7 +88,7 @@ public class RecordatorioService {
         dto.setDescripcion(recordatorio.getDescripcion());
         dto.setTitulo(recordatorio.getTitulo());
         dto.setIdMascota(recordatorio.getMascota().getIdMascota());
-        dto.setIdDuenio(recordatorio.getDuenio().getIdUsuario());
+        dto.setIdCliente(recordatorio.getCliente().getIdUsuario());
         dto.setFechaHora(recordatorio.getFechaHora());
         dto.setIdVeterinario(recordatorio.getVeterinario().getIdUsuario());
         dto.setFechaCreacion(recordatorio.getFechaCreacion());

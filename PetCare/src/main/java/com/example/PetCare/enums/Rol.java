@@ -7,5 +7,5 @@ public enum Rol {
     ADIESTRADOR,
     CUIDADOR,
     ADMIN,
-    DUENIO
+    CLIENTE
 }

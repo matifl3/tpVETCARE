@@ -33,7 +33,7 @@ function AdminMascotasPage() {
               <th>Especie</th>
               <th>Raza</th>
               <th>Sexo</th>
-              <th>Dueño ID</th>
+              <th>Cliente ID</th>
               <th>Activo</th>
             </tr>
           </thead>
