@@ -11,8 +11,8 @@
 	<groupId>com.example</groupId>
 	<artifactId>PetCare</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
+	<name>PetCare</name>
+	<description>Sistema integral para la gestión y cuidado de mascotas</description>
 	<url/>
 	<licenses>
 		<license/>
