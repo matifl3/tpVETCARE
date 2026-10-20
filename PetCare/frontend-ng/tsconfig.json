@@ -6,7 +6,9 @@
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
+    // Desactivado a propósito: los modelos de core/models.ts declaran [key: string]: any
+    // (misma flexibilidad que el JS original) y las páginas acceden a campos extra del backend.
+    "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
