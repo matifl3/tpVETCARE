@@ -1,0 +1,49 @@
+<div class="dashboard texto-centro">
+  <div class="icono-exito">✅</div>
+  <h1>¡Gracias por tu compra!</h1>
+  <p class="subtitulo">Tu compra se realizó con éxito.</p>
+
+  @if (carrito; as carrito) {
+    <div class="detalle">
+      <h3 class="mb-16">Resumen de compra</h3>
+      <p><strong>Compra #{{ carrito.id }}</strong></p>
+      <p>Estado: {{ carrito.estado }}</p>
+      <p>Fecha: {{ carrito.fechaCreacion }}</p>
+      @if (carrito.metodoPago) {
+        <p>Método de pago: {{ carrito.metodoPago }}</p>
+      }
+      <p class="total">Total: ${{ carrito.total.toFixed(2) }}</p>
+
+      @if (carrito.turnos?.length) {
+        <div class="mt-16">
+          <h4>Turnos reservados</h4>
+          @for (t of carrito.turnos; track t.id) {
+            <div class="turno-item">
+              <p><strong>Profesional:</strong> {{ t.nombreProfesional }}</p>
+              <p><strong>Mascota:</strong> {{ t.nombreMascota }}</p>
+              <p><strong>Fecha:</strong> {{ t.fecha }}</p>
+              @if ((t.horas ?? 0) > 1) {
+                <p><strong>Horas:</strong> {{ t.horas }}</p>
+              }
+              <p><strong>Precio:</strong> ${{ t.precio?.toFixed(2) }}</p>
+            </div>
+          }
+        </div>
+      }
+
+      @if (carrito.items?.length) {
+        <div class="mt-16">
+          <h4>Productos</h4>
+          @for (item of carrito.items; track item.id) {
+            <p class="texto-14">{{ item.productoNombre }} × {{ item.cantidad }} — ${{ item.subtotal.toFixed(2) }}</p>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <div class="acciones-centradas">
+    <a routerLink="/dashboard" class="btn-primary">Volver al Dashboard</a>
+    <a routerLink="/dashboard/mis-turnos" class="btn-secondary">Ver mis turnos</a>
+  </div>
+</div>

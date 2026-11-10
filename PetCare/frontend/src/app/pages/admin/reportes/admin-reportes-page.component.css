@@ -1,0 +1,32 @@
+.tabs-reporte {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filtros {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.input-anio {
+  width: 100px;
+}
+
+.select-mes {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+}
+
+.total-ganancia {
+  font-size: 28px;
+  font-weight: 700;
+  color: #667eea;
+}

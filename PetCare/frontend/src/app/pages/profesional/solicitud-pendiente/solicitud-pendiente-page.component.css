@@ -1,0 +1,17 @@
+.contenedor {
+  text-align: center;
+  padding-top: 80px;
+}
+
+.icono {
+  font-size: 80px;
+  margin-bottom: 24px;
+}
+
+.mensaje {
+  color: #777;
+  font-size: 16px;
+  max-width: 480px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}

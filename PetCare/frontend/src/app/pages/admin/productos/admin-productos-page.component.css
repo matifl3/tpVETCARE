@@ -1,0 +1,17 @@
+.form-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.descripcion-corta {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,64 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Postulaciones</h1>
+      <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
+    </div>
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    @if (postulaciones().length === 0) {
+      <div class="admin-card">
+        <p class="estado-vacio">No hay postulaciones pendientes.</p>
+      </div>
+    } @else {
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Matrícula</th>
+              <th>Experiencia</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of postulaciones(); track p.id) {
+              <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.nombre }} {{ p.apellido }}</td>
+                <td>{{ p.email }}</td>
+                <td><span class="nav-role">{{ p.rol }}</span></td>
+                <td>{{ p.matricula || '—' }}</td>
+                <td>{{ p.experiencia || '—' }}</td>
+                <td>
+                  <div class="actions">
+                    <button class="btn-primary btn-sm" [disabled]="procesando() === p.id" (click)="aprobar(p.id)">
+                      {{ procesando() === p.id ? '...' : 'Aprobar' }}
+                    </button>
+                    <button
+                      class="btn-secondary btn-sm btn-peligro"
+                      [disabled]="procesando() === p.id"
+                      (click)="rechazar(p.id)"
+                    >
+                      {{ procesando() === p.id ? '...' : 'Rechazar' }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}
