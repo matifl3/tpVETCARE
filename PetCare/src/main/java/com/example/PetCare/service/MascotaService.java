@@ -148,7 +148,7 @@ public class MascotaService {
         return false;
     }
 
-    /// pasa de dto a entidad
+    /// pasa de entidad a dto
     public MascotaDTO toDTO(Mascota entity) {
         MascotaDTO dto = new MascotaDTO();
         dto.setIdMascota(entity.getIdMascota());
@@ -166,7 +166,7 @@ public class MascotaService {
         return dto;
     }
 
-    /// pasa de entidad a dto
+    /// pasa de dto a entidad
     public Mascota toEntity(MascotaDTO dto, Usuario usuario) {
         Mascota entity = new Mascota();
         entity.setNombre(dto.getNombre());

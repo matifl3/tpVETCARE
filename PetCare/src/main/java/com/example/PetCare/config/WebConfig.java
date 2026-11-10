@@ -8,6 +8,11 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 
 import java.io.IOException;
 
+/**
+ * Sirve el build de Angular (frontend/dist) desde Spring Boot, para poder correr todo en el puerto 8080.
+ * Cualquier ruta que no sea /api/** y no sea un archivo existente devuelve index.html,
+ * así el router de Angular maneja las URLs (ej: /dashboard/mascotas).
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
@@ -15,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
             .addResourceHandler("/**")
-            .addResourceLocations("classpath:/static/", "file:frontend/dist/")
+            .addResourceLocations("file:frontend/dist/")
             .resourceChain(true)
             .addResolver(new PathResourceResolver() {
                 @Override

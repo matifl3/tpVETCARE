@@ -1,4 +1,4 @@
-package com.example.PetCare.service;
+package com.example.PetCare.security;
 
 import com.example.PetCare.model.Usuario;
 import com.example.PetCare.repository.UsuarioRepository;
