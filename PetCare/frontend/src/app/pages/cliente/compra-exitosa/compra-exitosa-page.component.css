@@ -1,0 +1,32 @@
+.icono-exito {
+  font-size: 80px;
+  margin-bottom: 16px;
+}
+
+.subtitulo {
+  color: #777;
+  margin-bottom: 32px;
+}
+
+.detalle {
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto 32px;
+}
+
+.total {
+  font-size: 20px;
+  font-weight: 700;
+  color: #667eea;
+  margin-top: 12px;
+}
+
+.turno-item {
+  background: #f0f0ff;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+}

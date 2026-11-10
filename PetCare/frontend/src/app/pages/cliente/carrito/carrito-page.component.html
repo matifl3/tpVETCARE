@@ -1,0 +1,188 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <h1>Carrito</h1>
+
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    <div class="tab-buttons mt-16">
+      <button class="tab-btn" [class.active]="pestana() === 'carrito'" (click)="pestana.set('carrito')">
+        Carrito Actual
+      </button>
+      <button class="tab-btn" [class.active]="pestana() === 'historial'" (click)="pestana.set('historial')">
+        Historial
+      </button>
+    </div>
+
+    @if (pestana() === 'carrito') {
+      <div>
+        @if (!hayItems()) {
+          <p class="texto-gris mt-24">Tu carrito está vacío.</p>
+        } @else {
+          @if (carrito(); as carrito) {
+          <div class="mt-24">
+            @for (item of carrito.items ?? []; track item.id) {
+              <div class="item-fila">
+                <div>
+                  <strong>{{ item.productoNombre }}</strong>
+                  <p class="texto-gris texto-chico">${{ item.precioUnitario.toFixed(2) }} c/u</p>
+                </div>
+                <div class="item-acciones">
+                  <button class="btn-secondary btn-mini" (click)="handleModificar(item.idProducto, item.cantidad - 1)">−</button>
+                  <span>{{ item.cantidad }}</span>
+                  <button class="btn-secondary btn-mini" (click)="handleModificar(item.idProducto, item.cantidad + 1)">+</button>
+                  <button
+                    class="btn-secondary btn-mini btn-peligro"
+                    (click)="handleEliminar(item.idProducto)"
+                  >✕</button>
+                </div>
+                <strong>${{ item.subtotal.toFixed(2) }}</strong>
+              </div>
+            }
+
+            @for (t of carrito.turnos ?? []; track t.id) {
+              <div class="item-fila item-turno">
+                <div>
+                  <strong>🗓️ Turno: {{ t.nombreProfesional }}</strong>
+                  <p class="texto-gris texto-chico">
+                    {{ t.nombreMascota }} — {{ t.fecha }} {{ (t.horas ?? 0) > 1 ? '(' + t.horas + ' hs)' : '' }}
+                  </p>
+                </div>
+                <div class="item-acciones">
+                  <button
+                    class="btn-secondary btn-mini btn-peligro"
+                    (click)="handleEliminarTurno(t.id)"
+                  >✕</button>
+                </div>
+                <strong>${{ t.precio?.toFixed(2) }}</strong>
+              </div>
+            }
+
+            <div class="resumen">
+              <h2 class="mb-16">Total: ${{ carrito.total.toFixed(2) }}</h2>
+
+              <div class="seccion-pago">
+                <p class="seccion-titulo">Método de pago</p>
+                <div class="opciones-pago">
+                  <label class="opcion-pago">
+                    <input type="radio" [checked]="metodoPago() === 'TARJETA'" (change)="metodoPago.set('TARJETA')" />
+                    💳 Tarjeta
+                  </label>
+                </div>
+              </div>
+
+              @if (metodoPago() === 'TARJETA') {
+                <div class="seccion-pago">
+                  <p class="seccion-titulo">Seleccionar tarjeta</p>
+
+                  @if (tarjetas().length > 0) {
+                    <div class="lista-tarjetas">
+                      @for (t of tarjetas(); track t.idTarjeta) {
+                        <label class="tarjeta-opcion"
+                          [style.border]="'2px solid ' + (idTarjetaGuardada() === t.idTarjeta ? '#667eea' : '#e0e0e0')"
+                        >
+                          <input
+                            type="radio"
+                            name="tarjeta"
+                            [checked]="idTarjetaGuardada() === t.idTarjeta"
+                            (change)="seleccionarTarjeta(t.idTarjeta)"
+                          />
+                          <span>💳</span>
+                          <div>
+                            <strong>{{ t.titular }}</strong>
+                            <p class="texto-gris texto-chico">•••• {{ t.ultimosDigitos }} — Vence: {{ t.vencimiento }}</p>
+                          </div>
+                        </label>
+                      }
+                    </div>
+                  }
+
+                  <button class="btn-secondary mb-12" (click)="toggleNuevaTarjeta()">
+                    {{ mostrarNuevaTarjeta() ? 'Cancelar' : '+ Usar otra tarjeta' }}
+                  </button>
+
+                  @if (mostrarNuevaTarjeta()) {
+                    <div class="form-tarjeta-nueva">
+                      <div class="input-group">
+                        <label>Titular</label>
+                        <input [value]="nuevaTarjeta().titular" (input)="updTarjeta({ titular: inputValue($event) })" />
+                      </div>
+                      <div class="input-group">
+                        <label>Número</label>
+                        <input
+                          [value]="nuevaTarjeta().numeroTarjeta"
+                          (input)="updTarjeta({ numeroTarjeta: inputValue($event) })"
+                          maxlength="19"
+                        />
+                      </div>
+                      <div class="input-group">
+                        <label>Vencimiento (MM/AA)</label>
+                        <input
+                          [value]="nuevaTarjeta().vencimiento"
+                          (input)="updTarjeta({ vencimiento: inputValue($event) })"
+                          placeholder="12/28"
+                          maxlength="5"
+                        />
+                      </div>
+                      <div class="input-group">
+                        <label>CVV</label>
+                        <input
+                          [value]="nuevaTarjeta().cvv"
+                          (input)="updTarjeta({ cvv: inputValue($event) })"
+                          placeholder="123"
+                          maxlength="4"
+                        />
+                      </div>
+                    </div>
+                  }
+
+                  <button
+                    class="btn-primary mt-16 ancho-completo"
+                    [disabled]="comprando() || (!idTarjetaGuardada() && !mostrarNuevaTarjeta())"
+                    (click)="handleComprar()"
+                  >
+                    {{ comprando() ? 'Procesando...' : 'Pagar $' + carrito.total.toFixed(2) + ' con tarjeta' }}
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+          }
+        }
+      </div>
+    }
+
+    @if (pestana() === 'historial') {
+      <div class="mt-24">
+        @if (historial().length === 0) {
+          <p class="texto-gris">No hay compras anteriores.</p>
+        } @else {
+          @for (c of historial(); track c.id) {
+            <div class="compra-historial">
+              <p><strong>Compra #{{ c.id }}</strong> — {{ c.estado }} — ${{ c.total.toFixed(2) }}</p>
+              <p class="texto-gris texto-chico">{{ c.fechaCreacion }}</p>
+              @if (c.metodoPago) {
+                <p class="texto-gris texto-chico">Método: {{ c.metodoPago }}</p>
+              }
+              @if (c.turnos?.length) {
+                <div class="mt-8">
+                  @for (t of c.turnos; track t.id) {
+                    <p class="detalle-compra">🗓️ Turno: {{ t.nombreProfesional }} — {{ t.fecha }}</p>
+                  }
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+
+    <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
+  </div>
+}

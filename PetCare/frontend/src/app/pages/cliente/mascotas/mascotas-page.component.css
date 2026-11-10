@@ -1,0 +1,21 @@
+.acciones-mascota {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.accion {
+  flex: 1;
+}
+
+.accion-eliminar {
+  background: #d32f2f;
+  color: #fff;
+}
+
+.accion-seguimiento {
+  text-decoration: none;
+  text-align: center;
+  background: #667eea;
+  color: #fff;
+}

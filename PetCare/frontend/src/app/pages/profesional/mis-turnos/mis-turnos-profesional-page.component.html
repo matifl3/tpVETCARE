@@ -1,0 +1,46 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Mis Turnos</h1>
+      <a routerLink="/dashboard/profesional" class="btn-secondary btn-volver">← Volver</a>
+    </div>
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+
+    @if (turnos().length === 0) {
+      <div class="admin-card">
+        <p class="estado-vacio">No tenés turnos asignados.</p>
+      </div>
+    } @else {
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Mascota</th>
+              <th>Fecha</th>
+              <th>Horas</th>
+              <th>Precio</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of turnos(); track t.id) {
+              <tr>
+                <td>{{ t.id }}</td>
+                <td>{{ t.nombreMascota || '—' }}</td>
+                <td>{{ t.fecha || '—' }}</td>
+                <td>{{ t.horas || '—' }}</td>
+                <td>{{ t.precio ? '$' + t.precio.toFixed(2) : '—' }}</td>
+                <td><span class="nav-role">{{ t.estadoTurno || '—' }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

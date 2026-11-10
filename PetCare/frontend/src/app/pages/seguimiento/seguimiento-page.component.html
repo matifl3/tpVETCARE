@@ -1,0 +1,103 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Seguimiento de {{ seguimiento()?.nombreMascota || 'Mascota' }}</h1>
+      <a href="#" (click)="volver($event)" class="btn-secondary btn-volver">← Volver</a>
+    </div>
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    @if (esAdiestradorOAdmin) {
+      <div class="mb-24">
+        <button class="btn-primary" (click)="mostrarForm.set(!mostrarForm())">
+          {{ mostrarForm() ? 'Cancelar' : '+ Registrar progreso' }}
+        </button>
+      </div>
+    }
+
+    @if (mostrarForm()) {
+      <form (submit)="handleSubmit($event)" class="admin-card mb-24">
+        <h3>Nuevo registro de progreso</h3>
+        <div class="grilla-2">
+          <div class="input-group">
+            <label>Descripción</label>
+            <textarea class="campo campo-textarea"
+              required
+              [value]="form().descripcion"
+              (input)="upd({ descripcion: inputValue($event) })"
+            ></textarea>
+          </div>
+          <div class="input-group">
+            <label>Técnicas aplicadas</label>
+            <textarea class="campo campo-textarea"
+              required
+              [value]="form().tecnicas"
+              (input)="upd({ tecnicas: inputValue($event) })"
+            ></textarea>
+          </div>
+          <div class="input-group">
+            <label>Observaciones</label>
+            <textarea class="campo campo-textarea"
+              [value]="form().observaciones"
+              (input)="upd({ observaciones: inputValue($event) })"
+            ></textarea>
+          </div>
+          <div class="input-group">
+            <label>Evaluación</label>
+            <select class="campo"
+              required
+              [value]="form().evaluacion"
+              (change)="upd({ evaluacion: inputValue($event) })"
+            >
+              <option value="">Seleccionar</option>
+              <option value="EXCELENTE">Excelente</option>
+              <option value="BUENO">Bueno</option>
+              <option value="REGULAR">Regular</option>
+              <option value="MALO">Malo</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary mt-16">Guardar registro</button>
+      </form>
+    }
+
+    @if (!seguimiento()?.registros?.length) {
+      <div class="admin-card">
+        <p class="estado-vacio">No hay registros de seguimiento para esta mascota.</p>
+      </div>
+    } @else {
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Profesional</th>
+              <th>Descripción</th>
+              <th>Técnicas</th>
+              <th>Observaciones</th>
+              <th>Evaluación</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of seguimiento()?.registros; track r.id) {
+              <tr>
+                <td>{{ r.fecha }}</td>
+                <td>{{ r.nombreProfesional }}</td>
+                <td>{{ r.descripcion }}</td>
+                <td>{{ r.tecnicas }}</td>
+                <td>{{ r.observaciones || '—' }}</td>
+                <td><span class="nav-role">{{ r.evaluacion }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

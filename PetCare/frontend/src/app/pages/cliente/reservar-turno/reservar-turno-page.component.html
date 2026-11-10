@@ -1,0 +1,92 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <h1>Reservar turno</h1>
+
+    @if (profesional(); as prof) {
+      <div class="info-profesional">
+        <span class="icono">👨‍⚕️</span>
+        <div>
+          <h3>{{ prof.nombre }} {{ prof.apellido }}</h3>
+          <p class="texto-gris">{{ capitalizar(prof.rol) }}</p>
+          @if (prof.experiencia) {
+            <p class="texto-gris texto-chico">{{ prof.experiencia }}</p>
+          }
+        </div>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    <form class="contenido-angosto" (submit)="handleSubmit($event)">
+      <div class="input-group">
+        <label>Mascota</label>
+        <select class="campo"
+          (change)="idMascota.set(inputValue($event))"
+          required
+        >
+          <option value="" [selected]="idMascota() === ''">Seleccionar mascota</option>
+          @for (m of mascotas(); track m.idMascota) {
+            <option [value]="m.idMascota" [selected]="idMascota() === String(m.idMascota)">
+              {{ m.nombre }} ({{ m.especie }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Fecha del turno</label>
+        <input type="date" [value]="fecha()" (input)="onFecha(inputValue($event))" required [min]="hoy" />
+      </div>
+
+      @if (fecha()) {
+        <div class="mb-16">
+          @if (disponible() === null) {
+            <p class="texto-gris">Verificando disponibilidad...</p>
+          } @else if (disponible()) {
+            <p class="disponible">✓ Profesional disponible en esa fecha</p>
+          } @else {
+            <p class="no-disponible">✕ El profesional no está disponible en esa fecha</p>
+          }
+        </div>
+      }
+
+      @if (permiteHoras()) {
+        <div class="input-group">
+          <label>Horas de servicio</label>
+          <input type="number" min="1" max="8" [value]="horas()" (input)="onHoras(inputValue($event))" />
+          <p class="ayuda">Cargo adicional por hora extra: ${{ precioHora().toFixed(2) }}</p>
+        </div>
+      }
+
+      <div class="resumen-turno">
+        <h3>Resumen del turno</h3>
+        @if (permiteHoras()) {
+          <p>Precio base: ${{ precioBase().toFixed(2) }}</p>
+        }
+        @if (permiteHoras() && horas() > 1) {
+          <p>
+            Horas extra: {{ horas() - 1 }} × ${{ precioHora().toFixed(2) }} = ${{ (precioHora() * (horas() - 1)).toFixed(2) }}
+          </p>
+        }
+        <p class="precio-total">Total: ${{ total().toFixed(2) }}</p>
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="enviando() || !disponible() || !fecha() || !idMascota()"
+      >
+        {{ enviando() ? 'Agregando...' : 'Agregar al carrito' }}
+      </button>
+    </form>
+
+    <a routerLink="/dashboard/profesionales" class="btn-secondary link-volver">← Volver a profesionales</a>
+  </div>
+}

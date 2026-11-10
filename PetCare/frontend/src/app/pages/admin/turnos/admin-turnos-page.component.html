@@ -1,0 +1,54 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Turnos</h1>
+      <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
+    </div>
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Profesional</th>
+            <th>Mascota</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Activo</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of turnos(); track t.id) {
+            <tr>
+              <td>{{ t.id }}</td>
+              <td>{{ t.nombreProfesional || '—' }}</td>
+              <td>{{ t.nombreMascota || '—' }}</td>
+              <td>{{ t.fecha || '—' }}</td>
+              <td><span class="nav-role">{{ t.estadoTurno || '—' }}</span></td>
+              <td>{{ t.activo ? '✅' : '❌' }}</td>
+              <td>
+                @if (t.activo) {
+                  <button
+                    class="btn-secondary btn-sm btn-peligro"
+                    (click)="handleCancelar(t.id)"
+                  >
+                    Cancelar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

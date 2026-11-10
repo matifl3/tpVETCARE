@@ -35,7 +35,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-../tpVETCARE/
-../target/
-../.idea/

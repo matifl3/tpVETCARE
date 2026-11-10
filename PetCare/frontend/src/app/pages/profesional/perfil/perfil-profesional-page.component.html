@@ -1,0 +1,33 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Perfil Profesional</h1>
+      <a routerLink="/dashboard/profesional" class="btn-secondary btn-volver">← Volver</a>
+    </div>
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+
+    @if (perfil(); as perfil) {
+      <div class="admin-card contenido-angosto">
+        <div class="avatar">👤</div>
+        <h2 class="mb-8">{{ perfil.nombre }} {{ perfil.apellido }}</h2>
+        <p class="rol">
+          {{ rolLabels[perfil.rol] || perfil.rol }}
+        </p>
+
+        <table class="admin-table">
+          <tbody>
+            <tr><td class="etiqueta">Email</td><td>{{ perfil.email }}</td></tr>
+            <tr><td class="negrita">Teléfono</td><td>{{ perfil.telefono || '—' }}</td></tr>
+            <tr><td class="negrita">Matrícula</td><td>{{ perfil.matricula || '—' }}</td></tr>
+            <tr><td class="negrita">Experiencia</td><td>{{ perfil.experiencia || '—' }}</td></tr>
+            <tr><td class="negrita">Estado</td><td><span class="nav-role">{{ perfil.estado }}</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

@@ -1,5 +1,6 @@
 package com.example.PetCare.controller;
 
+import com.example.PetCare.dto.LoginRequest;
 import com.example.PetCare.dto.RegistroRequest;
 import com.example.PetCare.enums.EstadoProfesional;
 import com.example.PetCare.enums.Rol;
@@ -7,17 +8,16 @@ import com.example.PetCare.model.Profesional;
 import com.example.PetCare.model.Usuario;
 import com.example.PetCare.repository.ProfesionalRepository;
 import com.example.PetCare.repository.UsuarioRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import com.example.PetCare.security.JwtService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,59 +44,44 @@ public class AuthController {
     private final UsuarioRepository usuarioRepository;
     private final ProfesionalRepository profesionalRepository;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public AuthController(PasswordEncoder passwordEncoder,
                           UsuarioRepository usuarioRepository,
                           ProfesionalRepository profesionalRepository,
-                          AuthenticationManager authenticationManager) {
+                          AuthenticationManager authenticationManager,
+                          JwtService jwtService) {
         this.passwordEncoder = passwordEncoder;
         this.usuarioRepository = usuarioRepository;
         this.profesionalRepository = profesionalRepository;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
+    /**
+     * Valida email y contraseña y, si son correctos, devuelve un token JWT
+     * junto con los datos del usuario. El front guarda el token y lo manda
+     * en cada request en el header "Authorization: Bearer <token>".
+     */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body, HttpServletRequest request) {
-        String email = body.get("email");
-        String password = body.get("password");
-
-        if (email == null || password == null) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Email y contraseña son requeridos"));
-        }
-
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            HttpSession session = request.getSession(true);
-            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                SecurityContextHolder.getContext());
-
-            Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
-            Map<String, Object> response = new java.util.HashMap<>();
-            response.put("mensaje", "Inicio de sesión exitoso");
-            response.put("id", usuario.getIdUsuario());
-            response.put("nombre", usuario.getNombre());
-            response.put("email", usuario.getEmail());
-            response.put("rol", usuario.getRol().name());
-
-            if (ROLES_PROFESIONALES.contains(usuario.getRol())) {
-                Profesional profesional = (Profesional) usuario;
-                response.put("estado", profesional.getEstado().name());
-                response.put("aprobado", profesional.getEstado() == EstadoProfesional.APROBADO);
-            } else {
-                response.put("aprobado", true);
-            }
-
-            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
         }
+
+        Usuario usuario = usuarioRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        Map<String, Object> response = datosDeUsuario(usuario);
+        response.put("mensaje", "Inicio de sesión exitoso");
+        response.put("token", jwtService.generarToken(usuario.getEmail(), usuario.getRol().name()));
+        return ResponseEntity.ok(response);
     }
 
+    /** Devuelve los datos del usuario dueño del token. */
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -107,25 +91,27 @@ public class AuthController {
         if (usuario == null) {
             return ResponseEntity.status(401).body(Map.of("error", "Usuario no encontrado"));
         }
-        Map<String, Object> response = new java.util.HashMap<>();
-        response.put("id", usuario.getIdUsuario());
-        response.put("nombre", usuario.getNombre());
-        response.put("email", usuario.getEmail());
-        response.put("rol", usuario.getRol().name());
+        return ResponseEntity.ok(datosDeUsuario(usuario));
+    }
+
+    /** Datos del usuario que necesita el front (id, nombre, rol y si está aprobado). */
+    private Map<String, Object> datosDeUsuario(Usuario usuario) {
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("id", usuario.getIdUsuario());
+        datos.put("nombre", usuario.getNombre());
+        datos.put("email", usuario.getEmail());
+        datos.put("rol", usuario.getRol().name());
 
         if (usuario.getRol() == Rol.ADMIN) {
-            long pendientes = profesionalRepository.findByEstado(EstadoProfesional.PENDIENTE).size();
-            response.put("pendientes", pendientes);
-            response.put("aprobado", true);
-        } else if (ROLES_PROFESIONALES.contains(usuario.getRol())) {
-            Profesional profesional = (Profesional) usuario;
-            response.put("estado", profesional.getEstado().name());
-            response.put("aprobado", profesional.getEstado() == EstadoProfesional.APROBADO);
+            datos.put("pendientes", profesionalRepository.findByEstado(EstadoProfesional.PENDIENTE).size());
+            datos.put("aprobado", true);
+        } else if (usuario instanceof Profesional profesional) {
+            datos.put("estado", profesional.getEstado().name());
+            datos.put("aprobado", profesional.getEstado() == EstadoProfesional.APROBADO);
         } else {
-            response.put("aprobado", true);
+            datos.put("aprobado", true);
         }
-
-        return ResponseEntity.ok(response);
+        return datos;
     }
 
     @PostMapping("/registro")
