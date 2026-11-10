@@ -1,38 +1,30 @@
-HELP.md
+# ---------- Java / Maven ----------
 target/
 .mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+HELP.md
 
-### STS ###
-.apt_generated
+# ---------- Angular / Node ----------
+node_modules/
+PetCare/frontend/dist/
+PetCare/frontend/.angular/
+PetCare/frontend/coverage/
+PetCare/frontend/out-tsc/
+
+# ---------- IDEs ----------
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
 .classpath
 .factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
+.sts4-cache/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# ---------- Sistema ----------
+.DS_Store
+Thumbs.db
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-node_modules/
-PetCare/frontend/node_modules/
-PetCare/frontend/dist/
-dist/
-target/
-.idea/
-### VS Code ###
-.vscode/
+# ---------- Configuración local ----------
+.env
