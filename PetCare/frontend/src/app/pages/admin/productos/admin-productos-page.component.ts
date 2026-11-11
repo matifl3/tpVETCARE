@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { inputValue } from '../../../core/form.helpers';
 import { Producto } from '../../../core/models';
@@ -16,11 +16,11 @@ interface ProductoForm {
 const FORM_VACIO: ProductoForm = { nombre: '', descripcion: '', categoria: '', precio: '', stock: '', activo: true };
 
 @Component({
-  selector: 'app-admin-productos-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './admin-productos-page.component.html',
-  styleUrl: './admin-productos-page.component.css',
+    selector: 'app-admin-productos-page',
+    imports: [RouterLink],
+    templateUrl: './admin-productos-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './admin-productos-page.component.css'
 })
 export class AdminProductosPageComponent implements OnInit {
   private readonly productoService = inject(ProductoService);

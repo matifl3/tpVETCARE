@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { inputValue } from '../../../core/form.helpers';
 import { Tarjeta } from '../../../core/models';
@@ -14,11 +14,11 @@ interface TarjetaForm {
 const FORM_VACIO: TarjetaForm = { titular: '', numeroTarjeta: '', vencimiento: '', cvv: '' };
 
 @Component({
-  selector: 'app-tarjetas-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './tarjetas-page.component.html',
-  styleUrl: './tarjetas-page.component.css',
+    selector: 'app-tarjetas-page',
+    imports: [RouterLink],
+    templateUrl: './tarjetas-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './tarjetas-page.component.css'
 })
 export class TarjetasPageComponent implements OnInit {
   private readonly tarjetaService = inject(TarjetaService);

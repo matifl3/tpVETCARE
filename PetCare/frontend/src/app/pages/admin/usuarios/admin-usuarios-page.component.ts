@@ -1,14 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Usuario } from '../../../core/models';
 import { UsuarioService } from '../../../services/usuario.service';
 
 @Component({
-  selector: 'app-admin-usuarios-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './admin-usuarios-page.component.html',
-  styleUrl: './admin-usuarios-page.component.css',
+    selector: 'app-admin-usuarios-page',
+    imports: [RouterLink],
+    templateUrl: './admin-usuarios-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './admin-usuarios-page.component.css'
 })
 export class AdminUsuariosPageComponent implements OnInit {
   private readonly usuarioService = inject(UsuarioService);

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { inputValue } from '../../../core/form.helpers';
 import { Producto } from '../../../core/models';
@@ -8,11 +8,11 @@ import { ProductoService } from '../../../services/producto.service';
 const CATEGORIAS = ['ALIMENTO', 'JUGUETE', 'HIGIENE', 'ACCESORIO', 'SALUD', 'ROPA', 'CAMA', 'TRANSPORTE'];
 
 @Component({
-  selector: 'app-tienda-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './tienda-page.component.html',
-  styleUrl: './tienda-page.component.css',
+    selector: 'app-tienda-page',
+    imports: [RouterLink],
+    templateUrl: './tienda-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './tienda-page.component.css'
 })
 export class TiendaPageComponent implements OnInit {
   private readonly productoService = inject(ProductoService);

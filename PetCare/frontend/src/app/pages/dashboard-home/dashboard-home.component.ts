@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { SessionUser } from '../../core/models';
@@ -7,11 +7,11 @@ const ROLES_PROFESIONALES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADO
 
 /** Inicio del panel: accesos según el rol del usuario. */
 @Component({
-  selector: 'app-dashboard-home',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './dashboard-home.component.html',
-  styleUrl: './dashboard-home.component.css',
+    selector: 'app-dashboard-home',
+    imports: [RouterLink],
+    templateUrl: './dashboard-home.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './dashboard-home.component.css'
 })
 export class DashboardHomeComponent {
   private readonly auth = inject(AuthService);

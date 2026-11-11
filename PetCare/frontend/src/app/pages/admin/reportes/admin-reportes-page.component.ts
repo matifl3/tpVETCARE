@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { inputValue } from '../../../core/form.helpers';
@@ -9,11 +9,11 @@ type TipoReporte = 'ganancias' | 'ventas' | 'productos';
 const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
 @Component({
-  selector: 'app-admin-reportes-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './admin-reportes-page.component.html',
-  styleUrl: './admin-reportes-page.component.css',
+    selector: 'app-admin-reportes-page',
+    imports: [RouterLink],
+    templateUrl: './admin-reportes-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './admin-reportes-page.component.css'
 })
 export class AdminReportesPageComponent {
   private readonly reporteService = inject(ReporteService);
