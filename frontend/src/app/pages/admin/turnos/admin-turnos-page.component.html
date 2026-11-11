@@ -33,7 +33,7 @@
               <td>{{ t.nombreProfesional || '—' }}</td>
               <td>{{ t.nombreMascota || '—' }}</td>
               <td>{{ t.fecha || '—' }}</td>
-              <td><span class="nav-role">{{ t.estadoTurno || '—' }}</span></td>
+              <td><span class="estado-turno" [class.confirmado]="t.estadoTurno === 'CONFIRMADO'" [class.cancelado]="t.estadoTurno === 'CANCELADO'">{{ t.estadoTurno || '—' }}</span></td>
               <td>{{ t.activo ? '✅' : '❌' }}</td>
               <td>
                 @if (t.activo) {
