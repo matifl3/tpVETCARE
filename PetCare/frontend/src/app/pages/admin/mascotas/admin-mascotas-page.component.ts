@@ -1,14 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
 
 @Component({
-  selector: 'app-admin-mascotas-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './admin-mascotas-page.component.html',
-  styleUrl: './admin-mascotas-page.component.css',
+    selector: 'app-admin-mascotas-page',
+    imports: [RouterLink],
+    templateUrl: './admin-mascotas-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './admin-mascotas-page.component.css'
 })
 export class AdminMascotasPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);

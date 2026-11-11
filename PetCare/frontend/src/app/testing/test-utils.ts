@@ -1,5 +1,5 @@
 // Utilidades compartidas por los tests (.spec.ts). No forma parte del build de la app.
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EnvironmentProviders, Provider } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -43,7 +43,7 @@ export const USUARIO_ADMIN: SessionUser = {
  */
 export function providersDePrueba(): (Provider | EnvironmentProviders)[] {
   return [
-    provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([errorInterceptor, authInterceptor])),
     provideHttpClientTesting(),
     // Ruta comodín: si un componente navega (ej: a /login) el router de prueba no tira error.
     provideRouter([{ path: '**', children: [] }]),

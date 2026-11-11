@@ -1,15 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
 
 @Component({
-  selector: 'app-mis-turnos-profesional-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './mis-turnos-profesional-page.component.html',
-  styleUrl: './mis-turnos-profesional-page.component.css',
+    selector: 'app-mis-turnos-profesional-page',
+    imports: [RouterLink],
+    templateUrl: './mis-turnos-profesional-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './mis-turnos-profesional-page.component.css'
 })
 export class MisTurnosProfesionalPageComponent implements OnInit {
   private readonly auth = inject(AuthService);

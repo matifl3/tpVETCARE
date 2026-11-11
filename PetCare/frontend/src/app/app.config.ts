@@ -1,4 +1,4 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
@@ -12,6 +12,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     // Orden: errorInterceptor envuelve a authInterceptor, así auth ve el 401 original
     // antes de que errorInterceptor lo convierta en un Error con mensaje legible.
-    provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([errorInterceptor, authInterceptor])),
   ],
 };
