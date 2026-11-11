@@ -1,0 +1,114 @@
+/* Estilos que solo usa la pantalla de login/registro. Los compartidos están en src/styles.css */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 40px 20px;
+}
+
+.login-card {
+  background: var(--color-blanco-90);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px var(--color-sombra-08), 0 8px 20px var(--color-primario-06);
+  border: 1px solid var(--color-blanco-60);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-header .logo {
+  justify-content: center;
+}
+
+.subtitulo {
+  color: var(--color-texto-tenue);
+  margin-top: 8px;
+}
+
+.form-container {
+  display: none;
+}
+
+.form-container.active {
+  display: block;
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--color-texto-tenue);
+}
+
+.form-footer .link {
+  color: var(--color-primario);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.role-selector {
+  margin-bottom: 16px;
+}
+
+.role-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+  margin-bottom: 8px;
+}
+
+.role-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 2px solid var(--color-borde-lila);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.role-card:has(input:checked) {
+  border-color: var(--color-primario);
+  background: var(--color-primario-06);
+}
+
+.role-card input {
+  display: none;
+}
+
+.role-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-text {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.register-note {
+  background: var(--color-aviso-fondo);
+  border: 1px solid var(--color-aviso-borde);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--color-aviso-texto);
+  margin-bottom: 16px;
+}
