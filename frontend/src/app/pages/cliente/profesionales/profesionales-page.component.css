@@ -1,7 +1,7 @@
 .precio {
   font-size: 16px;
   font-weight: 700;
-  color: #667eea;
+  color: var(--color-acento);
   margin-top: 8px;
 }
 

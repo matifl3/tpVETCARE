@@ -1,8 +1,11 @@
 package com.example.PetCare.controller;
 
+import com.example.PetCare.dto.CambiarPasswordRequest;
 import com.example.PetCare.dto.ResetPasswordRequest;
 import com.example.PetCare.dto.UsuarioDTO;
+import com.example.PetCare.model.Usuario;
 import com.example.PetCare.service.UsuarioService;
+import com.example.PetCare.utils.AuthUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +19,22 @@ import java.util.Map;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final AuthUtils authUtils;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, AuthUtils authUtils) {
         this.usuarioService = usuarioService;
+        this.authUtils = authUtils;
+    }
+
+    /**
+     * El usuario logueado (profesional, cliente o admin) cambia su propia contraseña.
+     * Body: { "passwordActual": "...", "nuevaPassword": "..." }
+     */
+    @PutMapping("/mi-password")
+    public ResponseEntity<Map<String, String>> cambiarMiPassword(@RequestBody CambiarPasswordRequest request) {
+        Usuario usuario = authUtils.getCurrentUsuario();
+        usuarioService.cambiarPassword(usuario, request.getPasswordActual(), request.getNuevaPassword());
+        return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada correctamente"));
     }
 
     // Listar todos los usuarios: solo ADMIN (información sensible de usuarios)

@@ -9,13 +9,13 @@
 }
 
 .accion-eliminar {
-  background: #d32f2f;
-  color: #fff;
+  background: var(--color-error);
+  color: var(--color-blanco);
 }
 
 .accion-seguimiento {
   text-decoration: none;
   text-align: center;
-  background: #667eea;
-  color: #fff;
+  background: var(--color-acento);
+  color: var(--color-blanco);
 }
