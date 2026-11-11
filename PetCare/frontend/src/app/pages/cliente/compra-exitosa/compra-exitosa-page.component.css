@@ -4,6 +4,7 @@
 }
 
 .subtitulo {
+  margin-top: 8px;
   color: var(--color-texto-gris);
   margin-bottom: 32px;
 }
