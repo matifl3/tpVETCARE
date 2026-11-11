@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { SessionUser } from '../../../core/models';
@@ -8,11 +8,11 @@ import { SessionUser } from '../../../core/models';
  * o fue rechazada.
  */
 @Component({
-  selector: 'app-solicitud-pendiente',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './solicitud-pendiente-page.component.html',
-  styleUrl: './solicitud-pendiente-page.component.css',
+    selector: 'app-solicitud-pendiente',
+    imports: [RouterLink],
+    templateUrl: './solicitud-pendiente-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './solicitud-pendiente-page.component.css'
 })
 export class SolicitudPendientePageComponent {
   private readonly auth = inject(AuthService);

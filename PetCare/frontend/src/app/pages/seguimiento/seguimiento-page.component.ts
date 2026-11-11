@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { inputValue } from '../../core/form.helpers';
@@ -19,6 +19,7 @@ const FORM_VACIO: ProgresoForm = { descripcion: '', tecnicas: '', observaciones:
   selector: 'app-seguimiento-page',
   standalone: true,
   templateUrl: './seguimiento-page.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './seguimiento-page.component.css',
 })
 export class SeguimientoPageComponent implements OnInit {

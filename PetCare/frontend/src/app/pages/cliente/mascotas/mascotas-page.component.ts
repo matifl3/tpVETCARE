@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { inputValue } from '../../../core/form.helpers';
 import { Mascota } from '../../../core/models';
@@ -23,11 +23,11 @@ const FORM_VACIO: MascotaForm = {
 };
 
 @Component({
-  selector: 'app-mascotas-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './mascotas-page.component.html',
-  styleUrl: './mascotas-page.component.css',
+    selector: 'app-mascotas-page',
+    imports: [RouterLink],
+    templateUrl: './mascotas-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './mascotas-page.component.css'
 })
 export class MascotasPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Profesional } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
@@ -6,11 +6,11 @@ import { ProfesionalService } from '../../../services/profesional.service';
 const ROLES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
 
 @Component({
-  selector: 'app-profesionales-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './profesionales-page.component.html',
-  styleUrl: './profesionales-page.component.css',
+    selector: 'app-profesionales-page',
+    imports: [RouterLink],
+    templateUrl: './profesionales-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './profesionales-page.component.css'
 })
 export class ProfesionalesPageComponent implements OnInit {
   private readonly profesionalService = inject(ProfesionalService);

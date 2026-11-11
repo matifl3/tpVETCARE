@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { inputValue } from '../../core/form.helpers';
@@ -36,11 +36,11 @@ const ROLES_PROFESIONALES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADO
 
 /** Login y registro (tabs de ingreso y registro). */
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+    selector: 'app-login',
+    imports: [RouterLink],
+    templateUrl: './login.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './login.component.css'
 })
 export class LoginComponent {
   private readonly auth = inject(AuthService);

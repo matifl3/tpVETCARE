@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { inputValue } from '../../../core/form.helpers';
@@ -18,11 +18,11 @@ interface NuevaTarjetaForm {
 const TARJETA_VACIA: NuevaTarjetaForm = { titular: '', numeroTarjeta: '', vencimiento: '', cvv: '' };
 
 @Component({
-  selector: 'app-carrito-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './carrito-page.component.html',
-  styleUrl: './carrito-page.component.css',
+    selector: 'app-carrito-page',
+    imports: [RouterLink],
+    templateUrl: './carrito-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './carrito-page.component.css'
 })
 export class CarritoPageComponent implements OnInit {
   private readonly router = inject(Router);

@@ -1,14 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
 
 @Component({
-  selector: 'app-admin-turnos-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './admin-turnos-page.component.html',
-  styleUrl: './admin-turnos-page.component.css',
+    selector: 'app-admin-turnos-page',
+    imports: [RouterLink],
+    templateUrl: './admin-turnos-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './admin-turnos-page.component.css'
 })
 export class AdminTurnosPageComponent implements OnInit {
   private readonly turnoService = inject(TurnoService);

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { inputValue } from '../../../core/form.helpers';
@@ -11,11 +11,11 @@ import { TurnoService } from '../../../services/turno.service';
 const ROLES_CON_HORAS = ['PASEADOR', 'CUIDADOR'];
 
 @Component({
-  selector: 'app-reservar-turno-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './reservar-turno-page.component.html',
-  styleUrl: './reservar-turno-page.component.css',
+    selector: 'app-reservar-turno-page',
+    imports: [RouterLink],
+    templateUrl: './reservar-turno-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './reservar-turno-page.component.css'
 })
 export class ReservarTurnoPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
