@@ -30,3 +30,17 @@
   font-weight: 700;
   color: var(--color-acento);
 }
+
+.header-ventas{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.acciones-exportar{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}

@@ -1,4 +1,4 @@
 // URL base del backend. Vacío = mismo origen (proxy de ng serve en desarrollo).
 export const environment = {
-  apiUrl: '',
+  apiUrl: 'http://localhost:8080',
 };

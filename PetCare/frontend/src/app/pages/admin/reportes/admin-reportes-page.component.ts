@@ -56,4 +56,47 @@ export class AdminReportesPageComponent {
       },
     });
   }
+
+  exportarPdf(): void {
+    // Abre la ventana de impresión nativa formateada para guardar como PDF
+    window.print();
+  }
+
+  exportarCsv(): void {
+    const ventas = this.data();
+    if (!Array.isArray(ventas) || ventas.length === 0) return;
+
+    // Encabezados del CSV
+    let csvContent = 'ID;Usuario;Total;Estado;Fecha\n';
+
+    // Filas de datos
+    ventas.forEach((v: any) => {
+      const usuario = v.idUsuario || '—';
+      const total = v.total ? v.total.toFixed(2) : '0.00';
+      const estado = v.estado || '';
+      const fecha = v.fechaCreacion || '';
+      csvContent += `${v.id};"${usuario}";${total};${estado};${fecha}\n`;
+    });
+
+    // Crear Blob y forzar descarga
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `reporte-ventas-${this.fechaInicio()}-a-${this.fechaFin()}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Genera un enlace temporal en el DOM para forzar la descarga del archivo binario.
+   */
+  private descargarArchivo(blob: Blob, nombreArchivo: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nombreArchivo;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
 }
