@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment';
 export type QueryParams = Record<string, string | number | boolean>;
 
 /**
- * Cliente HTTP base. Siempre envía las cookies de sesión (`withCredentials`).
+ * Cliente HTTP base. El token JWT lo agrega `authInterceptor`.
  */
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -14,39 +14,36 @@ export class ApiService {
   private readonly base = environment.apiUrl;
 
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(this.url(endpoint), { withCredentials: true });
+    return this.http.get<T>(this.url(endpoint), { });
   }
 
   post<T>(endpoint: string, body?: unknown): Observable<T> {
-    return this.http.post<T>(this.url(endpoint), body ?? null, { withCredentials: true });
+    return this.http.post<T>(this.url(endpoint), body ?? null, { });
   }
 
   put<T>(endpoint: string, body?: unknown): Observable<T> {
-    return this.http.put<T>(this.url(endpoint), body ?? null, { withCredentials: true });
+    return this.http.put<T>(this.url(endpoint), body ?? null, { });
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(this.url(endpoint), { withCredentials: true });
+    return this.http.delete<T>(this.url(endpoint), { });
   }
 
   postWithParams<T>(endpoint: string, params: QueryParams): Observable<T> {
     return this.http.post<T>(this.url(endpoint), null, {
       params: this.toParams(params),
-      withCredentials: true,
     });
   }
 
   putWithParams<T>(endpoint: string, params: QueryParams): Observable<T> {
     return this.http.put<T>(this.url(endpoint), null, {
       params: this.toParams(params),
-      withCredentials: true,
     });
   }
 
   deleteWithParams<T>(endpoint: string, params: QueryParams): Observable<T> {
     return this.http.delete<T>(this.url(endpoint), {
       params: this.toParams(params),
-      withCredentials: true,
     });
   }
 

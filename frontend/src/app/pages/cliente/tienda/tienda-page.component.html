@@ -1,0 +1,68 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <h1>Tienda</h1>
+    <p class="mb-24">Productos para tu mascota.</p>
+
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    <form class="buscador" (submit)="handleBuscar($event)">
+      <input class="input-busqueda"
+        type="text"
+        placeholder="Buscar producto..."
+        [value]="busqueda()"
+        (input)="busqueda.set(inputValue($event))"
+      />
+      <button type="submit" class="btn-primary">Buscar</button>
+    </form>
+
+    <div class="barra-filtros">
+      <button
+        [class]="'btn-' + (categoria() === '' && busqueda() === '' ? 'primary' : 'secondary')"
+        (click)="filtrarCategoria('')"
+      >
+        Todas
+      </button>
+      @for (c of categorias; track c) {
+        <button [class]="'btn-' + (categoria() === c ? 'primary' : 'secondary')" (click)="filtrarCategoria(c)">
+          {{ c.charAt(0) + c.slice(1).toLowerCase() }}
+        </button>
+      }
+    </div>
+
+    @if (productos().length === 0) {
+      <p class="texto-gris">No se encontraron productos.</p>
+    } @else {
+      <div class="card-grid">
+        @for (p of productosActivos(); track p.id) {
+          <div class="dash-card tarjeta-columna">
+            <div>
+              <span class="dash-icon">📦</span>
+              <h3>{{ p.nombre }}</h3>
+              <p>{{ p.descripcion }}</p>
+              <p class="precio">${{ p.precio.toFixed(2) }}</p>
+              <p class="texto-chico" [style.color]="p.stock > 0 ? '#388e3c' : '#d32f2f'">
+                {{ p.stock > 0 ? p.stock + ' en stock' : 'Sin stock' }}
+              </p>
+            </div>
+            <button
+              class="btn-primary btn-agregar"
+              [disabled]="p.stock <= 0"
+              (click)="handleAgregarCarrito(p.id)"
+            >
+              {{ p.stock > 0 ? 'Agregar al carrito' : 'Sin stock' }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
+  </div>
+}

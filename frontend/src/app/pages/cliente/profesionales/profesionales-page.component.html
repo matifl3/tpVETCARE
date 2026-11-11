@@ -1,0 +1,58 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <h1>Profesionales</h1>
+    <p class="mb-24">Buscá profesionales para el cuidado de tus mascotas.</p>
+
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+
+    <div class="barra-filtros">
+      <button [class]="'btn-' + (filtroRol() === '' ? 'primary' : 'secondary')" (click)="handleFiltrar('')">
+        Todos
+      </button>
+      @for (r of roles; track r) {
+        <button [class]="'btn-' + (filtroRol() === r ? 'primary' : 'secondary')" (click)="handleFiltrar(r)">
+          {{ capitalizar(r) }}
+        </button>
+      }
+    </div>
+
+    @if (profesionales().length === 0) {
+      <p class="texto-gris">No se encontraron profesionales.</p>
+    } @else {
+      <div class="card-grid">
+        @for (p of profesionales(); track p.id) {
+          <div class="dash-card tarjeta-columna">
+            <div>
+              <span class="dash-icon">👨‍⚕️</span>
+              <h3>{{ p.nombre }} {{ p.apellido }}</h3>
+              <p><strong>Rol:</strong> {{ capitalizar(p.rol) }}</p>
+              @if (p.matricula) {
+                <p><strong>Matrícula:</strong> {{ p.matricula }}</p>
+              }
+              @if (p.experiencia) {
+                <p><strong>Experiencia:</strong> {{ p.experiencia }}</p>
+              }
+              @if (p.precioBase != null) {
+                <p class="precio">
+                  Desde ${{ p.precioBase.toFixed(2) }}
+                </p>
+              }
+            </div>
+            <a
+              [routerLink]="['/dashboard/profesionales/reservar', p.id]"
+              class="btn-primary reservar"
+            >
+              Reservar turno
+            </a>
+          </div>
+        }
+      </div>
+    }
+
+    <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
+  </div>
+}

@@ -1,0 +1,82 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="encabezado-pagina">
+      <h1>Métodos de Pago</h1>
+      <button class="btn-primary" (click)="mostrarForm.set(!mostrarForm())">
+        {{ mostrarForm() ? 'Cancelar' : '+ Nueva Tarjeta' }}
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    @if (mostrarForm()) {
+      <form class="panel-formulario" (submit)="handleAgregar($event)">
+        <div class="grilla-2">
+          <div class="input-group">
+            <label>Titular</label>
+            <input required [value]="form().titular" (input)="upd({ titular: inputValue($event) })" />
+          </div>
+          <div class="input-group">
+            <label>Número de tarjeta</label>
+            <input
+              required
+              [value]="form().numeroTarjeta"
+              (input)="upd({ numeroTarjeta: inputValue($event) })"
+              placeholder="1234567890123456"
+              maxlength="19"
+            />
+          </div>
+          <div class="input-group">
+            <label>Vencimiento (MM/AA)</label>
+            <input
+              required
+              [value]="form().vencimiento"
+              (input)="upd({ vencimiento: inputValue($event) })"
+              placeholder="12/28"
+              maxlength="5"
+            />
+          </div>
+          <div class="input-group">
+            <label>CVV</label>
+            <input
+              required
+              [value]="form().cvv"
+              (input)="upd({ cvv: inputValue($event) })"
+              placeholder="123"
+              maxlength="4"
+            />
+          </div>
+        </div>
+        <button type="submit" class="btn-primary mt-16">Guardar Tarjeta</button>
+      </form>
+    }
+
+    @if (tarjetas().length === 0) {
+      <p class="texto-gris">No tenés tarjetas registradas.</p>
+    } @else {
+      <div class="card-grid">
+        @for (t of tarjetas(); track t.idTarjeta) {
+          <div class="dash-card relativo">
+            <span class="dash-icon">💳</span>
+            <h3>{{ t.titular }}</h3>
+            <p>•••• {{ t.ultimosDigitos }}</p>
+            <p class="texto-gris texto-chico">Vence: {{ t.vencimiento }}</p>
+            <button class="btn-eliminar"
+              (click)="handleEliminar(t.idTarjeta)"
+              title="Eliminar"
+            >✕</button>
+          </div>
+        }
+      </div>
+    }
+
+    <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
+  </div>
+}

@@ -1,0 +1,47 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Usuarios</h1>
+      <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
+    </div>
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Activo</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of usuarios(); track u.idUsuario) {
+            <tr>
+              <td>{{ u.idUsuario }}</td>
+              <td>{{ u.nombre }} {{ u.apellido }}</td>
+              <td>{{ u.email }}</td>
+              <td><span class="nav-role">{{ u.rol }}</span></td>
+              <td>{{ u.activo ? '✅' : '❌' }}</td>
+              <td>
+                <button class="btn-secondary btn-sm" (click)="toggleActivo(u)">
+                  {{ u.activo ? 'Desactivar' : 'Activar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

@@ -1,0 +1,90 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Productos</h1>
+      <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
+    </div>
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    <form (submit)="handleSubmit($event)" class="admin-card mb-24">
+      <div class="form-fila mb-12">
+        <div class="input-group mb-0">
+          <label>Nombre</label>
+          <input required [value]="form().nombre" (input)="upd({ nombre: inputValue($event) })" />
+        </div>
+        <div class="input-group mb-0">
+          <label>Descripción</label>
+          <input required [value]="form().descripcion" (input)="upd({ descripcion: inputValue($event) })" />
+        </div>
+        <div class="input-group mb-0">
+          <label>Categoría</label>
+          <input required [value]="form().categoria" (input)="upd({ categoria: inputValue($event) })" />
+        </div>
+        <div class="form-fila">
+          <div class="input-group mb-0">
+            <label>Precio</label>
+            <input type="number" step="0.01" required [value]="form().precio" (input)="upd({ precio: inputValue($event) })" />
+          </div>
+          <div class="input-group mb-0">
+            <label>Stock</label>
+            <input type="number" required [value]="form().stock" (input)="upd({ stock: inputValue($event) })" />
+          </div>
+        </div>
+      </div>
+      <div class="acciones">
+        <button type="submit" class="btn-primary">
+          {{ editId() ? 'Guardar cambios' : 'Crear producto' }}
+        </button>
+        @if (editId()) {
+          <button type="button" class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+        }
+      </div>
+    </form>
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Activo</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of productos(); track p.id) {
+            <tr>
+              <td>{{ p.id }}</td>
+              <td>{{ p.nombre }}</td>
+              <td class="descripcion-corta">{{ p.descripcion || '—' }}</td>
+              <td>{{ p.categoria }}</td>
+              <td>${{ p.precio.toFixed(2) }}</td>
+              <td>{{ p.stock }}</td>
+              <td>{{ p.activo ? '✅' : '❌' }}</td>
+              <td>
+                <div class="actions">
+                  <button class="btn-secondary btn-sm" (click)="editar(p)">Editar</button>
+                  <button
+                    class="btn-secondary btn-sm btn-peligro"
+                    (click)="eliminar(p.id)"
+                  >Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

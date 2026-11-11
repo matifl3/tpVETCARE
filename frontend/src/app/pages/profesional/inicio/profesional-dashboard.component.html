@@ -1,0 +1,25 @@
+<div class="dashboard">
+  <h1>Panel de {{ info.label }}</h1>
+  <p>Bienvenido, {{ user.nombre }}. Gestioná tus turnos y pacientes desde acá.</p>
+
+  <div class="card-grid">
+    <a routerLink="/dashboard/profesional/mis-turnos" class="dash-card link-tarjeta">
+      <span class="dash-icon">📅</span>
+      <h3>Mis Turnos</h3>
+      <p>Revisá y gestioná tus turnos asignados.</p>
+      <span class="dash-link">Ver más →</span>
+    </a>
+    <a routerLink="/dashboard/profesional/mis-pacientes" class="dash-card link-tarjeta">
+      <span class="dash-icon">🐾</span>
+      <h3>Mis Pacientes</h3>
+      <p>Revisá las mascotas a tu cargo.</p>
+      <span class="dash-link">Ver más →</span>
+    </a>
+    <a routerLink="/dashboard/profesional/perfil" class="dash-card link-tarjeta">
+      <span class="dash-icon">👤</span>
+      <h3>Perfil Profesional</h3>
+      <p>Consultá tu matrícula, experiencia y datos.</p>
+      <span class="dash-link">Ver más →</span>
+    </a>
+  </div>
+</div>

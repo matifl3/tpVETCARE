@@ -3,28 +3,43 @@ import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { SessionUser } from './models';
 
-/** Respuesta de /api/auth/registro y /api/auth/login (campos extra del login). */
+/** Respuesta de /api/auth/login: datos del usuario + token JWT. */
 export interface LoginResponse extends SessionUser {
+  token: string;
   mensaje?: string;
 }
+
+const TOKEN_KEY = 'petcare_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
 
-  /** Usuario de la sesión; `null` = sin sesión verificada. */
+  /** Usuario logueado; `null` = sin sesión verificada. */
   readonly user = signal<SessionUser | null>(null);
 
-  /** GET /api/auth/me — guarda el usuario en la signal. */
+  /** Token JWT guardado (lo usa el interceptor para armar el header Authorization). */
+  getToken(): string | null {
+    try {
+      return localStorage.getItem(TOKEN_KEY);
+    } catch {
+      return null;
+    }
+  }
+
+  /** GET /api/auth/me — valida el token y guarda el usuario en la signal. */
   check(): Observable<SessionUser> {
     return this.api.get<SessionUser>('/api/auth/me').pipe(tap((user) => this.user.set(user)));
   }
 
-  /** POST /api/auth/login */
+  /** POST /api/auth/login — guarda el token y el usuario. */
   login(email: string, password: string): Observable<LoginResponse> {
-    return this.api
-      .post<LoginResponse>('/api/auth/login', { email, password })
-      .pipe(tap((user) => this.user.set(user)));
+    return this.api.post<LoginResponse>('/api/auth/login', { email, password }).pipe(
+      tap((res) => {
+        this.saveToken(res.token);
+        this.user.set(res);
+      })
+    );
   }
 
   /** POST /api/auth/registro */
@@ -32,8 +47,21 @@ export class AuthService {
     return this.api.post<{ mensaje: string }>('/api/auth/registro', data);
   }
 
-  /** POST /logout (Spring Security) */
-  logout(): Observable<void> {
-    return this.api.post<void>('/logout').pipe(tap(() => this.user.set(null)));
+  /** Con JWT el logout es local: se borra el token y listo. */
+  logout(): void {
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+    } catch {
+      /* storage no disponible */
+    }
+    this.user.set(null);
+  }
+
+  private saveToken(token: string): void {
+    try {
+      localStorage.setItem(TOKEN_KEY, token);
+    } catch {
+      /* storage no disponible */
+    }
   }
 }

@@ -649,3 +649,91 @@ section {
     transform: translateY(0);
   }
 }
+
+/* ============================================================
+   Utilidades compartidas por las pantallas
+   (antes estaban como style="..." repetidos en los templates).
+   Las de una sola línea llevan !important, igual que en Bootstrap,
+   para que le ganen a reglas más específicas como ".dashboard h1".
+   ============================================================ */
+
+/* Botones */
+.btn-volver { padding: 8px 20px !important; font-size: 13px !important; }
+.btn-mini { padding: 4px 12px !important; }
+.btn-peligro { color: #d32f2f !important; border-color: #d32f2f !important; }
+
+/* Texto */
+.texto-gris { color: #777 !important; }
+.texto-chico { font-size: 13px !important; }
+.texto-14 { font-size: 14px !important; }
+.negrita { font-weight: 600 !important; }
+.texto-centro { text-align: center !important; }
+.sin-subrayado { text-decoration: none !important; }
+
+/* Espaciado */
+.mb-0 { margin-bottom: 0 !important; }
+.mb-8 { margin-bottom: 8px !important; }
+.mb-12 { margin-bottom: 12px !important; }
+.mb-16 { margin-bottom: 16px !important; }
+.mb-24 { margin-bottom: 24px !important; }
+.mt-0 { margin-top: 0 !important; }
+.mt-8 { margin-top: 8px !important; }
+.mt-16 { margin-top: 16px !important; }
+.mt-24 { margin-top: 24px !important; }
+
+/* Layout */
+.relativo { position: relative !important; }
+.ancho-completo { width: 100% !important; }
+.contenido-angosto { max-width: 500px !important; }
+.encabezado-pagina {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.grilla-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.barra-filtros {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.acciones-centradas {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+.tarjeta-columna {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.panel-formulario {
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+}
+
+/* Links */
+.link-volver { margin-top: 24px !important; display: inline-block !important; }
+.link-tarjeta { text-decoration: none !important; color: inherit !important; }
+
+/* Estado vacío ("No hay ...") */
+.estado-vacio { color: #777 !important; text-align: center !important; padding: 32px !important; }
+.estado-vacio-chico { padding: 16px !important; }
+
+/* Campos de formulario (select / textarea / input sueltos) */
+.campo {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.campo-textarea { min-height: 80px !important; resize: vertical !important; }

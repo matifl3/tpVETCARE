@@ -1,0 +1,123 @@
+<div class="dashboard">
+  <div class="admin-header">
+    <h1>Reportes</h1>
+    <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
+  </div>
+  @if (error()) {
+    <div class="alert alert-error show">{{ error() }}</div>
+  }
+
+  <div class="admin-card mb-24">
+    <div class="tabs-reporte">
+      <button class="tab-btn" [class.active]="tipo() === 'ganancias'" (click)="tipo.set('ganancias')">Ganancias</button>
+      <button class="tab-btn" [class.active]="tipo() === 'ventas'" (click)="tipo.set('ventas')">Ventas</button>
+      <button class="tab-btn" [class.active]="tipo() === 'productos'" (click)="tipo.set('productos')">Productos más vendidos</button>
+    </div>
+
+    <div class="filtros">
+      @if (tipo() === 'ganancias' || tipo() === 'productos') {
+        <div class="input-group mb-0">
+          <label>Año</label>
+          <input class="input-anio" type="number" [value]="anio()" (input)="anio.set(Number(inputValue($event)))" />
+        </div>
+        <div class="input-group mb-0">
+          <label>Mes</label>
+          <select class="select-mes"
+            (change)="mes.set(Number(inputValue($event)))"
+          >
+            @for (m of meses; track $index) {
+              <option [value]="$index + 1" [selected]="mes() === $index + 1">{{ m }}</option>
+            }
+          </select>
+        </div>
+      }
+      @if (tipo() === 'ventas') {
+        <div class="input-group mb-0">
+          <label>Fecha inicio</label>
+          <input type="date" [value]="fechaInicio()" (input)="fechaInicio.set(inputValue($event))" />
+        </div>
+        <div class="input-group mb-0">
+          <label>Fecha fin</label>
+          <input type="date" [value]="fechaFin()" (input)="fechaFin.set(inputValue($event))" />
+        </div>
+      }
+      <button class="btn-primary" (click)="consultar()" [disabled]="loading()">
+        {{ loading() ? 'Consultando...' : 'Consultar' }}
+      </button>
+    </div>
+  </div>
+
+  @if (data(); as data) {
+    <div class="admin-card">
+      @if (tipo() === 'ganancias') {
+        <div>
+          <h3 class="mb-16">Ganancias — {{ meses[mes() - 1] }} {{ anio() }}</h3>
+          <p class="mb-8"><strong>Cantidad de ventas:</strong> {{ data.cantidadVentas || 0 }}</p>
+          <p class="total-ganancia">${{ (data.gananciaTotal || 0).toFixed(2) }}</p>
+        </div>
+      }
+      @if (tipo() === 'ventas') {
+        <div>
+          <h3 class="mb-16">Ventas del {{ fechaInicio() }} al {{ fechaFin() }}</h3>
+          @if (isArray(data) && data.length === 0) {
+            <p class="estado-vacio estado-vacio-chico">No hay ventas en ese período.</p>
+          }
+          @if (isArray(data) && data.length > 0) {
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Usuario</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (c of data; track c.id) {
+                  <tr>
+                    <td>{{ c.id }}</td>
+                    <td>{{ c.idUsuario || '—' }}</td>
+                    <td>${{ c.total?.toFixed(2) }}</td>
+                    <td>{{ c.estado }}</td>
+                    <td>{{ c.fechaCreacion }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
+      @if (tipo() === 'productos') {
+        <div>
+          <h3 class="mb-16">Productos más vendidos — {{ meses[mes() - 1] }} {{ anio() }}</h3>
+          @if (isArray(data) && data.length === 0) {
+            <p class="estado-vacio estado-vacio-chico">No hay datos para ese período.</p>
+          }
+          @if (isArray(data) && data.length > 0) {
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th>Cantidad vendida</th>
+                  <th>Ganancia</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of data; track $index) {
+                  <tr>
+                    <td>{{ p.nombreProducto }}</td>
+                    <td>{{ p.categoria }}</td>
+                    <td>{{ p.cantidadVendida || 0 }}</td>
+                    <td>${{ (p.gananciaTotal || 0).toFixed(2) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
