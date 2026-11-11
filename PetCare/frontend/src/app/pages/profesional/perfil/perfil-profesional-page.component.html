@@ -11,6 +11,9 @@
     }
 
     @if (perfil(); as perfil) {
+      <div class="contenedor">
+
+      
       <div class="admin-card contenido-angosto">
         <div class="avatar">👤</div>
         <h2 class="mb-8">{{ perfil.nombre }} {{ perfil.apellido }}</h2>
@@ -28,6 +31,45 @@
           </tbody>
         </table>
       </div>
+
+      <div class="admin-card contenido-angosto seccion-password">
+        <div class="password-header">
+          <h2>🔒 Contraseña</h2>
+          <button type="button" class="btn-secondary" (click)="togglePassword()">
+            {{ mostrarPassword() ? 'Cancelar' : 'Cambiar contraseña' }}
+          </button>
+        </div>
+
+        @if (passwordOk()) {
+          <div class="alert alert-success show">{{ passwordOk() }}</div>
+        }
+
+        @if (mostrarPassword()) {
+          @if (passwordError()) {
+            <div class="alert alert-error show">{{ passwordError() }}</div>
+          }
+          <form (submit)="cambiarPassword($event)">
+            <div class="input-group">
+              <label for="pass-actual">Contraseña actual</label>
+              <input id="pass-actual" type="password" autocomplete="current-password"
+                     [value]="passwordForm().actual" (input)="updPassword({ actual: inputValue($event) })" />
+            </div>
+            <div class="input-group">
+              <label for="pass-nueva">Nueva contraseña</label>
+              <input id="pass-nueva" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"
+                     [value]="passwordForm().nueva" (input)="updPassword({ nueva: inputValue($event) })" />
+            </div>
+            <div class="input-group">
+              <label for="pass-repetir">Repetir nueva contraseña</label>
+              <input id="pass-repetir" type="password" autocomplete="new-password"
+                     [value]="passwordForm().repetir" (input)="updPassword({ repetir: inputValue($event) })" />
+            </div>
+            <button type="submit" class="btn-primary" [disabled]="guardandoPassword()">
+              {{ guardandoPassword() ? 'Guardando...' : 'Guardar contraseña' }}
+            </button>
+          </form>
+        }
+      </div></div>
     }
   </div>
 }

@@ -9,7 +9,7 @@
 }
 
 .mensaje {
-  color: #777;
+  color: var(--color-texto-gris);
   font-size: 16px;
   max-width: 480px;
   margin: 0 auto 32px;

@@ -7,5 +7,5 @@
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #d32f2f;
+  color: var(--color-error);
 }

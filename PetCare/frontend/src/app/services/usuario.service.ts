@@ -19,6 +19,11 @@ export class UsuarioService {
     return this.api.put<Usuario>('/api/usuarios/actualizar', data);
   }
 
+  /** PUT /api/usuarios/mi-password — el usuario logueado cambia su propia contraseña. */
+  cambiarMiPassword(passwordActual: string, nuevaPassword: string): Observable<{ mensaje: string }> {
+    return this.api.put<{ mensaje: string }>('/api/usuarios/mi-password', { passwordActual, nuevaPassword });
+  }
+
   eliminar(id: number | string): Observable<void> {
     return this.api.delete<void>(`/api/usuarios/eliminar/${id}`);
   }

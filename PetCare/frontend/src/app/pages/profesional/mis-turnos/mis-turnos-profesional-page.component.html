@@ -35,7 +35,7 @@
                 <td>{{ t.fecha || '—' }}</td>
                 <td>{{ t.horas || '—' }}</td>
                 <td>{{ t.precio ? '$' + t.precio.toFixed(2) : '—' }}</td>
-                <td><span class="nav-role">{{ t.estadoTurno || '—' }}</span></td>
+                <td><span class="estado-turno" [class.confirmado]="t.estadoTurno === 'CONFIRMADO'" [class.cancelado]="t.estadoTurno === 'CANCELADO'">{{ t.estadoTurno || '—' }}</span></td>
               </tr>
             }
           </tbody>

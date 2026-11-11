@@ -4,11 +4,11 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-borde);
 }
 
 .item-turno {
-  background: #f0f0ff;
+  background: var(--color-superficie-lila);
 }
 
 .item-acciones {
@@ -22,7 +22,7 @@
   text-align: right;
   margin-top: 24px;
   padding: 24px;
-  background: #f8f9fa;
+  background: var(--color-superficie-gris);
   border-radius: 12px;
 }
 
@@ -46,7 +46,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  border: 2px solid #667eea;
+  border: 2px solid var(--color-acento);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -72,17 +72,17 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   padding: 16px;
-  background: white;
+  background: var(--color-blanco);
   border-radius: 10px;
 }
 
 /* Historial de compras */
 .compra-historial {
   padding: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-borde);
 }
 
 .detalle-compra {
   font-size: 13px;
-  color: #555;
+  color: var(--color-texto-suave);
 }

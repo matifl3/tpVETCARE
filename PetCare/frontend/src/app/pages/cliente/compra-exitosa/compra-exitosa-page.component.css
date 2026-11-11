@@ -4,12 +4,12 @@
 }
 
 .subtitulo {
-  color: #777;
+  color: var(--color-texto-gris);
   margin-bottom: 32px;
 }
 
 .detalle {
-  background: #f8f9fa;
+  background: var(--color-superficie-gris);
   padding: 24px;
   border-radius: 12px;
   text-align: left;
@@ -20,12 +20,12 @@
 .total {
   font-size: 20px;
   font-weight: 700;
-  color: #667eea;
+  color: var(--color-acento);
   margin-top: 12px;
 }
 
 .turno-item {
-  background: #f0f0ff;
+  background: var(--color-superficie-lila);
   padding: 12px;
   border-radius: 8px;
   margin-top: 8px;
