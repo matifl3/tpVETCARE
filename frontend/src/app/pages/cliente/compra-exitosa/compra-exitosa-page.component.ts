@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Carrito } from '../../../core/models';
 
@@ -7,15 +7,15 @@ import { Carrito } from '../../../core/models';
  * `history.state` lo conserva si se recarga la página.
  */
 @Component({
-  selector: 'app-compra-exitosa-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './compra-exitosa-page.component.html',
-  styleUrl: './compra-exitosa-page.component.css',
+    selector: 'app-compra-exitosa-page',
+    imports: [RouterLink],
+    templateUrl: './compra-exitosa-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './compra-exitosa-page.component.css'
 })
 export class CompraExitosaPageComponent {
   private readonly router = inject(Router);
 
   protected readonly carrito: Carrito | undefined =
-    this.router.getCurrentNavigation()?.extras.state?.['carrito'] ?? history.state?.carrito;
+    this.router.currentNavigation()?.extras.state?.['carrito'] ?? history.state?.carrito;
 }

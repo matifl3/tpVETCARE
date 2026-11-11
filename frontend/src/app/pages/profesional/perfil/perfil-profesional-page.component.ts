@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Profesional } from '../../../core/models';
@@ -13,11 +13,11 @@ const ROL_LABELS: Record<string, string> = {
 };
 
 @Component({
-  selector: 'app-perfil-profesional-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './perfil-profesional-page.component.html',
-  styleUrl: './perfil-profesional-page.component.css',
+    selector: 'app-perfil-profesional-page',
+    imports: [RouterLink],
+    templateUrl: './perfil-profesional-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './perfil-profesional-page.component.css'
 })
 export class PerfilProfesionalPageComponent implements OnInit {
   private readonly auth = inject(AuthService);

@@ -1,14 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Profesional } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
 
 @Component({
-  selector: 'app-admin-postulaciones-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './admin-postulaciones-page.component.html',
-  styleUrl: './admin-postulaciones-page.component.css',
+    selector: 'app-admin-postulaciones-page',
+    imports: [RouterLink],
+    templateUrl: './admin-postulaciones-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './admin-postulaciones-page.component.css'
 })
 export class AdminPostulacionesPageComponent implements OnInit {
   private readonly profesionalService = inject(ProfesionalService);

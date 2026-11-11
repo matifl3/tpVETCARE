@@ -1,15 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Mascota, SessionUser } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
 
 @Component({
-  selector: 'app-mis-pacientes-profesional-page',
-  standalone: true,
-  imports: [RouterLink],
-  templateUrl: './mis-pacientes-profesional-page.component.html',
-  styleUrl: './mis-pacientes-profesional-page.component.css',
+    selector: 'app-mis-pacientes-profesional-page',
+    imports: [RouterLink],
+    templateUrl: './mis-pacientes-profesional-page.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './mis-pacientes-profesional-page.component.css'
 })
 export class MisPacientesProfesionalPageComponent implements OnInit {
   private readonly auth = inject(AuthService);

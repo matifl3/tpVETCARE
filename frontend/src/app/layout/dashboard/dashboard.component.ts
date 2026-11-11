@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { SessionUser } from '../../core/models';
@@ -11,11 +11,11 @@ const ROLES_PROFESIONALES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADO
  * la verifica el authGuard antes de activar la ruta.
  */
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [RouterOutlet, RouterLink, SolicitudPendientePageComponent],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
+    selector: 'app-dashboard',
+    imports: [RouterOutlet, RouterLink, SolicitudPendientePageComponent],
+    templateUrl: './dashboard.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
   private readonly auth = inject(AuthService);
