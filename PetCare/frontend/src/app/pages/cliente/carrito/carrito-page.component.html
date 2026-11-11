@@ -85,7 +85,7 @@
                     <div class="lista-tarjetas">
                       @for (t of tarjetas(); track t.idTarjeta) {
                         <label class="tarjeta-opcion"
-                          [style.border]="'2px solid ' + (idTarjetaGuardada() === t.idTarjeta ? '#667eea' : '#e0e0e0')"
+                          [style.border]="'2px solid ' + (idTarjetaGuardada() === t.idTarjeta ? 'var(--color-acento)' : 'var(--color-borde)')"
                         >
                           <input
                             type="radio"

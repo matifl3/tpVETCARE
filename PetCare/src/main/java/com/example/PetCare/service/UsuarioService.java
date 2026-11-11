@@ -115,6 +115,30 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    /**
+     * El usuario logueado cambia su propia contraseña.
+     * Verifica la contraseña actual antes de guardar la nueva.
+     *
+     * @throws IllegalArgumentException con un mensaje para mostrar en el front si algo no es válido
+     */
+    public void cambiarPassword(Usuario usuario, String passwordActual, String nuevaPassword) {
+        if (passwordActual == null || passwordActual.isBlank()) {
+            throw new IllegalArgumentException("Ingresá tu contraseña actual");
+        }
+        if (!passwordEncoder.matches(passwordActual, usuario.getPassword())) {
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+        }
+        if (nuevaPassword == null || nuevaPassword.length() < 6) {
+            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 6 caracteres");
+        }
+        if (passwordEncoder.matches(nuevaPassword, usuario.getPassword())) {
+            throw new IllegalArgumentException("La nueva contraseña tiene que ser distinta de la actual");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(nuevaPassword));
+        usuarioRepository.save(usuario);
+    }
+
     public UsuarioDTO toDTO(Usuario entity) {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setIdUsuario(entity.getIdUsuario());

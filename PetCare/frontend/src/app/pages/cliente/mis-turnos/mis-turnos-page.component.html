@@ -26,7 +26,7 @@
               <p><strong>Precio:</strong> ${{ t.precio.toFixed(2) }}</p>
             }
             <p>
-              <span class="nav-role" [style.background]="t.estadoTurno === 'CONFIRMADO' ? '#388e3c' : '#d32f2f'">{{ t.estadoTurno }}</span>
+              <span class="estado-turno" [class.confirmado]="t.estadoTurno === 'CONFIRMADO'" [class.cancelado]="t.estadoTurno === 'CANCELADO'">{{ t.estadoTurno }}</span>
             </p>
           </div>
         }

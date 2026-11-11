@@ -188,11 +188,14 @@ public class CarritoService {
         carrito.setEstado(Estado_Carrito.ENVIO);
         carrito.setMetodoPago(dto.getMetodoPago());
         carrito.setFechaActualizacion(LocalDate.now());
-        carritoRepository.save(carrito);
 
         CarritoDTO result = toDTO(carrito);
+        // Se guarda el total pagado (productos + servicios) para el historial y los reportes de ganancias.
+        carrito.setTotal(result.getTotal());
+        carritoRepository.save(carrito);
 
-        carrito.getTurnos().clear();
+        // Los turnos quedan asociados al carrito pagado: si se borraran (orphanRemoval),
+        // el historial mostraría $0 para los pagos de servicios.
         obtenerOCrearCarrito(dto.getId_usuario());
         return result;
     }

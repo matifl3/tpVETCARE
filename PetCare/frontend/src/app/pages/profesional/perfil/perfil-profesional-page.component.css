@@ -4,12 +4,36 @@
 }
 
 .rol {
-  color: #667eea;
+  color: var(--color-acento);
   font-weight: 600;
   margin-bottom: 24px;
+}
+
+.seccion-password {
+  margin-top: 24px;
+  text-align: left;
+}
+
+.password-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.password-header h2 {
+  margin: 0;
 }
 
 .etiqueta {
   font-weight: 600;
   width: 140px;
+}
+
+
+.contenedor{
+  display: flex;
+  justify-content: space-between;
 }

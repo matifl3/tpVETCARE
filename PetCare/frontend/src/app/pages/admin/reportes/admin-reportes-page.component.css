@@ -18,15 +18,15 @@
 
 .select-mes {
   padding: 12px 16px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--color-borde);
   border-radius: 10px;
   font-size: 14px;
   font-family: inherit;
-  background: white;
+  background: var(--color-blanco);
 }
 
 .total-ganancia {
   font-size: 28px;
   font-weight: 700;
-  color: #667eea;
+  color: var(--color-acento);
 }
