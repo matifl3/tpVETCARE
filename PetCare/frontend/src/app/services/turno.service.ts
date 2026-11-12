@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { Turno } from '../core/models';
+import { EstadisticasTurnos, Turno } from '../core/models';
 
 @Injectable({ providedIn: 'root' })
 export class TurnoService {
@@ -29,5 +29,12 @@ export class TurnoService {
 
   disponibilidad(idProfesional: number | string, fecha: string): Observable<any> {
     return this.api.get<any>(`/api/turnos/disponibilidad/${idProfesional}?fecha=${fecha}`);
+  }
+
+  /** Estadísticas del panel de administración (solo ADMIN). */
+  estadisticas(desde: string, hasta: string, agrupacion: string): Observable<EstadisticasTurnos> {
+    return this.api.get<EstadisticasTurnos>(
+      `/api/turnos/estadisticas?desde=${desde}&hasta=${hasta}&agrupacion=${agrupacion}`
+    );
   }
 }

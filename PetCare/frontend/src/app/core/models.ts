@@ -68,6 +68,41 @@ export interface Turno {
   [key: string]: any;
 }
 
+/** Cantidad de turnos de un período del gráfico (GET /api/turnos/estadisticas). */
+export interface TurnoPeriodo {
+  /** Clave técnica del período: "2026-06", "2026-06-12" o "2026-W24". */
+  periodo: string;
+  /** Etiqueta lista para mostrar: "Jun 2026", "12/06" o "Sem 24". */
+  etiqueta: string;
+  cantidad: number;
+}
+
+/** Servicio (rol del profesional) dentro del ranking de más solicitados. */
+export interface ServicioRanking {
+  servicio: string;
+  cantidad: number;
+  porcentaje: number;
+}
+
+/** Totales del período consultado. Los cancelados no forman parte de total. */
+export interface ResumenTurnos {
+  total: number;
+  confirmados: number;
+  cancelados: number;
+  proximos: number;
+  servicioTop: string;
+}
+
+/** Respuesta completa del panel de estadísticas de turnos. */
+export interface EstadisticasTurnos {
+  desde: string;
+  hasta: string;
+  agrupacion: string;
+  resumen: ResumenTurnos;
+  porPeriodo: TurnoPeriodo[];
+  rankingServicios: ServicioRanking[];
+}
+
 export interface CarritoProducto {
   id: number;
   idProducto: number;
