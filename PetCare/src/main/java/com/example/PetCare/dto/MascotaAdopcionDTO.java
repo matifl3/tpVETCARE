@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.PetCare.enums.EstadoAdopcionMascota;
 import com.example.PetCare.enums.TamanioMascota;
+import com.example.PetCare.model.Vacuna;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,5 +38,5 @@ public class MascotaAdopcionDTO {
 
     // Campos de solo lectura
     private LocalDate fechaPublicacion;
-    private List<String> vacunas;
+    private List<Vacuna> vacunas;
 }
