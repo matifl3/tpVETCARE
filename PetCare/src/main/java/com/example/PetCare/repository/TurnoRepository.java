@@ -47,4 +47,56 @@ public interface TurnoRepository extends JpaRepository<Turno, Integer> {
      con el placeholder :idTurno dentro del JPQL de @Query. Sin él,
     Spring Data JPA no sabría cómo mapear el argumento al placeholder en la query.*/
 
+    // ==================== ESTADÍSTICAS (SOLO ADMIN) ====================
+    // Todas las consultas son nativas porque usan DATE_FORMAT de MySQL.
+    // Solo se consideran turnos activos y no cancelados.
+
+    @Query(value = """
+            SELECT DATE_FORMAT(t.fecha, :formato) AS periodo, COUNT(*) AS cantidad
+            FROM turno t
+            WHERE t.activo = 1
+              AND t.estado_turno <> 'CANCELADO'
+              AND t.fecha BETWEEN :desde AND :hasta
+            GROUP BY DATE_FORMAT(t.fecha, :formato)
+            ORDER BY periodo
+            """, nativeQuery = true)
+    List<Object[]> contarTurnosPorPeriodo(@Param("desde") LocalDate desde,
+                                          @Param("hasta") LocalDate hasta,
+                                          @Param("formato") String formato);
+
+    @Query(value = """
+            SELECT u.rol AS servicio, COUNT(*) AS cantidad
+            FROM turno t
+            JOIN usuario u ON u.id_usuario = t.id_profesional
+            WHERE t.activo = 1
+              AND t.estado_turno <> 'CANCELADO'
+              AND t.fecha BETWEEN :desde AND :hasta
+            GROUP BY u.rol
+            ORDER BY cantidad DESC, u.rol ASC
+            """, nativeQuery = true)
+    List<Object[]> contarTurnosPorServicio(@Param("desde") LocalDate desde,
+                                           @Param("hasta") LocalDate hasta);
+
+    @Query(value = """
+            SELECT COUNT(*) AS total,
+                   COALESCE(SUM(CASE WHEN t.estado_turno = 'CONFIRMADO' THEN 1 ELSE 0 END), 0) AS confirmados,
+                   COALESCE(SUM(CASE WHEN t.fecha >= CURRENT_DATE THEN 1 ELSE 0 END), 0) AS proximos
+            FROM turno t
+            WHERE t.activo = 1
+              AND t.estado_turno <> 'CANCELADO'
+              AND t.fecha BETWEEN :desde AND :hasta
+            """, nativeQuery = true)
+    List<Object[]> resumirTurnos(@Param("desde") LocalDate desde,
+                                 @Param("hasta") LocalDate hasta);
+
+    @Query(value = """
+            SELECT COUNT(*) AS cancelados
+            FROM turno t
+            WHERE t.activo = 1
+              AND t.estado_turno = 'CANCELADO'
+              AND t.fecha BETWEEN :desde AND :hasta
+            """, nativeQuery = true)
+    long contarTurnosCancelados(@Param("desde") LocalDate desde,
+                                @Param("hasta") LocalDate hasta);
+
 }
