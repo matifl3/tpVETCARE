@@ -6,6 +6,7 @@ import { AdminPostulacionesPageComponent } from './pages/admin/postulaciones/adm
 import { AdminProductosPageComponent } from './pages/admin/productos/admin-productos-page.component';
 import { AdminReportesPageComponent } from './pages/admin/reportes/admin-reportes-page.component';
 import { AdminTurnosPageComponent } from './pages/admin/turnos/admin-turnos-page.component';
+import { AdminTurnosEstadisticasPageComponent } from './pages/admin/turnos/estadisticas/admin-turnos-estadisticas-page.component';
 import { AdminUsuariosPageComponent } from './pages/admin/usuarios/admin-usuarios-page.component';
 import { CarritoPageComponent } from './pages/cliente/carrito/carrito-page.component';
 import { CompraExitosaPageComponent } from './pages/cliente/compra-exitosa/compra-exitosa-page.component';
@@ -47,6 +48,7 @@ export const routes: Routes = [
       { path: 'admin/postulaciones', component: AdminPostulacionesPageComponent },
       { path: 'admin/mascotas', component: AdminMascotasPageComponent },
       { path: 'admin/turnos', component: AdminTurnosPageComponent },
+      { path: 'admin/turnos/estadisticas', component: AdminTurnosEstadisticasPageComponent },
       { path: 'admin/productos', component: AdminProductosPageComponent },
       { path: 'admin/reportes', component: AdminReportesPageComponent },
       { path: 'profesional', component: ProfesionalDashboardComponent },
