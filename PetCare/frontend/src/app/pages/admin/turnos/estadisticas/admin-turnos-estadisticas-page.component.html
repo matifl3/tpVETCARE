@@ -1,0 +1,178 @@
+<div class="dashboard">
+  <div class="admin-header">
+    <div>
+      <h1>📊 Estadísticas de Turnos</h1>
+      <p class="stats-subtitle">
+        @if (data(); as d) {
+          Período {{ d.desde }} al {{ d.hasta }}
+        } @else {
+          Elegí un período para ver las estadísticas
+        }
+        @if (actualizadoEn()) {
+          · Actualizado {{ actualizadoEn() }}
+        }
+      </p>
+    </div>
+    <div class="acciones">
+      <button class="btn-primary" type="button" (click)="cargar()" [disabled]="refreshing() || rangoInvalido()">
+        {{ refreshing() ? 'Actualizando...' : '⟳ Actualizar' }}
+      </button>
+      <a routerLink="/dashboard/admin/turnos" class="btn-secondary btn-volver">← Volver a turnos</a>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error show">{{ error() }}</div>
+  }
+
+  <div class="admin-card stats-filters">
+    <div class="stats-filters-row">
+      <span class="stats-filters-label">Período</span>
+      <div class="chips">
+        @for (p of presets; track p.id) {
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="preset() === p.id"
+            (click)="elegirPreset(p)"
+          >
+            {{ p.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (preset() === 'custom') {
+      <div class="stats-filters-row">
+        <span class="stats-filters-label">Fechas</span>
+        <div class="fechas-custom">
+          <input
+            type="date"
+            [value]="desdeCustom()"
+            (change)="cambiarFecha('desde', $event)"
+            aria-label="Fecha desde"
+          />
+          <span class="fechas-hasta">hasta</span>
+          <input
+            type="date"
+            [value]="hastaCustom()"
+            (change)="cambiarFecha('hasta', $event)"
+            aria-label="Fecha hasta"
+          />
+        </div>
+      </div>
+    }
+
+    <div class="stats-filters-row">
+      <span class="stats-filters-label">Agrupación</span>
+      <div class="chips">
+        @for (a of agrupaciones; track a.id) {
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="agrupacion() === a.id"
+            (click)="cambiarAgrupacion(a.id)"
+          >
+            {{ a.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="admin-card stats-block">
+      <p>Cargando estadísticas...</p>
+    </div>
+  }
+
+  @if (data(); as d) {
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Turnos en el período</span>
+        <span class="kpi-value">{{ d.resumen.total }}</span>
+        <span class="kpi-hint">{{ etiquetaPreset() }}</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Confirmados</span>
+        <span class="kpi-value">{{ d.resumen.confirmados }}</span>
+        <span class="kpi-hint">Activos no cancelados</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Cancelados</span>
+        <span class="kpi-value">{{ d.resumen.cancelados }}</span>
+        <span class="kpi-hint">No incluidos en los gráficos</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Próximos</span>
+        <span class="kpi-value">{{ d.resumen.proximos }}</span>
+        <span class="kpi-hint">Con fecha de hoy en adelante</span>
+      </div>
+      <div class="kpi-card kpi-card-accent">
+        <span class="kpi-label">Servicio más solicitado</span>
+        <span class="kpi-value kpi-value-text">{{ d.resumen.servicioTop }}</span>
+        <span class="kpi-hint">Según cantidad de turnos</span>
+      </div>
+    </div>
+
+    @if (!hayDatos()) {
+      <div class="admin-card stats-block">
+        <p class="estado-vacio estado-vacio-chico">
+          No hay turnos en el período seleccionado. Probá con otro rango de fechas.
+        </p>
+      </div>
+    } @else {
+      <div class="admin-card stats-block">
+        <div class="chart-header">
+          <h3>Turnos por período</h3>
+          <span class="chart-legend">Máximo: {{ maximo() }}</span>
+        </div>
+        <div class="chart-plot">
+          <div class="chart-bars">
+            @for (p of d.porPeriodo; track p.periodo) {
+              <div
+                class="chart-col"
+                [title]="p.etiqueta + ': ' + p.cantidad + ' ' + (p.cantidad === 1 ? 'turno' : 'turnos')"
+              >
+                <span class="chart-value">{{ p.cantidad > 0 ? p.cantidad : '' }}</span>
+                <div
+                  class="chart-bar"
+                  [style.height.%]="altoBarra(p.cantidad)"
+                  [style.opacity]="p.cantidad === 0 ? 0.15 : 1"
+                ></div>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="chart-labels">
+          @for (p of d.porPeriodo; track p.periodo) {
+            <span class="chart-label" [title]="p.etiqueta">{{ p.etiqueta }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="admin-card stats-block">
+        <div class="chart-header">
+          <h3>Servicios más solicitados</h3>
+          <span class="chart-legend">{{ d.rankingServicios.length }} servicios con turnos</span>
+        </div>
+        @if (d.rankingServicios.length === 0) {
+          <p class="estado-vacio estado-vacio-chico">Sin servicios en el período.</p>
+        } @else {
+          <div class="ranking-list">
+            @for (servicio of d.rankingServicios; track servicio.servicio; let indice = $index) {
+              <div class="ranking-row">
+                <span class="ranking-pos" [class.ranking-pos-top]="indice === 0">{{ indice + 1 }}</span>
+                <span class="ranking-name">{{ servicio.servicio }}</span>
+                <div class="ranking-track">
+                  <div class="ranking-fill" [style.width.%]="anchoBarra(servicio.porcentaje)"></div>
+                </div>
+                <span class="ranking-value">{{ servicio.cantidad }} · {{ servicio.porcentaje.toFixed(1) }}%</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
