@@ -1,10 +1,14 @@
 package com.example.PetCare.controller;
 
+import com.example.PetCare.dto.EstadisticasTurnosDTO;
 import com.example.PetCare.dto.TurnoDTO;
+import com.example.PetCare.enums.AgrupacionPeriodo;
 import com.example.PetCare.model.Usuario;
+import com.example.PetCare.service.EstadisticaTurnoService;
 import com.example.PetCare.service.TurnoService;
 import com.example.PetCare.utils.AuthUtils;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +22,14 @@ import java.util.Map;
 public class TurnoController {
 
     private final TurnoService turnoService;
+    private final EstadisticaTurnoService estadisticaTurnoService;
     private final AuthUtils authUtils;
 
-    public TurnoController(TurnoService turnoService, AuthUtils authUtils) {
+    public TurnoController(TurnoService turnoService,
+                           EstadisticaTurnoService estadisticaTurnoService,
+                           AuthUtils authUtils) {
         this.turnoService = turnoService;
+        this.estadisticaTurnoService = estadisticaTurnoService;
         this.authUtils = authUtils;
     }
 
@@ -136,5 +144,16 @@ public class TurnoController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO') or hasRole('PASEADOR') or hasRole('PELUQUERO') or hasRole('ADIESTRADOR') or hasRole('CUIDADOR')")
     public boolean confirmarTurno(@PathVariable Integer id) {
         return turnoService.confirmarTurno(id);
+    }
+
+    // Estadísticas de turnos: solo ADMIN
+    // Ejemplo: GET /api/turnos/estadisticas?desde=2025-11-01&hasta=2026-10-31&agrupacion=MES
+    @GetMapping("/estadisticas")
+    @PreAuthorize("hasRole('ADMIN')")
+    public EstadisticasTurnosDTO estadisticas(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+            @RequestParam(defaultValue = "MES") AgrupacionPeriodo agrupacion) {
+        return estadisticaTurnoService.obtenerEstadisticas(desde, hasta, agrupacion);
     }
 }
