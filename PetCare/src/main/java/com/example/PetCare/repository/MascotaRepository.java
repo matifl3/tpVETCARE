@@ -21,6 +21,9 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
     List<Mascota> findByUsuario_IdUsuarioAndActivoTrue(Integer idUsuario);
 
     Optional<Mascota> findByIdMascotaAndUsuario_IdUsuario(int idMascota, int idUsuario);
+
+    @Query("SELECT m FROM Mascota m WHERE m.activo = true AND m.usuario IS NULL " + "AND NOT EXISTS (SELECT ma FROM MascotaAdopcion ma WHERE ma.mascota = m)")
+    List<Mascota> findMascotasElegiblesParaAdopcion();
 }
 
 

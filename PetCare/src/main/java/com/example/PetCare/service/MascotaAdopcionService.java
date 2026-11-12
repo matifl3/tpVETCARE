@@ -53,6 +53,15 @@ public class MascotaAdopcionService {
                 .toList();
     }
 
+
+    public List<MascotaAdopcionDTO> listarMascotasElegibles() {
+        return mascotaRepository.findMascotasElegiblesParaAdopcion().stream()
+                .map(this::mascotaToAdopcionDTO)
+                .toList();
+    }
+
+    
+    
     public List<MascotaAdopcionDTO> listarDisponibles() {
         return mascotaAdopcionRepository.findByEstado(EstadoAdopcionMascota.DISPONIBLE).stream()
                 .map(this::toDTO)
@@ -63,7 +72,7 @@ public class MascotaAdopcionService {
         return mascotaAdopcionRepository.findByEstado(EstadoAdopcionMascota.ADOPTADA).stream()
                 .map(this::toDTO)
                 .toList();
-    }
+            }
 
     public List<MascotaAdopcionDTO> listarPausadas() {
         return mascotaAdopcionRepository.findByEstado(EstadoAdopcionMascota.PAUSADA).stream()
@@ -101,7 +110,10 @@ public class MascotaAdopcionService {
             nuevaMascota.setObservaciones(dto.getObservaciones());
             nuevaMascota.setActivo(true);
             nuevaMascota.setUsuario(null);
-            nuevaMascota.setHistorialClinico(new HistorialClinico());
+
+            HistorialClinico hc = new HistorialClinico(); 
+            hc.setMascota(nuevaMascota); 
+            nuevaMascota.setHistorialClinico(hc);
 
             mascota = mascotaRepository.save(nuevaMascota);
         }
@@ -119,18 +131,18 @@ public class MascotaAdopcionService {
         MascotaAdopcion guardada = mascotaAdopcionRepository.save(publicacion);
         return toDTO(guardada);
     }
-
+    
 
     public MascotaAdopcionDTO actualizarPublicacion(Integer idMascotaAdopcion, MascotaAdopcionDTO dto) {
         MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
+        .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
 
         publicacionExistente.setTamanio(dto.getTamanio());
         publicacionExistente.setFoto(dto.getFoto());
         publicacionExistente.setDescripcion(dto.getDescripcion());
         publicacionExistente.setCastrado(dto.isCastrado());
         publicacionExistente.setDesparasitado(dto.isDesparasitado());
-
+        
         MascotaAdopcion actualizada = mascotaAdopcionRepository.save(publicacionExistente);
         return toDTO(actualizada);
     }
@@ -139,24 +151,24 @@ public class MascotaAdopcionService {
     public void pausarPublicacion(Integer idMascotaAdopcion) {
         MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
-
+                
         if(publicacionExistente.getEstado() != EstadoAdopcionMascota.DISPONIBLE) {
             throw new IllegalStateException("Solo se pueden pausar publicaciones que estén en estado DISPONIBLE.");
         }
-
+        
         publicacionExistente.setEstado(EstadoAdopcionMascota.PAUSADA);
         mascotaAdopcionRepository.save(publicacionExistente);
     }
-
-
+    
+    
     public void reanudarPublicacionPausada(Integer idMascotaAdopcion) {
         MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
-
+                
         if(publicacionExistente.getEstado() != EstadoAdopcionMascota.PAUSADA) {
             throw new IllegalStateException("Solo se pueden reanudar publicaciones que estén en estado PAUSADA.");
         }
-
+        
         publicacionExistente.setEstado(EstadoAdopcionMascota.DISPONIBLE);
         mascotaAdopcionRepository.save(publicacionExistente);
     }
@@ -165,7 +177,7 @@ public class MascotaAdopcionService {
     public void reanudarPublicacionAdoptada(Integer idMascotaAdopcion) {
         MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
-
+                
         if(publicacionExistente.getEstado() != EstadoAdopcionMascota.ADOPTADA) {
             throw new IllegalStateException("Solo se pueden reanudar publicaciones que estén en estado ADOPTADA.");
         }
@@ -174,11 +186,11 @@ public class MascotaAdopcionService {
         publicacionExistente.getMascota().setUsuario(null);
         mascotaAdopcionRepository.save(publicacionExistente);
     }
-
+    
 
     public void darEnAdopcion(Integer idMascotaAdopcion, Usuario usuarioAdoptante) {
         MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
+        .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
 
         if(publicacionExistente.getEstado() != EstadoAdopcionMascota.DISPONIBLE) {
             throw new IllegalStateException("Solo se pueden dar en adopción publicaciones que estén en estado DISPONIBLE.");
@@ -209,7 +221,7 @@ public class MascotaAdopcionService {
         dto.setPeso(m.getPeso());
         dto.setFechaNacimiento(m.getFechaNacimiento());
         dto.setObservaciones(m.getObservaciones());
-
+        
         dto.setTamanio(entidad.getTamanio());
         dto.setFoto(entidad.getFoto());
         dto.setDescripcion(entidad.getDescripcion());
@@ -238,5 +250,19 @@ public class MascotaAdopcionService {
         entity.setDesparasitado(dto.isDesparasitado());
         entity.setEstado(dto.getEstado());
         return entity;
+    }
+
+    //pasa de mascota a adopcion dto
+    private MascotaAdopcionDTO mascotaToAdopcionDTO(Mascota m) {
+        MascotaAdopcionDTO dto = new MascotaAdopcionDTO();
+        dto.setIdMascota(m.getIdMascota());
+        dto.setNombre(m.getNombre());
+        dto.setEspecie(m.getEspecie());
+        dto.setRaza(m.getRaza());
+        dto.setSexo(m.getSexo());
+        dto.setPeso(m.getPeso());
+        dto.setFechaNacimiento(m.getFechaNacimiento());
+        dto.setObservaciones(m.getObservaciones());
+        return dto;
     }
 }
