@@ -118,7 +118,8 @@
     @if (!hayDatos()) {
       <div class="admin-card stats-block">
         <p class="estado-vacio estado-vacio-chico">
-          No hay turnos en el período seleccionado. Probá con otro rango de fechas.
+          No hay turnos en el período seleccionado. Los turnos agendados se cuentan solo si su
+          fecha cae dentro del rango: probá con "Este año" o "Próximos 12 meses".
         </p>
       </div>
     } @else {
