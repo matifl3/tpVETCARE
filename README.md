@@ -198,20 +198,7 @@ Cada componente tiene su `.spec.ts`. Además hay tests del login con JWT: `AuthS
 ## 👥 Autores
 
 - Matías Zwicker
-- Matías Godoy
 - Matias Felissia
 - Tiziana Ponce
 
 Proyecto desarrollado para la carrera de Programación – UTN.
-
-Al copiar, arrancá desde # 🐾 PetCare y terminá en la última línea, "Proyecto desarrollado...". Las líneas de cuatro comillas invertidas (````) del principio y del final no van: solo marcan dónde empieza y termina el archivo.
-
----
-
-## 👥 Autores
-
-- Matías Zwicker
-- Matias Felissia
-- Tiziana Ponce
-
-Proyecto desarrollado para la carrera de Programación – UTN.go
