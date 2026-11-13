@@ -35,7 +35,7 @@ PetCare centraliza la información de las mascotas y conecta a los dueños con p
 | ------------- | ---------------------------------------------------------------- |
 | Backend       | Java 21, Spring Boot 4, Spring Security, Spring Data JPA, Maven  |
 | Autenticación | JWT (jjwt 0.12)                                                  |
-| Frontend      | Angular 18 (componentes standalone + signals), TypeScript, CSS   |
+| Frontend      | Angular 22 (componentes standalone + signals), TypeScript, CSS   |
 | Base de datos | MySQL 8 (H2 en memoria para los tests)                           |
 | Tests         | JUnit 5 + Mockito (backend), Jasmine + Karma (frontend)          |
 
@@ -81,6 +81,16 @@ mascotas/
 
 Los estilos que se repiten entre pantallas (márgenes, texto gris, botones chicos, etc.) están como clases utilitarias en `frontend/src/styles.css`.
 
+| Formularios | Cómo están hechos |
+| ----------- | ----------------- |
+| Login y registro | **Signal Forms** (`@angular/forms/signals`) |
+| Todos los demás (mascotas, tarjetas, perfil, productos, filtros...) | **Reactive Forms** (`FormGroup`, `FormBuilder`, `Validators`) |
+
+Reglas que seguimos:
+
+- Un mismo componente nunca mezcla las dos formas.
+- Las validaciones se declaran en el TypeScript y cada campo muestra su mensaje de error debajoo tocó.
+- Las validaciones propias (por ejemplo, que la fecha de nacimiento no sea futura) son funciones que devuelven `null` si el valor está bien, o un objeto con el nombre del error si esta mal.
 ---
 
 ## 🔒 Seguridad: cómo funciona el login con JWT
