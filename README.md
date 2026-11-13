@@ -81,6 +81,10 @@ mascotas/
 
 Los estilos que se repiten entre pantallas (márgenes, texto gris, botones chicos, etc.) están como clases utilitarias en `frontend/src/styles.css`.
 
+### Formularios
+
+En el proyecto usamos las dos formas de armar formularios que vimos en la cursada, cada una en pantallas distintas:
+
 | Formularios | Cómo están hechos |
 | ----------- | ----------------- |
 | Login y registro | **Signal Forms** (`@angular/forms/signals`) |
@@ -89,8 +93,9 @@ Los estilos que se repiten entre pantallas (márgenes, texto gris, botones chico
 Reglas que seguimos:
 
 - Un mismo componente nunca mezcla las dos formas.
-- Las validaciones se declaran en el TypeScript y cada campo muestra su mensaje de error debajoo tocó.
-- Las validaciones propias (por ejemplo, que la fecha de nacimiento no sea futura) son funciones que devuelven `null` si el valor está bien, o un objeto con el nombre del error si esta mal.
+- Las validaciones se declaran en el TypeScript y cada campo muestra su mensaje de error debajo, recién cuando el usuario lo tocó.
+- Las validaciones propias (por ejemplo, que la fecha de nacimiento no sea futura) son funciones que devuelven `null` si el valor está bien, o un objeto con el nombre del error si está mal.
+
 ---
 
 ## 🔒 Seguridad: cómo funciona el login con JWT
@@ -144,6 +149,23 @@ La app queda en `http://localhost:4200`. Las llamadas a `/api` se redirigen al b
 
 Para generar el build de producción (`frontend/dist/`, que también sirve Spring Boot en el puerto 8080):
 
+```bash                                   |
+| `JWT_SECRET`        | Clave para firmar los tokens (Base64)     | clave de desarrollo                       |
+| `JWT_EXPIRATION_MS` | Duración del token en milisegundos        | `28800000` (8 horas)                      |
+| `CORS_ALLOWED_ORIGINS` | Orígenes permitidos, separados por coma | `http://localhost:4200,http://localhost:8080` |
+
+### Frontend
+
+```bash
+cd PetCare/frontend
+npm install
+npm start
+```
+
+La app queda en `http://localhost:4200`. Las llamadas a `/api` se redirigen al backend (`http://localhost:8080`) mediante `proxy.conf.json`.
+
+Para generar el build de producción (`frontend/dist/`, que también sirve Spring Boot en el puerto 8080):
+
 ```bash
 npm run build
 ```
@@ -160,9 +182,7 @@ cd PetCare
 ```
 
 - `JwtServiceTest`: generación y validación de tokens (modificados, vencidos, de otra clave).
-- `AuthIntegrationTest`: flujo completo registro → login → token → endpoints protegidos, 401 sin token y 403 por rol.
-- `TurnoServiceTest`, `MascotaServiceTest`, `CarritoServiceTest`, `ProfesionalServiceTest`: lógica de negocio con Mockito.
-
+- `AuthIntegra
 ### Frontend
 
 ```bash
@@ -183,3 +203,15 @@ Cada componente tiene su `.spec.ts`. Además hay tests del login con JWT: `AuthS
 - Tiziana Ponce
 
 Proyecto desarrollado para la carrera de Programación – UTN.
+
+Al copiar, arrancá desde # 🐾 PetCare y terminá en la última línea, "Proyecto desarrollado...". Las líneas de cuatro comillas invertidas (````) del principio y del final no van: solo marcan dónde empieza y termina el archivo.
+
+---
+
+## 👥 Autores
+
+- Matías Zwicker
+- Matias Felissia
+- Tiziana Ponce
+
+Proyecto desarrollado para la carrera de Programación – UTN.go
