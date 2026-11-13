@@ -164,4 +164,13 @@ public class ProfesionalService {
         double precioHora = (rol == Rol.PASEADOR || rol == Rol.CUIDADOR) ? 1500.0 : 0.0;
         return new double[]{precioBase, precioHora};
     }
+/** Precio total de un turno: base + precio por hora a partir de la segunda hora. */
+public static double calcularPrecioTurno(Rol rol, int horas) {
+    if (horas < 1) {
+        throw new IllegalArgumentException("La cantidad de horas debe ser al menos 1");
+    }
+    double[] precios = calcularPrecios(rol);
+    return precios[0] + precios[1] * (horas - 1);
+}
+
 }

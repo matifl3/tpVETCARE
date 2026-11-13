@@ -88,7 +88,7 @@ public class CarritoService {
      * Agrega un turno (reserva de servicio) al carrito activo.
      */
     public CarritoDTO agregarTurno(int idUsuario, Integer idProfesional, Integer idMascota,
-                                    LocalDate fecha, Integer horas, Double precio) {
+                                    LocalDate fecha, Integer horas) {
         Carrito carrito = obtenerOCrearCarrito(idUsuario);
 
         Profesional prof = profesionalRepository.findById(idProfesional)
@@ -107,8 +107,7 @@ public class CarritoService {
         ct.setNombreMascota(masc.getNombre());
         ct.setFecha(fecha);
         ct.setHoras(horas);
-        ct.setPrecio(precio);
-
+        ct.setPrecio(ProfesionalService.calcularPrecioTurno(prof.getRol(), horas));
         carrito.getTurnos().add(ct);
         carrito.setFechaActualizacion(LocalDate.now());
         return toDTO(carritoRepository.save(carrito));

@@ -108,7 +108,7 @@ export class ReservarTurnoPageComponent implements OnInit, OnDestroy {
         idMascota: Number(this.idMascota()),
         fecha: this.fecha(),
         horas: this.permiteHoras() ? Number(this.horas()) : 1,
-        precio: this.total(),
+        
       })
       .subscribe({
         next: () => {

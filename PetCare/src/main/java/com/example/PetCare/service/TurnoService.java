@@ -22,7 +22,8 @@ public class TurnoService {
     private final MascotaRepository mascotaRepository;
     private final ProfesionalRepository profesionalRepository;
 
-    public TurnoService(TurnoRepository turnoRepository, MascotaRepository mascotaRepository, ProfesionalRepository profesionalRepository) {
+    public TurnoService(TurnoRepository turnoRepository, MascotaRepository mascotaRepository,
+            ProfesionalRepository profesionalRepository) {
         this.turnoRepository = turnoRepository;
         this.mascotaRepository = mascotaRepository;
         this.profesionalRepository = profesionalRepository;
@@ -70,13 +71,13 @@ public class TurnoService {
     public void verificarDisponibilidad(Integer idProfesional, LocalDate fecha) {
         if (!estaDisponible(idProfesional, fecha)) {
             throw new IllegalArgumentException(
-                "El profesional no tiene disponibilidad para la fecha " + fecha);
+                    "El profesional no tiene disponibilidad para la fecha " + fecha);
         }
     }
 
     public boolean estaDisponible(Integer idProfesional, LocalDate fecha) {
         List<Turno> existentes = turnoRepository.findByProfesionalIdUsuarioAndFechaAndActivoTrueAndEstadoTurno(
-            idProfesional, fecha, Estado_Turno.CONFIRMADO);
+                idProfesional, fecha, Estado_Turno.CONFIRMADO);
         return existentes.isEmpty();
     }
 
@@ -91,11 +92,8 @@ public class TurnoService {
 
         verificarDisponibilidad(dto.getId_profesional(), dto.getFecha());
 
-        double[] precios = ProfesionalService.calcularPrecios(fullProf.getRol());
-        double precioBase = precios[0];
-        double precioHora = precios[1];
         int horas = dto.getHoras() != null ? dto.getHoras() : 1;
-        double total = precioBase + (precioHora * (horas - 1));
+        double total = ProfesionalService.calcularPrecioTurno(fullProf.getRol(), horas);
 
         dto.setEstadoTurno(Estado_Turno.CONFIRMADO);
         dto.setActivo(true);
@@ -122,11 +120,15 @@ public class TurnoService {
         return false;
     }
 
-    // Busca la entidad existente y modifica sus campos: como ya tiene ID, save() hace UPDATE (no INSERT).
+    // Busca la entidad existente y modifica sus campos: como ya tiene ID, save()
+    // hace UPDATE (no INSERT).
     public TurnoDTO actualizar(Integer idTurno, TurnoDTO dto) {
-        Mascota mascota = mascotaRepository.findById(dto.getId_mascota()).orElseThrow(() -> new NoEncontradoException("Mascota no existe"));
-        Profesional profesional = profesionalRepository.findById(dto.getId_profesional()).orElseThrow(() -> new NoEncontradoException("Profesional no existe"));
-        Turno turno = turnoRepository.findById(idTurno).orElseThrow(() -> new NoEncontradoException("El turno no existe"));
+        Mascota mascota = mascotaRepository.findById(dto.getId_mascota())
+                .orElseThrow(() -> new NoEncontradoException("Mascota no existe"));
+        Profesional profesional = profesionalRepository.findById(dto.getId_profesional())
+                .orElseThrow(() -> new NoEncontradoException("Profesional no existe"));
+        Turno turno = turnoRepository.findById(idTurno)
+                .orElseThrow(() -> new NoEncontradoException("El turno no existe"));
         turno.setFecha(dto.getFecha());
         turno.setEstadoTurno(dto.getEstadoTurno());
         turno.setMascota(mascota);
@@ -142,7 +144,6 @@ public class TurnoService {
     public boolean confirmarTurno(Integer idTurno) {
         return turnoRepository.confirmarTurno(idTurno, Estado_Turno.CONFIRMADO) > 0;
     }
-
 
     /// pasa de entidad a dto
     private TurnoDTO toDTO(Turno entity) {
@@ -165,7 +166,8 @@ public class TurnoService {
         Turno entity = new Turno();
         entity.setEstadoTurno(dto.getEstadoTurno());
         entity.setFecha(dto.getFecha());
-        if (dto.getId() != null) entity.setIdTurno(dto.getId());
+        if (dto.getId() != null)
+            entity.setIdTurno(dto.getId());
         entity.setMascota(mascota);
         entity.setProfesional(profesional);
         entity.setHoras(dto.getHoras());
