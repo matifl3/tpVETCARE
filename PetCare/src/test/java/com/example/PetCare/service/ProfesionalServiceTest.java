@@ -1,4 +1,7 @@
 package com.example.PetCare.service;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.PetCare.enums.Rol;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +22,25 @@ class ProfesionalServiceTest {
             "CUIDADOR,    2500, 1500",
     })
     void calcularPrecios(Rol rol, double base, double porHora) {
-        assertArrayEquals(new double[]{base, porHora}, ProfesionalService.calcularPrecios(rol));
+        assertArrayEquals(new double[] { base, porHora }, ProfesionalService.calcularPrecios(rol));
+    }
+
+    @ParameterizedTest(name = "{0} x {1}h = {2}")
+    @DisplayName("Precio total de un turno según rol y horas")
+    @CsvSource({
+            "VETERINARIO, 1, 5000",
+            "PASEADOR,    1, 3000",
+            "PASEADOR,    3, 6000",
+            "CUIDADOR,    2, 4000",
+    })
+    void calcularPrecioTurno(Rol rol, int horas, double esperado) {
+        assertEquals(esperado, ProfesionalService.calcularPrecioTurno(rol, horas));
+    }
+
+    @Test
+    @DisplayName("Menos de 1 hora da error")
+    void calcularPrecioTurnoHorasInvalidas() {
+        assertThrows(IllegalArgumentException.class,
+                () -> ProfesionalService.calcularPrecioTurno(Rol.PASEADOR, 0));
     }
 }
