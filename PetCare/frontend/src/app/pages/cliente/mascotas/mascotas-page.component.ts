@@ -58,7 +58,7 @@ export class MascotasPageComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.form.reset;
+    this.form.reset();
     this.editandoId.set(null);
     this.mostrarForm.set(false);
   }
