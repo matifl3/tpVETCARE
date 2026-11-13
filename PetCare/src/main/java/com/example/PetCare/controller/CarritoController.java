@@ -80,8 +80,8 @@ public class CarritoController {
         String fechaStr = (String) body.get("fecha");
         LocalDate fecha = LocalDate.parse(fechaStr);
         Integer horas = body.containsKey("horas") ? Integer.parseInt(body.get("horas").toString()) : 1;
-        Double precio = body.containsKey("precio") ? Double.parseDouble(body.get("precio").toString()) : 0.0;
-        return carritoService.agregarTurno(usuario.getIdUsuario(), idProfesional, idMascota, fecha, horas, precio);
+        return carritoService.agregarTurno(usuario.getIdUsuario(), idProfesional, idMascota, fecha, horas);
+
     }
 
     /**
