@@ -25,6 +25,8 @@ const PRESETS: Preset[] = [
   { id: '30d', label: 'Últimos 30 días', agrupacion: 'DIA' },
   { id: '6m', label: 'Últimos 6 meses', agrupacion: 'SEMANA' },
   { id: '12m', label: 'Últimos 12 meses', agrupacion: 'MES' },
+  { id: 'prox30d', label: 'Próximos 30 días', agrupacion: 'DIA' },
+  { id: 'prox12m', label: 'Próximos 12 meses', agrupacion: 'MES' },
   { id: 'anio', label: 'Este año', agrupacion: 'MES' },
   { id: 'custom', label: 'Personalizado', agrupacion: null },
 ];
@@ -53,7 +55,7 @@ export class AdminTurnosEstadisticasPageComponent implements OnInit {
   readonly presets = PRESETS;
   readonly agrupaciones = AGRUPACIONES;
 
-  readonly preset = signal('12m');
+  readonly preset = signal('anio');
   readonly agrupacion = signal('MES');
   readonly desdeCustom = signal('');
   readonly hastaCustom = signal('');
@@ -179,8 +181,18 @@ export class AdminTurnosEstadisticasPageComponent implements OnInit {
         desde.setMonth(desde.getMonth() - 12);
         return { desde: this.aISO(desde), hasta };
       }
+      case 'prox30d': {
+        const hastaProx30d = new Date(hoy);
+        hastaProx30d.setDate(hastaProx30d.getDate() + 30);
+        return { desde: this.aISO(hoy), hasta: this.aISO(hastaProx30d) };
+      }
+      case 'prox12m': {
+        const hastaProx12m = new Date(hoy);
+        hastaProx12m.setMonth(hastaProx12m.getMonth() + 12);
+        return { desde: this.aISO(hoy), hasta: this.aISO(hastaProx12m) };
+      }
       case 'anio':
-        return { desde: `${hoy.getFullYear()}-01-01`, hasta };
+        return { desde: `${hoy.getFullYear()}-01-01`, hasta: `${hoy.getFullYear()}-12-31` };
       case 'custom': {
         const desde = this.desdeCustom();
         const hastaCustom = this.hastaCustom();
