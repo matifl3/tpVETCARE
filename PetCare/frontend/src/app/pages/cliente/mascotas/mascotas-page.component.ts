@@ -1,52 +1,46 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { inputValue } from '../../../core/form.helpers';
 import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
 
-interface MascotaForm {
-  nombre: string;
-  especie: string;
-  raza: string;
-  sexo: string;
-  peso: string;
-  fechaNacimiento: string;
-}
-
-const FORM_VACIO: MascotaForm = {
-  nombre: '',
-  especie: 'PERRO',
-  raza: '',
-  sexo: '',
-  peso: '',
-  fechaNacimiento: '',
-};
-
 @Component({
-    selector: 'app-mascotas-page',
-    imports: [RouterLink],
-    templateUrl: './mascotas-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './mascotas-page.component.css'
+  selector: 'app-mascotas-page',
+  imports: [RouterLink, ReactiveFormsModule],
+  templateUrl: './mascotas-page.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './mascotas-page.component.css',
 })
 export class MascotasPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);
-
-  protected readonly inputValue = inputValue;
+  private readonly fb = inject(NonNullableFormBuilder);
 
   readonly mascotas = signal<Mascota[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly mostrarForm = signal(false);
   readonly editandoId = signal<number | null>(null);
-  readonly form = signal<MascotaForm>({ ...FORM_VACIO });
+  readonly form = this.fb.group({
+    nombre: ['', [Validators.required, Validators.maxLength(50)]],
+    especie: ['PERRO', Validators.required],
+    raza: [''],
+    sexo: [''],
+    peso: this.fb.control<number | null>(null, Validators.min(0.1)),
+    fechaNacimiento: [''],
+  });
 
   ngOnInit(): void {
     this.cargarMascotas();
-  }
-
-  upd(patch: Partial<MascotaForm>): void {
-    this.form.set({ ...this.form(), ...patch });
   }
 
   cargarMascotas(): void {
@@ -64,7 +58,7 @@ export class MascotasPageComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.form.set({ ...FORM_VACIO });
+    this.form.reset;
     this.editandoId.set(null);
     this.mostrarForm.set(false);
   }
@@ -74,17 +68,21 @@ export class MascotasPageComponent implements OnInit {
     else this.mostrarForm.set(true);
   }
 
-  handleSubmit(event: Event): void {
-    event.preventDefault();
+  guardar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.error.set('');
-    const form = this.form();
+    const valores = this.form.getRawValue();
     const data: Partial<Mascota> = {
-      ...form,
-      peso: form.peso ? parseFloat(form.peso) : null,
-      fechaNacimiento: form.fechaNacimiento || null,
+      ...valores,
+      fechaNacimiento: valores.fechaNacimiento || null,
     };
     const id = this.editandoId();
-    const req = id ? this.mascotaService.actualizarMia(id, data) : this.mascotaService.crear(data);
+    const req = id
+      ? this.mascotaService.actualizarMia(id, data)
+      : this.mascotaService.crear(data);
     req.subscribe({
       next: () => {
         this.resetForm();
@@ -95,12 +93,12 @@ export class MascotasPageComponent implements OnInit {
   }
 
   handleEditar(m: Mascota): void {
-    this.form.set({
+    this.form.patchValue({
       nombre: m.nombre,
       especie: m.especie,
       raza: m.raza || '',
       sexo: m.sexo || '',
-      peso: m.peso ? String(m.peso) : '',
+      peso: m.peso ?? null,
       fechaNacimiento: m.fechaNacimiento || '',
     });
     this.editandoId.set(m.idMascota);
