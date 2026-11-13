@@ -19,3 +19,14 @@
   background: var(--color-acento);
   color: var(--color-blanco);
 }
+.error-campo {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-error);
+  font-size: 0.85rem;
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: var(--color-error);
+}
