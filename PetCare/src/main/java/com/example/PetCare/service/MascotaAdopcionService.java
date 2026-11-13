@@ -29,7 +29,9 @@ public class MascotaAdopcionService {
         this.mascotaRepository = mascotaRepository;
     }
 
-    /// listados
+    // =========================================================================
+    // CONSULTAS Y LISTADOS
+    // =========================================================================    
     public List<MascotaAdopcionDTO> listarTodos() {
         return mascotaAdopcionRepository.findAll().stream()
                 .map(this::toDTO)
@@ -81,61 +83,60 @@ public class MascotaAdopcionService {
     }
 
 
-    ///ABM
+    // =========================================================================
+    // CREAR Y ACTUALIZAR PUBLICACIONES
+    // =========================================================================
     public MascotaAdopcionDTO crearPublicacion(MascotaAdopcionDTO dto) {
-        Mascota mascota;
+        Mascota mascota = (dto.getIdMascota() != null)
+            ? obtenerYValidarMascotaExistente(dto.getIdMascota())
+            : crearNuevaMascota(dto);
 
-        if (dto.getIdMascota() != null) {
-            mascota = mascotaRepository.findById(dto.getIdMascota())
-                    .orElseThrow(() -> new EntityNotFoundException("No se encontró la mascota con ID: " + dto.getIdMascota()));
+        MascotaAdopcion publicacion = armarNuevaPublicacion(dto, mascota);
+        MascotaAdopcion guardada = mascotaAdopcionRepository.save(publicacion);
 
-            if (!mascota.isActivo()) {
-                throw new IllegalStateException("La mascota seleccionada está dada de baja.");
-            }
-            if (mascota.getUsuario() != null) {
-                throw new IllegalStateException("No se puede publicar una mascota que ya pertenece a un cliente.");
-            }
-            if (mascotaAdopcionRepository.existsByMascotaIdMascota(mascota.getIdMascota())) {
-                throw new IllegalStateException("Esta mascota ya tiene una publicación de adopción asociada.");
-            }
-        } else {
+        return toDTO(guardada);
+    }
 
-            Mascota nuevaMascota = new Mascota();
-            nuevaMascota.setNombre(dto.getNombre());
-            nuevaMascota.setEspecie(dto.getEspecie());
-            nuevaMascota.setRaza(dto.getRaza());
-            nuevaMascota.setSexo(dto.getSexo());
-            nuevaMascota.setPeso(dto.getPeso());
-            nuevaMascota.setFechaNacimiento(dto.getFechaNacimiento());
-            nuevaMascota.setObservaciones(dto.getObservaciones());
-            nuevaMascota.setActivo(true);
-            nuevaMascota.setUsuario(null);
-
-            HistorialClinico hc = new HistorialClinico(); 
-            hc.setMascota(nuevaMascota); 
-            nuevaMascota.setHistorialClinico(hc);
-
-            mascota = mascotaRepository.save(nuevaMascota);
+    
+    private Mascota crearNuevaMascota(MascotaAdopcionDTO dto) {
+        if (dto.getNombre() == null || dto.getNombre().isBlank() ||
+        dto.getEspecie() == null || dto.getEspecie().isBlank() ||
+        dto.getSexo() == null || dto.getSexo().isBlank()) {
+            throw new IllegalArgumentException("Para crear una mascota nueva, nombre, especie y sexo son obligatorios.");
         }
-
-        MascotaAdopcion publicacion = new MascotaAdopcion();
-        publicacion.setTamanio(dto.getTamanio());
-        publicacion.setFoto(dto.getFoto());
-        publicacion.setDescripcion(dto.getDescripcion());
-        publicacion.setCastrado(dto.isCastrado());
-        publicacion.setDesparasitado(dto.isDesparasitado());
+        
+        Mascota nuevaMascota = new Mascota();
+        nuevaMascota.setNombre(dto.getNombre());
+        nuevaMascota.setEspecie(dto.getEspecie());
+        nuevaMascota.setRaza(dto.getRaza());
+        nuevaMascota.setSexo(dto.getSexo());
+        nuevaMascota.setPeso(dto.getPeso() != null ? dto.getPeso() : 0.0);
+        nuevaMascota.setFechaNacimiento(dto.getFechaNacimiento());
+        nuevaMascota.setObservaciones(dto.getObservaciones());
+        nuevaMascota.setActivo(true);
+        nuevaMascota.setUsuario(null);
+        
+        HistorialClinico hc = new HistorialClinico();
+        hc.setMascota(nuevaMascota);
+        nuevaMascota.setHistorialClinico(hc);
+        
+        return mascotaRepository.save(nuevaMascota);
+    }
+    
+    private MascotaAdopcion armarNuevaPublicacion(MascotaAdopcionDTO dto, Mascota mascota) {
+        MascotaAdopcion publicacion = toEntity(dto, mascota);
         publicacion.setEstado(EstadoAdopcionMascota.DISPONIBLE);
         publicacion.setFechaPublicacion(LocalDate.now());
-        publicacion.setMascota(mascota);
-
-        MascotaAdopcion guardada = mascotaAdopcionRepository.save(publicacion);
-        return toDTO(guardada);
+        return publicacion;
     }
     
 
     public MascotaAdopcionDTO actualizarPublicacion(Integer idMascotaAdopcion, MascotaAdopcionDTO dto) {
-        MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
-        .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
+        MascotaAdopcion publicacionExistente = obtenerPublicacion(idMascotaAdopcion);
+        
+        if (publicacionExistente.getEstado() == EstadoAdopcionMascota.ADOPTADA) {
+            throw new IllegalStateException("No se puede editar una publicación que ya figura como ADOPTADA.");
+        }
 
         publicacionExistente.setTamanio(dto.getTamanio());
         publicacionExistente.setFoto(dto.getFoto());
@@ -146,68 +147,112 @@ public class MascotaAdopcionService {
         MascotaAdopcion actualizada = mascotaAdopcionRepository.save(publicacionExistente);
         return toDTO(actualizada);
     }
-
-
+    
+    
+    // =========================================================================
+    // GESTIÓN DE ESTADOS DE PUBLICACIÓN
+    // =========================================================================
     public void pausarPublicacion(Integer idMascotaAdopcion) {
-        MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
-                
-        if(publicacionExistente.getEstado() != EstadoAdopcionMascota.DISPONIBLE) {
-            throw new IllegalStateException("Solo se pueden pausar publicaciones que estén en estado DISPONIBLE.");
-        }
+        MascotaAdopcion publicacion = obtenerPublicacionEnEstado(
+            idMascotaAdopcion,
+            EstadoAdopcionMascota.DISPONIBLE,
+            "Solo se pueden pausar publicaciones que estén en estado DISPONIBLE."
+        );
         
-        publicacionExistente.setEstado(EstadoAdopcionMascota.PAUSADA);
-        mascotaAdopcionRepository.save(publicacionExistente);
+        publicacion.setEstado(EstadoAdopcionMascota.PAUSADA);
+        mascotaAdopcionRepository.save(publicacion);
     }
     
     
     public void reanudarPublicacionPausada(Integer idMascotaAdopcion) {
-        MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
-                
-        if(publicacionExistente.getEstado() != EstadoAdopcionMascota.PAUSADA) {
-            throw new IllegalStateException("Solo se pueden reanudar publicaciones que estén en estado PAUSADA.");
-        }
-        
-        publicacionExistente.setEstado(EstadoAdopcionMascota.DISPONIBLE);
-        mascotaAdopcionRepository.save(publicacionExistente);
+        MascotaAdopcion publicacion = obtenerPublicacionEnEstado(
+            idMascotaAdopcion,
+            EstadoAdopcionMascota.PAUSADA,
+            "Solo se pueden reanudar publicaciones que estén en estado PAUSADA."
+        );
+        validarMascotaActiva(publicacion);
+
+        publicacion.setEstado(EstadoAdopcionMascota.DISPONIBLE);
+        mascotaAdopcionRepository.save(publicacion);
     }
 
+    
+    public void republicarPublicacionAdoptada(Integer idMascotaAdopcion) {
+        MascotaAdopcion publicacion = obtenerPublicacionEnEstado(
+            idMascotaAdopcion,
+            EstadoAdopcionMascota.ADOPTADA,
+            "Solo se pueden republicar publicaciones que estén en estado ADOPTADA."
+        );
+        validarMascotaActiva(publicacion);
 
-    public void reanudarPublicacionAdoptada(Integer idMascotaAdopcion) {
-        MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
-                
-        if(publicacionExistente.getEstado() != EstadoAdopcionMascota.ADOPTADA) {
-            throw new IllegalStateException("Solo se pueden reanudar publicaciones que estén en estado ADOPTADA.");
-        }
-
-        publicacionExistente.setEstado(EstadoAdopcionMascota.DISPONIBLE);
-        publicacionExistente.getMascota().setUsuario(null);
-        mascotaAdopcionRepository.save(publicacionExistente);
+        publicacion.setEstado(EstadoAdopcionMascota.DISPONIBLE);
+        publicacion.getMascota().setUsuario(null);
+        mascotaAdopcionRepository.save(publicacion);
     }
     
-
+    
     public void darEnAdopcion(Integer idMascotaAdopcion, Usuario usuarioAdoptante) {
-        MascotaAdopcion publicacionExistente = mascotaAdopcionRepository.findById(idMascotaAdopcion)
-        .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
-
-        if(publicacionExistente.getEstado() != EstadoAdopcionMascota.DISPONIBLE) {
-            throw new IllegalStateException("Solo se pueden dar en adopción publicaciones que estén en estado DISPONIBLE.");
-        }
-        if(usuarioAdoptante == null) {
+        if (usuarioAdoptante == null) {
             throw new IllegalArgumentException("El usuario adoptante no puede ser nulo.");
         }
-        if(publicacionExistente.getMascota().isActivo() == false) {
-            throw new IllegalStateException("No se puede dar en adopción una mascota que está dada de baja.");
-        }
-        publicacionExistente.setEstado(EstadoAdopcionMascota.ADOPTADA);
-        publicacionExistente.getMascota().setUsuario(usuarioAdoptante);
-        mascotaAdopcionRepository.save(publicacionExistente);
+        
+        MascotaAdopcion publicacion = obtenerPublicacionEnEstado(
+            idMascotaAdopcion,
+            EstadoAdopcionMascota.DISPONIBLE,
+            "Solo se pueden dar en adopción publicaciones que estén en estado DISPONIBLE."
+        );
+        validarMascotaActiva(publicacion);
+        
+        publicacion.setEstado(EstadoAdopcionMascota.ADOPTADA);
+        publicacion.getMascota().setUsuario(usuarioAdoptante);
+        mascotaAdopcionRepository.save(publicacion);
     }
 
+    
+    // =========================================================================
+    // MÉTODOS AUXILIARES Y VALIDACIONES INTERNAS
+    // =========================================================================
+    private Mascota obtenerYValidarMascotaExistente(Integer idMascota) {
+        Mascota mascota = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró la mascota con ID: " + idMascota));
 
-    /// pasa de entidad a dto
+        if (!mascota.isActivo()) {
+            throw new IllegalStateException("La mascota seleccionada está dada de baja.");
+        }
+        if (mascota.getUsuario() != null) {
+            throw new IllegalStateException("No se puede publicar una mascota que ya pertenece a un cliente.");
+        }
+        if (mascotaAdopcionRepository.existsByMascotaIdMascota(mascota.getIdMascota())) {
+            throw new IllegalStateException("Esta mascota ya tiene una publicación de adopción asociada.");
+        }
+
+        return mascota;
+    }
+
+    private MascotaAdopcion obtenerPublicacion(Integer idMascotaAdopcion) {
+        return mascotaAdopcionRepository.findById(idMascotaAdopcion)
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró la publicación con ID: " + idMascotaAdopcion));
+    }
+            
+    private MascotaAdopcion obtenerPublicacionEnEstado(Integer idMascotaAdopcion, EstadoAdopcionMascota estadoEsperado, String mensajeError) {
+        MascotaAdopcion publicacion = obtenerPublicacion(idMascotaAdopcion);
+        if (publicacion.getEstado() != estadoEsperado) {
+            throw new IllegalStateException(mensajeError);
+        }
+        return publicacion;
+    }
+
+    private void validarMascotaActiva(MascotaAdopcion publicacion) {
+        if (!publicacion.getMascota().isActivo()) {
+            throw new IllegalStateException("La mascota asociada está dada de baja.");
+        }
+    }
+
+    
+
+    // =========================================================================
+    // MAPPERS (ENTIDAD <-> DTO)
+    // =========================================================================
     public MascotaAdopcionDTO toDTO(MascotaAdopcion entidad) {
         Mascota m = entidad.getMascota();
         MascotaAdopcionDTO dto = new MascotaAdopcionDTO();
@@ -239,7 +284,8 @@ public class MascotaAdopcionService {
         return dto;
     }
 
-    /// pasa de dto a entidad
+
+
     public MascotaAdopcion toEntity(MascotaAdopcionDTO dto, Mascota mascota) {
         MascotaAdopcion entity = new MascotaAdopcion();
         entity.setMascota(mascota);
@@ -252,7 +298,7 @@ public class MascotaAdopcionService {
         return entity;
     }
 
-    //pasa de mascota a adopcion dto
+
     private MascotaAdopcionDTO mascotaToAdopcionDTO(Mascota m) {
         MascotaAdopcionDTO dto = new MascotaAdopcionDTO();
         dto.setIdMascota(m.getIdMascota());

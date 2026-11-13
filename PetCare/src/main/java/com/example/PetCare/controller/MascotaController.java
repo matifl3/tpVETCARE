@@ -2,12 +2,10 @@ package com.example.PetCare.controller;
 
 import com.example.PetCare.dto.MascotaDTO;
 import com.example.PetCare.exceptions.NoEncontradoException;
-import com.example.PetCare.model.Mascota;
 import com.example.PetCare.model.Usuario;
 import com.example.PetCare.service.MascotaService;
 import com.example.PetCare.utils.AuthUtils;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -125,6 +123,6 @@ public class MascotaController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void eliminar(@PathVariable Integer id) {
-        boolean eliminado = mascotaService.eliminar(id);
+        mascotaService.eliminar(id);
     }
 }

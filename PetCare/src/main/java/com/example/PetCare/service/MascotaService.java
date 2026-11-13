@@ -109,6 +109,7 @@ public class MascotaService {
         mascotaRepository.save(entity);
         return true;
     }
+    
 
     public boolean actualizar(Integer idMascota, MascotaDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);
