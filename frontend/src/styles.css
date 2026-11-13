@@ -1,7 +1,5 @@
 /*
  * Paleta de colores de PetCare.
- * Todos los colores de la app se declaran acá una sola vez y los CSS los usan con var(--nombre).
- * Para cambiar un color en toda la app, se cambia solo en este bloque.
  * Los que terminan en 2 dígitos extra (#rrggbbAA) llevan transparencia.
  */
 :root {
