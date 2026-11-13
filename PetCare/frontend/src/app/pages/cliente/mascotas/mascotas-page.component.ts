@@ -1,18 +1,15 @@
-import {
-  Component,
-  OnInit,
-  inject,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
-import {
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import {Component,OnInit,inject,signal,ChangeDetectionStrategy,} from '@angular/core';
+import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
+
+/** La fecha de nacimiento no puede ser posterior a hoy. */
+function fechaNoFutura(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+  const hoy = new Date().toLocaleDateString('en-CA');
+  return control.value>hoy ? {fechaFutura: true} : null;
+}
 
 @Component({
   selector: 'app-mascotas-page',
@@ -30,14 +27,14 @@ export class MascotasPageComponent implements OnInit {
   readonly error = signal('');
   readonly mostrarForm = signal(false);
   readonly editandoId = signal<number | null>(null);
-  readonly form = this.fb.group({
-    nombre: ['', [Validators.required, Validators.maxLength(50)]],
-    especie: ['PERRO', Validators.required],
-    raza: [''],
-    sexo: [''],
-    peso: this.fb.control<number | null>(null, Validators.min(0.1)),
-    fechaNacimiento: [''],
-  });
+ readonly form = this.fb.group({
+  nombre: ['', [Validators.required, Validators.maxLength(50)]],
+  especie: ['', Validators.required],
+  raza: ['', Validators.required],
+  sexo: ['', Validators.required],
+  peso: this.fb.control<number | null>(null, [Validators.required, Validators.min(0.1)]),
+  fechaNacimiento: ['', [Validators.required, fechaNoFutura]],
+});
 
   ngOnInit(): void {
     this.cargarMascotas();
