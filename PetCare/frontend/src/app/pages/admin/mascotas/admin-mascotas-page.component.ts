@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
@@ -12,21 +13,25 @@ import { MascotaService } from '../../../services/mascota.service';
 })
 export class AdminMascotasPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly mascotas = signal<Mascota[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
 
   ngOnInit(): void {
-    this.mascotaService.listarTodos().subscribe({
-      next: (data) => {
-        this.mascotas.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.mascotaService
+      .listarTodos()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.mascotas.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 }

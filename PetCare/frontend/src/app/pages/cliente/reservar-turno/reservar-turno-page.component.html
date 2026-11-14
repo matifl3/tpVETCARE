@@ -9,7 +9,7 @@
         <span class="icono">👨‍⚕️</span>
         <div>
           <h3>{{ prof.nombre }} {{ prof.apellido }}</h3>
-          <p class="texto-gris">{{ capitalizar(prof.rol) }}</p>
+          <p class="texto-gris">{{ prof.rol | nombreRol }}</p>
           @if (prof.experiencia) {
             <p class="texto-gris texto-chico">{{ prof.experiencia }}</p>
           }

@@ -30,6 +30,20 @@ describe('DashboardComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
+  it('actualiza el usuario y el rol de la barra cuando cambia la sesión', () => {
+    const nombre = () => fixture.nativeElement.querySelector('.nav-user')?.textContent ?? '';
+    const rol = () => fixture.nativeElement.querySelector('.nav-role')?.textContent ?? '';
+
+    expect(nombre()).toContain('Ana');
+    expect(rol()).toContain('Cliente');
+
+    auth.user.set({ ...USUARIO_CLIENTE, nombre: 'Beto', rol: 'VETERINARIO' });
+    fixture.detectChanges();
+
+    expect(nombre()).toContain('Beto');
+    expect(rol()).toContain('Veterinario');
+  });
+
   it('cerrar sesión borra el token y vuelve al login', () => {
     localStorage.setItem('petcare_token', 'token-123');
 

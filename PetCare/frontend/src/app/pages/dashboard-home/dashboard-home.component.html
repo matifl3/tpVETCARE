@@ -1,14 +1,14 @@
 <div class="dashboard">
-  <h1>{{ user.rol === 'ADMIN' ? 'Panel de Administración' : '¡Bienvenido, ' + user.nombre + '!' }}</h1>
+  <h1>{{ esAdmin() ? 'Panel de Administración' : '¡Bienvenido, ' + user().nombre + '!' }}</h1>
   <p>
     {{
-      user.rol === 'ADMIN'
-        ? 'Bienvenido, ' + user.nombre + '. Gestioná la plataforma PetCare.'
+      esAdmin()
+        ? 'Bienvenido, ' + user().nombre + '. Gestioná la plataforma PetCare.'
         : 'Gestioná tus mascotas, turnos y más desde tu panel.'
     }}
   </p>
 
-  @if (user.rol === 'CLIENTE') {
+  @if (esCliente()) {
     <div class="card-grid">
       <a routerLink="/dashboard/mascotas" class="dash-card link-tarjeta">
         <span class="dash-icon">🐕</span>
@@ -49,7 +49,7 @@
     </div>
   }
 
-  @if (user.rol === 'ADMIN') {
+  @if (esAdmin()) {
     <div class="card-grid">
       <a routerLink="/dashboard/admin/usuarios" class="dash-card link-tarjeta">
         <span class="dash-icon">👥</span>
@@ -61,8 +61,8 @@
         <span class="dash-icon">📋</span>
         <h3>
           Postulaciones
-          @if (user.pendientes) {
-            <span class="nav-role">{{ user.pendientes }} pendientes</span>
+          @if (user().pendientes) {
+            <span class="nav-role">{{ user().pendientes }} pendientes</span>
           }
         </h3>
         <p>Revisá y aprobá solicitudes de profesionales.</p>
@@ -95,7 +95,7 @@
     </div>
   }
 
-  @if (rolesProfesionales.includes(user.rol)) {
+  @if (esProfesional()) {
     <div class="card-grid">
       <a routerLink="/dashboard/profesional" class="dash-card link-tarjeta">
         <span class="dash-icon">📅</span>

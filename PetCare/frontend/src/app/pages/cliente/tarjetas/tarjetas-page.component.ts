@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Tarjeta } from '../../../core/models';
+import { despuesDe } from '../../../core/tiempo.helpers';
 import {
   PATRON_CVV,
   PATRON_NUMERO_TARJETA,
@@ -20,6 +22,7 @@ import { TarjetaService } from '../../../services/tarjeta.service';
 export class TarjetasPageComponent implements OnInit {
    private readonly tarjetaService = inject(TarjetaService);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly tarjetas = signal<Tarjeta[]>([]);
   readonly loading = signal(true);
@@ -40,16 +43,19 @@ export class TarjetasPageComponent implements OnInit {
   }
 
   cargarTarjetas(): void {
-    this.tarjetaService.listar().subscribe({
-      next: (data) => {
-        this.tarjetas.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.tarjetaService
+      .listar()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.tarjetas.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   toggleForm(): void {
@@ -63,23 +69,29 @@ export class TarjetasPageComponent implements OnInit {
       return;
     }
     this.error.set('');
-    this.tarjetaService.agregar(this.form.getRawValue()).subscribe({
-      next: () => {
-        this.success.set('Tarjeta agregada correctamente');
-        this.mostrarForm.set(false);
-        this.form.reset();
-        this.cargarTarjetas();
-        setTimeout(() => this.success.set(''), 3000);
-      },
-      error: (err) => this.error.set(err.message),
-    });
+    this.tarjetaService
+      .agregar(this.form.getRawValue())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.success.set('Tarjeta agregada correctamente');
+          this.mostrarForm.set(false);
+          this.form.reset();
+          this.cargarTarjetas();
+          despuesDe(3000, this.destroyRef).subscribe(() => this.success.set(''));
+        },
+        error: (err) => this.error.set(err.message),
+      });
   }
 
   handleEliminar(id: number): void {
     if (!confirm('¿Eliminar esta tarjeta?')) return;
-    this.tarjetaService.eliminar(id).subscribe({
-      next: () => this.cargarTarjetas(),
-      error: (err) => this.error.set(err.message),
-    });
+    this.tarjetaService
+      .eliminar(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.cargarTarjetas(),
+        error: (err) => this.error.set(err.message),
+      });
   }
 }

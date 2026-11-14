@@ -13,7 +13,7 @@
       <div class="alert alert-success show">{{ success() }}</div>
     }
 
-    @if (esAdiestradorOAdmin) {
+    @if (esAdiestradorOAdmin()) {
       <div class="mb-24">
         <button class="btn-primary" (click)="mostrarForm.set(!mostrarForm())">
           {{ mostrarForm() ? 'Cancelar' : '+ Registrar progreso' }}

@@ -1,4 +1,5 @@
-import {Component,OnInit,inject,signal,ChangeDetectionStrategy,} from '@angular/core';
+import {Component,DestroyRef,OnInit,inject,signal,ChangeDetectionStrategy,} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../core/models';
@@ -21,6 +22,7 @@ function fechaNoFutura(control: AbstractControl): ValidationErrors | null {
 export class MascotasPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);
   private readonly fb = inject(NonNullableFormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly mascotas = signal<Mascota[]>([]);
   readonly loading = signal(true);
@@ -42,16 +44,19 @@ export class MascotasPageComponent implements OnInit {
 
   cargarMascotas(): void {
     this.loading.set(true);
-    this.mascotaService.misMascotas().subscribe({
-      next: (data) => {
-        this.mascotas.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.mascotaService
+      .misMascotas()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.mascotas.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   resetForm(): void {
@@ -80,7 +85,7 @@ export class MascotasPageComponent implements OnInit {
     const req = id
       ? this.mascotaService.actualizarMia(id, data)
       : this.mascotaService.crear(data);
-    req.subscribe({
+    req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.resetForm();
         this.cargarMascotas();
@@ -104,9 +109,12 @@ export class MascotasPageComponent implements OnInit {
 
   handleEliminar(id: number): void {
     if (!confirm('¿Eliminar esta mascota?')) return;
-    this.mascotaService.eliminarMia(id).subscribe({
-      next: () => this.cargarMascotas(),
-      error: (err) => this.error.set(err.message),
-    });
+    this.mascotaService
+      .eliminarMia(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.cargarMascotas(),
+        error: (err) => this.error.set(err.message),
+      });
   }
 }

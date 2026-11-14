@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { form, maxLength, min, required, validate } from '@angular/forms/signals';
 import { forkJoin } from 'rxjs';
@@ -30,6 +31,7 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly mascotaService = inject(MascotaService);
   private readonly historialService = inject(HistorialClinicoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected idMascota = 0;
 
@@ -65,36 +67,41 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
     forkJoin({
       mascota: this.mascotaService.buscarPorId(this.idMascota),
       historial: this.historialService.obtener(this.idMascota),
-    }).subscribe({
-      next: ({ mascota, historial }) => {
-        this.mascota.set(mascota);
-        this.historial.set(historial);
-        this.fichaModel.set({
-          nombre: mascota.nombre ?? '',
-          especie: mascota.especie ?? '',
-          raza: mascota.raza ?? '',
-          sexo: mascota.sexo ?? '',
-          peso: mascota.peso ?? null,
-          fechaNacimiento: mascota.fechaNacimiento ?? '',
-          observaciones: mascota.observaciones ?? '',
-          observacionesHistorial: historial.observaciones ?? '',
-        });
-        this.fichaForm().reset();
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ mascota, historial }) => {
+          this.mascota.set(mascota);
+          this.historial.set(historial);
+          this.fichaModel.set({
+            nombre: mascota.nombre ?? '',
+            especie: mascota.especie ?? '',
+            raza: mascota.raza ?? '',
+            sexo: mascota.sexo ?? '',
+            peso: mascota.peso ?? null,
+            fechaNacimiento: mascota.fechaNacimiento ?? '',
+            observaciones: mascota.observaciones ?? '',
+            observacionesHistorial: historial.observaciones ?? '',
+          });
+          this.fichaForm().reset();
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   /** Vuelve a pedir solo el historial (lo usan las secciones de vacunas y medicamentos). */
   recargarHistorial(): void {
-    this.historialService.obtener(this.idMascota).subscribe({
-      next: (historial) => this.historial.set(historial),
-      error: (err) => this.error.set(err.message),
-    });
+    this.historialService
+      .obtener(this.idMascota)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (historial) => this.historial.set(historial),
+        error: (err) => this.error.set(err.message),
+      });
   }
 
   guardarFicha(): void {
@@ -123,17 +130,19 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
       historial: this.historialService.actualizar(this.idMascota, {
         observaciones: f.observacionesHistorial.trim(),
       }),
-    }).subscribe({
-      next: () => {
-        this.guardando.set(false);
-        this.success.set('Datos guardados correctamente');
-        this.cargar();
-      },
-      error: (err) => {
-        this.guardando.set(false);
-        this.error.set(err.message);
-        this.cargar();
-      },
-    });
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.guardando.set(false);
+          this.success.set('Datos guardados correctamente');
+          this.cargar();
+        },
+        error: (err) => {
+          this.guardando.set(false);
+          this.error.set(err.message);
+          this.cargar();
+        },
+      });
   }
 }

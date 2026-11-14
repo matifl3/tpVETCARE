@@ -1,4 +1,5 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { inputValue } from '../../../core/form.helpers';
@@ -17,6 +18,7 @@ const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', '
 })
 export class AdminReportesPageComponent {
   private readonly reporteService = inject(ReporteService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly inputValue = inputValue;
   protected readonly Number = Number;
@@ -33,6 +35,9 @@ export class AdminReportesPageComponent {
   readonly error = signal('');
   readonly loading = signal(false);
 
+  /** Nombre del mes elegido, derivado de la signal `mes`. */
+  readonly nombreMes = computed(() => this.meses[this.mes() - 1] ?? '');
+
   consultar(): void {
     this.error.set('');
     this.loading.set(true);
@@ -45,7 +50,7 @@ export class AdminReportesPageComponent {
     } else {
       req = this.reporteService.productosMasVendidos(this.anio(), this.mes());
     }
-    req.subscribe({
+    req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.data.set(res);
         this.loading.set(false);

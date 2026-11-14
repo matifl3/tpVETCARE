@@ -74,7 +74,7 @@
             <option value="" disabled>Seleccioná un rol...</option>
             <option value="CLIENTE">Cliente / Adoptante</option>
             @for (rol of rolesProfesionales; track rol) {
-              <option [value]="rol">{{ rol }}</option>
+              <option [value]="rol">{{ rol | nombreRol }}</option>
             }
           </select>
           @if (formularioRegistro.rol().touched() && formularioRegistro.rol().invalid()) {

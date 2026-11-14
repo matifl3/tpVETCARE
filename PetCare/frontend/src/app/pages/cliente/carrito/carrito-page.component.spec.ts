@@ -35,8 +35,8 @@ describe('CarritoPageComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    // Después de comprar, el componente espera 1 segundo y navega.
-    // Con el reloj falso de Jasmine ese setTimeout no corre solo.
+    // Después de comprar, el componente espera 1 segundo (timer RxJS) y navega.
+    // Con el reloj falso de Jasmine ese timer no corre solo.
     jasmine.clock().install();
   });
 

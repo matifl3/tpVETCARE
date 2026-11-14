@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { EstadisticasTurnos } from '../../../../core/models';
 import { TurnoService } from '../../../../services/turno.service';
@@ -28,6 +29,7 @@ import { RankingServiciosComponent } from './components/ranking-servicios/rankin
 })
 export class AdminTurnosEstadisticasPageComponent implements OnInit {
   private readonly turnoService = inject(TurnoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly presets = PRESETS;
   readonly agrupaciones = AGRUPACIONES;
@@ -102,19 +104,22 @@ export class AdminTurnosEstadisticasPageComponent implements OnInit {
     this.loading.set(primeraCarga);
     this.refreshing.set(!primeraCarga);
 
-    this.turnoService.estadisticas(rango.desde, rango.hasta, this.agrupacion()).subscribe({
-      next: (res) => {
-        this.data.set(res);
-        this.actualizadoEn.set(new Date().toLocaleTimeString('es-AR'));
-        this.loading.set(false);
-        this.refreshing.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-        this.refreshing.set(false);
-      },
-    });
+    this.turnoService
+      .estadisticas(rango.desde, rango.hasta, this.agrupacion())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.data.set(res);
+          this.actualizadoEn.set(new Date().toLocaleTimeString('es-AR'));
+          this.loading.set(false);
+          this.refreshing.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+          this.refreshing.set(false);
+        },
+      });
   }
 
   // ==================== FECHAS ====================

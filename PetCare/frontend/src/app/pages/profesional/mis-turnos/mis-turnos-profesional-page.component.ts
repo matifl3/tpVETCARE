@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Turno } from '../../../core/models';
@@ -14,21 +15,25 @@ import { TurnoService } from '../../../services/turno.service';
 export class MisTurnosProfesionalPageComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly turnoService = inject(TurnoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly turnos = signal<Turno[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
 
   ngOnInit(): void {
-    this.turnoService.porProfesional(this.auth.user()!.id).subscribe({
-      next: (data) => {
-        this.turnos.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.turnoService
+      .porProfesional(this.auth.user()!.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.turnos.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 }

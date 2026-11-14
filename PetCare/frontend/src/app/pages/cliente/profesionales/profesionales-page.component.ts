@@ -1,19 +1,22 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Profesional } from '../../../core/models';
+import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
 import { ProfesionalService } from '../../../services/profesional.service';
 
 const ROLES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
 
 @Component({
     selector: 'app-profesionales-page',
-    imports: [RouterLink],
+    imports: [RouterLink, NombreRolPipe],
     templateUrl: './profesionales-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './profesionales-page.component.css'
 })
 export class ProfesionalesPageComponent implements OnInit {
   private readonly profesionalService = inject(ProfesionalService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly roles = ROLES;
 
@@ -29,7 +32,7 @@ export class ProfesionalesPageComponent implements OnInit {
   cargar(rol?: string): void {
     this.loading.set(true);
     const req = rol ? this.profesionalService.porRol(rol) : this.profesionalService.listar();
-    req.subscribe({
+    req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.profesionales.set(data);
         this.loading.set(false);
@@ -44,9 +47,5 @@ export class ProfesionalesPageComponent implements OnInit {
   handleFiltrar(rol: string): void {
     this.filtroRol.set(rol);
     this.cargar(rol);
-  }
-
-  capitalizar(r: string | undefined): string {
-    return r ? r.charAt(0) + r.slice(1).toLowerCase() : '';
   }
 }

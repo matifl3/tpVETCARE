@@ -1,7 +1,6 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
-import { SessionUser } from '../../core/models';
 
 const ROLES_PROFESIONALES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
 
@@ -16,6 +15,12 @@ const ROLES_PROFESIONALES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADO
 export class DashboardHomeComponent {
   private readonly auth = inject(AuthService);
 
-  protected readonly user: SessionUser = this.auth.user()!;
-  protected readonly rolesProfesionales = ROLES_PROFESIONALES;
+  /** Sigue la signal global: el dashboard se actualiza si cambia el usuario. */
+  protected readonly user = computed(() => this.auth.user()!);
+
+  protected readonly esAdmin = computed(() => this.user().rol === 'ADMIN');
+  protected readonly esCliente = computed(() => this.user().rol === 'CLIENTE');
+  protected readonly esProfesional = computed(() =>
+    ROLES_PROFESIONALES.includes(this.user().rol),
+  );
 }

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { inputValue } from '../../../core/form.helpers';
 import { Producto } from '../../../core/models';
@@ -24,6 +25,7 @@ const FORM_VACIO: ProductoForm = { nombre: '', descripcion: '', categoria: '', p
 })
 export class AdminProductosPageComponent implements OnInit {
   private readonly productoService = inject(ProductoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly inputValue = inputValue;
 
@@ -44,16 +46,19 @@ export class AdminProductosPageComponent implements OnInit {
 
   cargar(): void {
     this.loading.set(true);
-    this.productoService.listar().subscribe({
-      next: (data) => {
-        this.productos.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.productoService
+      .listar()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.productos.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   handleSubmit(event: Event): void {
@@ -63,7 +68,7 @@ export class AdminProductosPageComponent implements OnInit {
     const body: Partial<Producto> = { ...form, precio: parseFloat(form.precio), stock: parseInt(form.stock) };
     const id = this.editId();
     const req = id ? this.productoService.actualizar(id, body) : this.productoService.crear(body);
-    req.subscribe({
+    req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.success.set(id ? 'Producto actualizado' : 'Producto creado');
         this.cancelarEdicion();
@@ -92,12 +97,15 @@ export class AdminProductosPageComponent implements OnInit {
 
   eliminar(id: number): void {
     if (!confirm('¿Eliminar producto?')) return;
-    this.productoService.eliminar(id).subscribe({
-      next: () => {
-        this.success.set('Producto eliminado');
-        this.cargar();
-      },
-      error: (err) => this.error.set(err.message),
-    });
+    this.productoService
+      .eliminar(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.success.set('Producto eliminado');
+          this.cargar();
+        },
+        error: (err) => this.error.set(err.message),
+      });
   }
 }

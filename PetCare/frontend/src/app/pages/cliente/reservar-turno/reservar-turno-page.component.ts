@@ -1,8 +1,19 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { catchError, debounce, distinctUntilChanged, forkJoin, map, of, switchMap, timer } from 'rxjs';
 import { inputValue } from '../../../core/form.helpers';
 import { Mascota, Profesional } from '../../../core/models';
+import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
+import { despuesDe } from '../../../core/tiempo.helpers';
 import { CarritoService } from '../../../services/carrito.service';
 import { MascotaService } from '../../../services/mascota.service';
 import { ProfesionalService } from '../../../services/profesional.service';
@@ -12,14 +23,15 @@ const ROLES_CON_HORAS = ['PASEADOR', 'CUIDADOR'];
 
 @Component({
     selector: 'app-reservar-turno-page',
-    imports: [RouterLink],
+    imports: [RouterLink, NombreRolPipe],
     templateUrl: './reservar-turno-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './reservar-turno-page.component.css'
 })
-export class ReservarTurnoPageComponent implements OnInit, OnDestroy {
+export class ReservarTurnoPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly profesionalService = inject(ProfesionalService);
   private readonly mascotaService = inject(MascotaService);
   private readonly turnoService = inject(TurnoService);
@@ -29,8 +41,7 @@ export class ReservarTurnoPageComponent implements OnInit, OnDestroy {
   protected readonly String = String;
   protected readonly hoy = new Date().toISOString().split('T')[0];
 
-  private idProfesional = '';
-  private timer: ReturnType<typeof setTimeout> | undefined;
+  private readonly idProfesional = this.route.snapshot.paramMap.get('idProfesional') ?? '';
 
   readonly profesional = signal<Profesional | null>(null);
   readonly mascotas = signal<Mascota[]>([]);
@@ -42,58 +53,60 @@ export class ReservarTurnoPageComponent implements OnInit, OnDestroy {
   readonly fecha = signal('');
   readonly horas = signal(1);
   readonly idMascota = signal('');
-  readonly disponible = signal<boolean | null>(null);
 
   readonly precioBase = computed(() => this.profesional()?.precioBase || 0);
   readonly precioHora = computed(() => this.profesional()?.precioHora || 0);
   readonly total = computed(() => this.precioBase() + this.precioHora() * (Math.max(this.horas(), 1) - 1));
   readonly permiteHoras = computed(() => ROLES_CON_HORAS.includes(this.profesional()?.rol ?? ''));
 
+  /**
+   * Disponibilidad del profesional para la fecha elegida.
+   * El debounce evita consultar en cada tecla, `distinctUntilChanged` evita
+   * repetir la misma fecha y `switchMap` cancela la consulta anterior. Al
+   * destruirse el componente, `toSignal` corta la suscripción y con ella el
+   * pedido pendiente.
+   */
+  private readonly disponibilidad$ = toObservable(this.fecha).pipe(
+    debounce((fecha) => timer(fecha ? 500 : 0)),
+    distinctUntilChanged(),
+    switchMap((fecha) =>
+      fecha
+        ? this.turnoService.disponibilidad(this.idProfesional, fecha).pipe(
+            map((res) => res?.disponible ?? false),
+            catchError(() => of(false)),
+          )
+        : of(null),
+    ),
+  );
+
+  readonly disponible = toSignal(this.disponibilidad$, { initialValue: null });
+
   ngOnInit(): void {
-    this.idProfesional = this.route.snapshot.paramMap.get('idProfesional') ?? '';
     forkJoin([
       this.profesionalService.buscarPorId(Number(this.idProfesional)),
       this.mascotaService.misMascotas(),
-    ]).subscribe({
-      next: ([prof, masc]) => {
-        this.profesional.set(prof);
-        this.mascotas.set(masc);
-        if (masc.length > 0) this.idMascota.set(String(masc[0].idMascota));
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    ])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ([prof, masc]) => {
+          this.profesional.set(prof);
+          this.mascotas.set(masc);
+          if (masc.length > 0) this.idMascota.set(String(masc[0].idMascota));
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
-  ngOnDestroy(): void {
-    clearTimeout(this.timer);
-  }
-
-  /** Consulta de disponibilidad con debounce de 500 ms. */
   onFecha(fecha: string): void {
     this.fecha.set(fecha);
-    clearTimeout(this.timer);
-    if (!fecha) {
-      this.disponible.set(null);
-      return;
-    }
-    this.timer = setTimeout(() => {
-      this.turnoService.disponibilidad(this.idProfesional, fecha).subscribe({
-        next: (res) => this.disponible.set(res.disponible),
-        error: () => this.disponible.set(false),
-      });
-    }, 500);
   }
 
   onHoras(valor: string): void {
     this.horas.set(parseInt(valor) || 1);
-  }
-
-  capitalizar(r: string | undefined): string {
-    return r ? r.charAt(0) + r.slice(1).toLowerCase() : '';
   }
 
   handleSubmit(event: Event): void {
@@ -108,13 +121,16 @@ export class ReservarTurnoPageComponent implements OnInit, OnDestroy {
         idMascota: Number(this.idMascota()),
         fecha: this.fecha(),
         horas: this.permiteHoras() ? Number(this.horas()) : 1,
-        
+
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.enviando.set(false);
           this.success.set('Turno agregado al carrito');
-          setTimeout(() => this.router.navigate(['/dashboard/carrito']), 1500);
+          despuesDe(1500, this.destroyRef).subscribe(() =>
+            this.router.navigate(['/dashboard/carrito']),
+          );
         },
         error: (err) => {
           this.error.set(err.message);

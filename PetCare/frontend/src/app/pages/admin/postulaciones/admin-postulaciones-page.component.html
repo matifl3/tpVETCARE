@@ -37,7 +37,7 @@
                 <td>{{ p.id }}</td>
                 <td>{{ p.nombre }} {{ p.apellido }}</td>
                 <td>{{ p.email }}</td>
-                <td><span class="nav-role">{{ p.rol }}</span></td>
+                <td><span class="nav-role">{{ p.rol | nombreRol }}</span></td>
                 <td>{{ p.matricula || '—' }}</td>
                 <td>{{ p.experiencia || '—' }}</td>
                 <td>

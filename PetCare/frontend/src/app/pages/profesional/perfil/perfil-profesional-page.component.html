@@ -18,7 +18,7 @@
         <div class="avatar">👤</div>
         <h2 class="mb-8">{{ perfil.nombre }} {{ perfil.apellido }}</h2>
         <p class="rol">
-          {{ rolLabels[perfil.rol] || perfil.rol }}
+          {{ perfil.rol | nombreRol }}
         </p>
 
         <table class="admin-table">

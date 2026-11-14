@@ -32,33 +32,57 @@ describe('LoginComponent', () => {
     localStorage.clear();
   });
 
+  /** Completa los campos del formulario signal forms como lo haría el usuario. */
+  function completar(email: string, password: string): void {
+    const emailInput: HTMLInputElement = fixture.nativeElement.querySelector('input[type="email"]');
+    const passwordInput: HTMLInputElement =
+      fixture.nativeElement.querySelector('input[type="password"]');
+
+    emailInput.value = email;
+    emailInput.dispatchEvent(new Event('input'));
+    passwordInput.value = password;
+    passwordInput.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  }
+
+  /** Dispara el submit del form; FormRoot lo intercepta y ejecuta la acción. */
+  function enviar(): void {
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+  }
+
   it('se crea', () => {
     expect(component).toBeTruthy();
   });
 
-  it('con credenciales correctas guarda el token y va al dashboard', () => {
-    component.updLogin({ email: 'ana@test.com', password: '123456' });
-    component.handleLogin(new Event('submit'));
+  it('con credenciales correctas guarda el token y va al dashboard', async () => {
+    completar('ana@test.com', '123456');
+    enviar();
 
     http
       .expectOne((r) => r.url.endsWith('/api/auth/login'))
       .flush({ ...USUARIO_CLIENTE, token: 'token-123' });
 
+    await fixture.whenStable();
+    fixture.detectChanges();
+
     expect(TestBed.inject(AuthService).getToken()).toBe('token-123');
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 
-  it('con credenciales incorrectas muestra el error', () => {
-    component.updLogin({ email: 'ana@test.com', password: 'mal' });
-    component.handleLogin(new Event('submit'));
+  it('con credenciales incorrectas muestra el error', async () => {
+    completar('ana@test.com', 'mal');
+    enviar();
 
     http
       .expectOne((r) => r.url.endsWith('/api/auth/login'))
       .flush({ error: 'Credenciales inválidas' }, { status: 401, statusText: 'Unauthorized' });
+
+    await fixture.whenStable();
     fixture.detectChanges();
 
+    // El interceptor normaliza el error a un `Error`; el componente muestra su mensaje genérico.
     const alerta: HTMLElement = fixture.nativeElement.querySelector('.alert-error');
-    expect(alerta.textContent).toContain('Credenciales inválidas');
+    expect(alerta.textContent).toContain('Correo o contraseña incorrectos.');
     expect(router.navigate).not.toHaveBeenCalled();
   });
 });

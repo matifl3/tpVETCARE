@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Profesional } from '../../../core/models';
+import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
 import { ProfesionalService } from '../../../services/profesional.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { inputValue } from '../../../core/form.helpers';
@@ -14,17 +16,9 @@ interface PasswordForm {
 
 const PASSWORD_FORM_VACIO: PasswordForm = { actual: '', nueva: '', repetir: '' };
 
-const ROL_LABELS: Record<string, string> = {
-  VETERINARIO: 'Veterinario',
-  PASEADOR: 'Paseador',
-  PELUQUERO: 'Peluquero',
-  ADIESTRADOR: 'Adiestrador',
-  CUIDADOR: 'Cuidador',
-};
-
 @Component({
     selector: 'app-perfil-profesional-page',
-    imports: [RouterLink],
+    imports: [RouterLink, NombreRolPipe],
     templateUrl: './perfil-profesional-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './perfil-profesional-page.component.css'
@@ -33,8 +27,8 @@ export class PerfilProfesionalPageComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly profesionalService = inject(ProfesionalService);
   private readonly usuarioService = inject(UsuarioService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly rolLabels = ROL_LABELS;
   protected readonly inputValue = inputValue;
 
   readonly perfil = signal<Profesional | null>(null);
@@ -79,30 +73,36 @@ export class PerfilProfesionalPageComponent implements OnInit {
     }
 
     this.guardandoPassword.set(true);
-    this.usuarioService.cambiarMiPassword(actual, nueva).subscribe({
-      next: (res) => {
-        this.guardandoPassword.set(false);
-        this.passwordOk.set(res.mensaje);
-        this.passwordForm.set({ ...PASSWORD_FORM_VACIO });
-        this.mostrarPassword.set(false);
-      },
-      error: (err) => {
-        this.guardandoPassword.set(false);
-        this.passwordError.set(err.message);
-      },
-    });
+    this.usuarioService
+      .cambiarMiPassword(actual, nueva)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.guardandoPassword.set(false);
+          this.passwordOk.set(res.mensaje);
+          this.passwordForm.set({ ...PASSWORD_FORM_VACIO });
+          this.mostrarPassword.set(false);
+        },
+        error: (err) => {
+          this.guardandoPassword.set(false);
+          this.passwordError.set(err.message);
+        },
+      });
   }
 
   ngOnInit(): void {
-    this.profesionalService.buscarPorId(this.auth.user()!.id).subscribe({
-      next: (data) => {
-        this.perfil.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.profesionalService
+      .buscarPorId(this.auth.user()!.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.perfil.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 }

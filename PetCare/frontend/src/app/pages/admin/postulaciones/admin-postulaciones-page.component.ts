@@ -1,17 +1,20 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Profesional } from '../../../core/models';
+import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
 import { ProfesionalService } from '../../../services/profesional.service';
 
 @Component({
     selector: 'app-admin-postulaciones-page',
-    imports: [RouterLink],
+    imports: [RouterLink, NombreRolPipe],
     templateUrl: './admin-postulaciones-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-postulaciones-page.component.css'
 })
 export class AdminPostulacionesPageComponent implements OnInit {
   private readonly profesionalService = inject(ProfesionalService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly postulaciones = signal<Profesional[]>([]);
   readonly loading = signal(true);
@@ -25,16 +28,19 @@ export class AdminPostulacionesPageComponent implements OnInit {
 
   cargar(): void {
     this.loading.set(true);
-    this.profesionalService.pendientes().subscribe({
-      next: (data) => {
-        this.postulaciones.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.profesionalService
+      .pendientes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.postulaciones.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   aprobar(id: number): void {
@@ -49,16 +55,18 @@ export class AdminPostulacionesPageComponent implements OnInit {
     this.error.set('');
     this.success.set('');
     this.procesando.set(id);
-    this.profesionalService[accion](id).subscribe({
-      next: (res) => {
-        this.success.set(res?.['mensaje'] || mensajeDefault);
-        this.postulaciones.update((prev) => prev.filter((p) => p.id !== id));
-        this.procesando.set(null);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.procesando.set(null);
-      },
-    });
+    this.profesionalService[accion](id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.success.set(res?.['mensaje'] || mensajeDefault);
+          this.postulaciones.update((prev) => prev.filter((p) => p.id !== id));
+          this.procesando.set(null);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.procesando.set(null);
+        },
+      });
   }
 }

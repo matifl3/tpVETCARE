@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { AuthService } from '../../core/auth.service';
+import { NombreRolPipe } from '../../core/pipes/nombre-rol.pipe';
 import { firstValueFrom } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 
@@ -22,7 +23,7 @@ const ROLES_PROFESIONALES = ['VETERINARIO',
   'CUIDADOR'];
 
 @Component({
-  imports: [FormRoot, FormField, RouterLink],
+  imports: [FormRoot, FormField, RouterLink, NombreRolPipe],
   selector: 'app-register',
   styleUrl: './register.component.css',
   templateUrl: './register.component.html',

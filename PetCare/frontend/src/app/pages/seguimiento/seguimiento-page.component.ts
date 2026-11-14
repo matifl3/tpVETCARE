@@ -1,5 +1,14 @@
 import { Location } from '@angular/common';
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { inputValue } from '../../core/form.helpers';
@@ -27,12 +36,15 @@ export class SeguimientoPageComponent implements OnInit {
   private readonly location = inject(Location);
   private readonly auth = inject(AuthService);
   private readonly seguimientoService = inject(SeguimientoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly inputValue = inputValue;
 
   private idMascota = 0;
-  private readonly user = this.auth.user();
-  protected readonly esAdiestradorOAdmin = this.user?.rol === 'ADIESTRADOR' || this.user?.rol === 'ADMIN';
+  private readonly user = this.auth.user;
+  protected readonly esAdiestradorOAdmin = computed(
+    () => this.user()?.rol === 'ADIESTRADOR' || this.user()?.rol === 'ADMIN',
+  );
 
   readonly seguimiento = signal<Seguimiento | null>(null);
   readonly loading = signal(true);
@@ -52,16 +64,19 @@ export class SeguimientoPageComponent implements OnInit {
 
   cargar(): void {
     this.loading.set(true);
-    this.seguimientoService.obtener(this.idMascota).subscribe({
-      next: (data) => {
-        this.seguimiento.set(data);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    this.seguimientoService
+      .obtener(this.idMascota)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.seguimiento.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   /** "← Volver" vuelve a la página anterior. */
@@ -74,14 +89,17 @@ export class SeguimientoPageComponent implements OnInit {
     event.preventDefault();
     this.error.set('');
     this.success.set('');
-    this.seguimientoService.registrarProgreso(this.idMascota, { ...this.form() }).subscribe({
-      next: () => {
-        this.success.set('Progreso registrado correctamente');
-        this.form.set({ ...FORM_VACIO });
-        this.mostrarForm.set(false);
-        this.cargar();
-      },
-      error: (err) => this.error.set(err.message),
-    });
+    this.seguimientoService
+      .registrarProgreso(this.idMascota, { ...this.form() })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.success.set('Progreso registrado correctamente');
+          this.form.set({ ...FORM_VACIO });
+          this.mostrarForm.set(false);
+          this.cargar();
+        },
+        error: (err) => this.error.set(err.message),
+      });
   }
 }

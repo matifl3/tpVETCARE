@@ -99,6 +99,13 @@ Reglas que seguimos:
 - Las validaciones se declaran en el TypeScript y cada campo muestra su mensaje de error debajo, recién cuando el usuario lo tocó.
 - Las validaciones propias (por ejemplo, que la fecha de nacimiento no sea futura) son funciones que devuelven `null` si el valor está bien, o un objeto con el nombre del error si está mal.
 
+### Reactividad, esperas y cancelación
+
+- **Peticiones cancelables**: cada `subscribe` de una pantalla usa `takeUntilDestroyed(...)`, así al salir de la pantalla el pedido HTTP pendiente se aborta solo. En `reservar-turno`, la consulta de disponibilidad se arma con `toObservable` + `debounce` + `switchMap` y se expone con `toSignal`; si el usuario cambia la fecha, la consulta anterior se cancela.
+- **Valores derivados con `computed()`**: el usuario logueado, los roles y los totales se calculan a partir de otras signals (`computed`) en vez de guardarse en campos que quedan desactualizados. Por ejemplo, el navbar y el dashboard se actualizan si cambia `auth.user`.
+- **Sin `setTimeout`**: las esperas para mostrar/ocultar mensajes o navegar usan `despuesDe(ms, destroyRef)` (`core/tiempo.helpers.ts`), que devuelve un `timer` de RxJS atado al ciclo de vida del componente.
+- **Pipe `nombreRol`**: muestra el rol con un nombre legible (`VETERINARIO` → `Veterinario`) desde `core/pipes/nombre-rol.pipe.ts`, sin repetir mapas o funciones de capitalización en cada pantalla.
+
 ---
 
 ## 🔒 Seguridad: cómo funciona el login con JWT

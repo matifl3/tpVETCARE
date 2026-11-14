@@ -1,6 +1,6 @@
 <div class="dashboard">
-  <h1>Panel de {{ info.label }}</h1>
-  <p>Bienvenido, {{ user.nombre }}. Gestioná tus turnos y pacientes desde acá.</p>
+  <h1>Panel de {{ user().rol | nombreRol }}</h1>
+  <p>Bienvenido, {{ user().nombre }}. Gestioná tus turnos y pacientes desde acá.</p>
 
   <div class="card-grid">
     <a routerLink="/dashboard/profesional/mis-turnos" class="dash-card link-tarjeta">

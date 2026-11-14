@@ -69,17 +69,11 @@
 
               <div class="seccion-pago">
                 <p class="seccion-titulo">Método de pago</p>
-                <div class="opciones-pago">
-                  <label class="opcion-pago">
-                    <input type="radio" [checked]="metodoPago() === 'TARJETA'" (change)="metodoPago.set('TARJETA')" />
-                    💳 Tarjeta
-                  </label>
-                </div>
+                <p class="texto-gris">💳 Tarjeta</p>
               </div>
 
-              @if (metodoPago() === 'TARJETA') {
-                <div class="seccion-pago">
-                  <p class="seccion-titulo">Seleccionar tarjeta</p>
+              <div class="seccion-pago">
+                <p class="seccion-titulo">Seleccionar tarjeta</p>
 
                   @if (tarjetas().length > 0) {
                     <div class="lista-tarjetas">
@@ -176,7 +170,6 @@
                     {{ comprando() ? 'Procesando...' : 'Pagar $' + carrito.total.toFixed(2) + ' con tarjeta' }}
                   </button>
                 </div>
-              }
             </div>
           </div>
           }

@@ -31,7 +31,7 @@
               <td>{{ u.idUsuario }}</td>
               <td>{{ u.nombre }} {{ u.apellido }}</td>
               <td>{{ u.email }}</td>
-              <td><span class="nav-role">{{ u.rol }}</span></td>
+              <td><span class="nav-role">{{ u.rol | nombreRol }}</span></td>
               <td>{{ u.activo ? '✅' : '❌' }}</td>
               <td>
                 <button class="btn-secondary btn-sm" (click)="toggleActivo(u)">

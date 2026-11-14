@@ -1,13 +1,13 @@
 <div class="dashboard contenedor">
   <div class="icono">
-    {{ esRechazado ? '❌' : '⏳' }}
+    {{ esRechazado() ? '❌' : '⏳' }}
   </div>
   <h1 class="mb-16">
-    {{ esRechazado ? 'Solicitud rechazada' : 'Solicitud en revisión' }}
+    {{ esRechazado() ? 'Solicitud rechazada' : 'Solicitud en revisión' }}
   </h1>
   <p class="mensaje">
     {{
-      esRechazado
+      esRechazado()
         ? 'Tu solicitud de registro como profesional fue rechazada. Contactá con soporte para más información.'
         : 'Tu solicitud de registro como profesional está siendo revisada por el administrador. Te notificaremos cuando sea aprobada.'
     }}

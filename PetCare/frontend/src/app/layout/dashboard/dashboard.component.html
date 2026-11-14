@@ -6,13 +6,13 @@
         <h1>PetCare</h1>
       </a>
       <div class="nav-links">
-        <span class="nav-user">👤 {{ user.nombre }}</span>
-        <span class="nav-role">{{ user.rol }}</span>
+        <span class="nav-user">👤 {{ user().nombre }}</span>
+        <span class="nav-role">{{ user().rol | nombreRol }}</span>
         <button (click)="handleLogout()" class="btn-secondary">Cerrar sesión</button>
       </div>
     </div>
   </nav>
-  @if (esProfesionalNoAprobado) {
+  @if (esProfesionalNoAprobado()) {
     <app-solicitud-pendiente />
   } @else {
     <router-outlet />

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormField, form, required, validate } from '@angular/forms/signals';
 import { Medicamento } from '../../../../../core/models';
 import { HistorialClinicoService } from '../../../../../services/historial-clinico.service';
@@ -18,6 +19,7 @@ import { fechaHoy, MEDICAMENTO_VACIO, MedicamentoForm } from '../../historial-cl
 })
 export class MedicamentosSectionComponent {
   private readonly historialService = inject(HistorialClinicoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly idMascota = input.required<number>();
   readonly medicamentos = input<Medicamento[]>([]);
@@ -90,7 +92,7 @@ export class MedicamentosSectionComponent {
       ? this.historialService.actualizarMedicamento(this.idMascota(), id, payload)
       : this.historialService.registrarMedicamento(this.idMascota(), payload);
 
-    request.subscribe({
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.exito.emit(
           id ? 'Medicamento actualizado correctamente' : 'Medicamento registrado correctamente',
@@ -104,13 +106,16 @@ export class MedicamentosSectionComponent {
 
   eliminar(medicamento: Medicamento): void {
     if (!confirm(`¿Eliminar el medicamento "${medicamento.nombre}"?`)) return;
-    this.historialService.eliminarMedicamento(this.idMascota(), medicamento.id).subscribe({
-      next: () => {
-        this.exito.emit('Medicamento eliminado correctamente');
-        if (this.editandoId() === medicamento.id) this.cancelar();
-        this.recargar.emit();
-      },
-      error: (err) => this.errorMsg.emit(err.message),
-    });
+    this.historialService
+      .eliminarMedicamento(this.idMascota(), medicamento.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.exito.emit('Medicamento eliminado correctamente');
+          if (this.editandoId() === medicamento.id) this.cancelar();
+          this.recargar.emit();
+        },
+        error: (err) => this.errorMsg.emit(err.message),
+      });
   }
 }

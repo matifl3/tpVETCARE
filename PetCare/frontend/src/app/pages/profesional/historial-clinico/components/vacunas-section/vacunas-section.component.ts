@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormField, form, required, validate } from '@angular/forms/signals';
 import { Vacuna } from '../../../../../core/models';
 import { HistorialClinicoService } from '../../../../../services/historial-clinico.service';
@@ -18,6 +19,7 @@ import { fechaHoy, VACUNA_VACIA, VacunaForm } from '../../historial-clinico.mode
 })
 export class VacunasSectionComponent {
   private readonly historialService = inject(HistorialClinicoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly idMascota = input.required<number>();
   readonly vacunas = input<Vacuna[]>([]);
@@ -92,7 +94,7 @@ export class VacunasSectionComponent {
       ? this.historialService.actualizarVacuna(this.idMascota(), id, payload)
       : this.historialService.registrarVacuna(this.idMascota(), payload);
 
-    request.subscribe({
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.exito.emit(id ? 'Vacuna actualizada correctamente' : 'Vacuna registrada correctamente');
         this.cancelar();
@@ -104,13 +106,16 @@ export class VacunasSectionComponent {
 
   eliminar(vacuna: Vacuna): void {
     if (!confirm(`¿Eliminar la vacuna "${vacuna.nombre}"?`)) return;
-    this.historialService.eliminarVacuna(this.idMascota(), vacuna.id).subscribe({
-      next: () => {
-        this.exito.emit('Vacuna eliminada correctamente');
-        if (this.editandoId() === vacuna.id) this.cancelar();
-        this.recargar.emit();
-      },
-      error: (err) => this.errorMsg.emit(err.message),
-    });
+    this.historialService
+      .eliminarVacuna(this.idMascota(), vacuna.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.exito.emit('Vacuna eliminada correctamente');
+          if (this.editandoId() === vacuna.id) this.cancelar();
+          this.recargar.emit();
+        },
+        error: (err) => this.errorMsg.emit(err.message),
+      });
   }
 }

@@ -47,6 +47,14 @@ describe('MascotasPageComponent', () => {
     expect(nombres).toContain('Michi');
   });
 
+  it('cancela la petición de mascotas al salir de la pantalla', () => {
+    const pedido = http.expectOne(misMascotas('GET'));
+
+    fixture.destroy();
+
+    expect(pedido.cancelled).toBeTrue();
+  });
+
   it('si falla la carga muestra el error', () => {
     http
       .expectOne(misMascotas('GET'))

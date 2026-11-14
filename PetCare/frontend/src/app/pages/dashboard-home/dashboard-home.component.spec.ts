@@ -21,4 +21,16 @@ describe('DashboardHomeComponent', () => {
   it('se crea', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
+
+  it('actualiza el saludo cuando cambia el usuario logueado', () => {
+    const auth = TestBed.inject(AuthService);
+    const titulo = () => (fixture.nativeElement.querySelector('h1') as HTMLElement).textContent ?? '';
+
+    expect(titulo()).toContain('Ana');
+
+    auth.user.set({ ...USUARIO_CLIENTE, nombre: 'Beto' });
+    fixture.detectChanges();
+
+    expect(titulo()).toContain('Beto');
+  });
 });

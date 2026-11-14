@@ -15,7 +15,7 @@
       </button>
       @for (r of roles; track r) {
         <button [class]="'btn-' + (filtroRol() === r ? 'primary' : 'secondary')" (click)="handleFiltrar(r)">
-          {{ capitalizar(r) }}
+          {{ r | nombreRol }}
         </button>
       }
     </div>
@@ -29,7 +29,7 @@
             <div>
               <span class="dash-icon">👨‍⚕️</span>
               <h3>{{ p.nombre }} {{ p.apellido }}</h3>
-              <p><strong>Rol:</strong> {{ capitalizar(p.rol) }}</p>
+              <p><strong>Rol:</strong> {{ p.rol | nombreRol }}</p>
               @if (p.matricula) {
                 <p><strong>Matrícula:</strong> {{ p.matricula }}</p>
               }

@@ -52,7 +52,7 @@
     <div class="admin-card">
       @if (tipo() === 'ganancias') {
         <div>
-          <h3 class="mb-16">Ganancias — {{ meses[mes() - 1] }} {{ anio() }}</h3>
+          <h3 class="mb-16">Ganancias — {{ nombreMes() }} {{ anio() }}</h3>
           <p class="mb-8"><strong>Cantidad de ventas:</strong> {{ data.cantidadVentas || 0 }}</p>
           <p class="total-ganancia">${{ (data.gananciaTotal || 0).toFixed(2) }}</p>
         </div>

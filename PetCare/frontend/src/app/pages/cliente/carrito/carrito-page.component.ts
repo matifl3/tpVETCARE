@@ -1,8 +1,18 @@
-import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Carrito, Tarjeta } from '../../../core/models';
+import { despuesDe } from '../../../core/tiempo.helpers';
 import { CarritoService } from '../../../services/carrito.service';
 import { TarjetaService } from '../../../services/tarjeta.service';
 import {
@@ -23,6 +33,7 @@ type Pestana = 'carrito' | 'historial';
 })
 export class CarritoPageComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly carritoService = inject(CarritoService);
   private readonly tarjetaService = inject(TarjetaService);
 
@@ -37,7 +48,6 @@ export class CarritoPageComponent implements OnInit {
   readonly pestana = signal<Pestana>('carrito');
   readonly comprando = signal(false);
 
-  readonly metodoPago = signal('TARJETA');
   readonly idTarjetaGuardada = signal<number | ''>('');
   readonly mostrarNuevaTarjeta = signal(false);
   /** Formulario de "Usar otra tarjeta": mismas reglas que Métodos de Pago. */
@@ -59,40 +69,51 @@ export class CarritoPageComponent implements OnInit {
 
   cargarDatos(): void {
     this.loading.set(true);
-    forkJoin([this.carritoService.obtener(), this.carritoService.historial(), this.tarjetaService.listar()]).subscribe({
-      next: ([cart, hist, cards]) => {
-        this.carrito.set(cart);
-        this.historial.set(hist);
-        this.tarjetas.set(cards);
-        if (cards.length > 0) this.idTarjetaGuardada.set(cards[0].idTarjeta);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.loading.set(false);
-      },
-    });
+    forkJoin([this.carritoService.obtener(), this.carritoService.historial(), this.tarjetaService.listar()])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ([cart, hist, cards]) => {
+          this.carrito.set(cart);
+          this.historial.set(hist);
+          this.tarjetas.set(cards);
+          if (cards.length > 0) this.idTarjetaGuardada.set(cards[0].idTarjeta);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.loading.set(false);
+        },
+      });
   }
 
   handleModificar(idProducto: number, cantidad: number): void {
-    this.carritoService.modificar(idProducto, cantidad).subscribe({
-      next: (nuevo) => this.carrito.set(nuevo),
-      error: (err) => this.error.set(err.message),
-    });
+    this.carritoService
+      .modificar(idProducto, cantidad)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (nuevo) => this.carrito.set(nuevo),
+        error: (err) => this.error.set(err.message),
+      });
   }
 
   handleEliminar(idProducto: number): void {
-    this.carritoService.eliminar(idProducto).subscribe({
-      next: (nuevo) => this.carrito.set(nuevo),
-      error: (err) => this.error.set(err.message),
-    });
+    this.carritoService
+      .eliminar(idProducto)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (nuevo) => this.carrito.set(nuevo),
+        error: (err) => this.error.set(err.message),
+      });
   }
 
   handleEliminarTurno(id: number): void {
-    this.carritoService.eliminarTurno(id).subscribe({
-      next: (c) => this.carrito.set(c),
-      error: (err) => this.error.set(err.message),
-    });
+    this.carritoService
+      .eliminarTurno(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (c) => this.carrito.set(c),
+        error: (err) => this.error.set(err.message),
+      });
   }
 
   seleccionarTarjeta(id: number): void {
@@ -127,21 +148,23 @@ export class CarritoPageComponent implements OnInit {
     } else if (usaTarjetaNueva) {
       body['tarjetaNueva'] = this.tarjetaNueva.getRawValue();
     }
-    this.carritoService.comprar(body).subscribe({
-      next: (resultado) => {
-        this.comprando.set(false);
-        this.success.set('Compra realizada con éxito');
-        this.carrito.set(resultado);
-        this.cargarDatos();
-        setTimeout(
-          () => this.router.navigate(['/dashboard/compra-exitosa'], { state: { carrito: resultado } }),
-          1000,
-        );
-      },
-      error: (err) => {
-        this.error.set(err.message);
-        this.comprando.set(false);
-      },
-    });
+    this.carritoService
+      .comprar(body)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (resultado) => {
+          this.comprando.set(false);
+          this.success.set('Compra realizada con éxito');
+          this.carrito.set(resultado);
+          this.cargarDatos();
+          despuesDe(1000, this.destroyRef).subscribe(() =>
+            this.router.navigate(['/dashboard/compra-exitosa'], { state: { carrito: resultado } }),
+          );
+        },
+        error: (err) => {
+          this.error.set(err.message);
+          this.comprando.set(false);
+        },
+      });
   }
 }
