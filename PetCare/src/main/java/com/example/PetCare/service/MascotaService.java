@@ -140,6 +140,25 @@ public class MascotaService {
         return toDTO(mascotaRepository.save(mascota));
     }
 
+    /**
+     * Actualiza los datos fisicos y clinicos de una mascota desde el panel del
+     * veterinario. No modifica el dueño, el estado activo ni el historial clinico.
+     */
+    public MascotaDTO actualizarDatosVeterinario(Integer idMascota, MascotaDTO dto) {
+        Mascota entity = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+
+        entity.setNombre(dto.getNombre());
+        entity.setEspecie(dto.getEspecie());
+        entity.setRaza(dto.getRaza());
+        entity.setSexo(dto.getSexo());
+        entity.setPeso(dto.getPeso() != null ? dto.getPeso() : 0.0);
+        entity.setFechaNacimiento(dto.getFechaNacimiento());
+        entity.setObservaciones(dto.getObservaciones());
+
+        return toDTO(mascotaRepository.save(entity));
+    }
+
     public boolean eliminar(Integer idMascota) {
         if (mascotaRepository.existsById(idMascota)) {
             mascotaRepository.deleteById(idMascota);
