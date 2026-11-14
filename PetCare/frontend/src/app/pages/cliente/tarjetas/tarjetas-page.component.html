@@ -4,8 +4,8 @@
   <div class="dashboard">
     <div class="encabezado-pagina">
       <h1>Métodos de Pago</h1>
-      <button class="btn-primary" (click)="mostrarForm.set(!mostrarForm())">
-        {{ mostrarForm() ? 'Cancelar' : '+ Nueva Tarjeta' }}
+      <button class="btn-primary" (click)="toggleForm()">
+        {{ mostrarForm() ? "Cancelar" : "+ Nueva Tarjeta" }}
       </button>
     </div>
 
@@ -17,41 +17,62 @@
     }
 
     @if (mostrarForm()) {
-      <form class="panel-formulario" (submit)="handleAgregar($event)">
+      <form class="panel-formulario" [formGroup]="form" (ngSubmit)="agregar()">
         <div class="grilla-2">
           <div class="input-group">
             <label>Titular</label>
-            <input required [value]="form().titular" (input)="upd({ titular: inputValue($event) })" />
+            <input
+              formControlName="titular"
+              placeholder="Como figura en la tarjeta"
+            />
+            @if (form.controls.titular.touched) {
+              @if (form.controls.titular.hasError("required")) {
+                <small class="error-campo">El titular es obligatorio</small>
+              }
+              @if (form.controls.titular.hasError("maxlength")) {
+                <small class="error-campo">Máximo 60 caracteres</small>
+              }
+            }
           </div>
           <div class="input-group">
             <label>Número de tarjeta</label>
-            <input
-              required
-              [value]="form().numeroTarjeta"
-              (input)="upd({ numeroTarjeta: inputValue($event) })"
-              placeholder="1234567890123456"
-              maxlength="19"
-            />
+             <input formControlName="numeroTarjeta" placeholder="1234567890123456" maxlength="19" inputmode="numeric"/>
+              @if (form.controls.numeroTarjeta.touched) {
+              @if (form.controls.numeroTarjeta.hasError('required')) {
+                <small class="error-campo">El número es obligatorio</small>
+              }
+              @if (form.controls.numeroTarjeta.hasError('pattern')) {
+                <small class="error-campo">Entre 13 y 19 números, sin espacios</small>
+              }
+            }
           </div>
           <div class="input-group">
             <label>Vencimiento (MM/AA)</label>
-            <input
-              required
-              [value]="form().vencimiento"
-              (input)="upd({ vencimiento: inputValue($event) })"
-              placeholder="12/28"
-              maxlength="5"
-            />
+            <input formControlName="vencimiento" placeholder="12/28" maxlength="5" />
+              @if (form.controls.vencimiento.touched) {
+              @if (form.controls.vencimiento.hasError('required')) {
+                <small class="error-campo">El vencimiento es obligatorio</small>
+              }
+              @if (form.controls.vencimiento.hasError('pattern')) {
+                <small class="error-campo">Usá el formato MM/AA, por ejemplo 08/29</small>
+              }
+              @if (form.controls.vencimiento.hasError('tarjetaVencida')) {
+                <small class="error-campo">La tarjeta está vencida</small>
+              }
+            }
           </div>
+
           <div class="input-group">
             <label>CVV</label>
-            <input
-              required
-              [value]="form().cvv"
-              (input)="upd({ cvv: inputValue($event) })"
-              placeholder="123"
-              maxlength="4"
-            />
+            <input formControlName="cvv" placeholder="123" maxlength="4" inputmode="numeric" />
+             @if (form.controls.cvv.touched) {
+              @if (form.controls.cvv.hasError('required')) {
+                <small class="error-campo">El CVV es obligatorio</small>
+              }
+              @if (form.controls.cvv.hasError('pattern')) {
+                <small class="error-campo">3 o 4 números</small>
+              }
+            }
           </div>
         </div>
         <button type="submit" class="btn-primary mt-16">Guardar Tarjeta</button>
@@ -68,15 +89,20 @@
             <h3>{{ t.titular }}</h3>
             <p>•••• {{ t.ultimosDigitos }}</p>
             <p class="texto-gris texto-chico">Vence: {{ t.vencimiento }}</p>
-            <button class="btn-eliminar"
+            <button
+              class="btn-eliminar"
               (click)="handleEliminar(t.idTarjeta)"
               title="Eliminar"
-            >✕</button>
+            >
+              ✕
+            </button>
           </div>
         }
       </div>
     }
 
-    <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
+    <a routerLink="/dashboard" class="btn-secondary link-volver"
+      >← Volver al Dashboard</a
+    >
   </div>
 }

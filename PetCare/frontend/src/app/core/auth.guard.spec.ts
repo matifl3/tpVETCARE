@@ -43,7 +43,7 @@ describe('authGuard', () => {
     localStorage.setItem('petcare_token', 'token-123');
 
     const resultado = firstValueFrom(ejecutarGuard() as Observable<boolean | UrlTree>);
-    http.expectOne('/api/auth/me').flush(USUARIO_CLIENTE);
+    http.expectOne((r) => r.url.endsWith('/api/auth/me')).flush(USUARIO_CLIENTE);
 
     expect(await resultado).toBeTrue();
     expect(auth.user()?.email).toBe(USUARIO_CLIENTE.email);
@@ -54,7 +54,7 @@ describe('authGuard', () => {
 
     const resultado = firstValueFrom(ejecutarGuard() as Observable<boolean | UrlTree>);
     http
-      .expectOne('/api/auth/me')
+      .expectOne((r) => r.url.endsWith('/api/auth/me'))
       .flush({ error: 'No autenticado' }, { status: 401, statusText: 'Unauthorized' });
 
     expect(router.serializeUrl((await resultado) as UrlTree)).toBe('/login');

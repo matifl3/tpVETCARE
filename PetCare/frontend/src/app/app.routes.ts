@@ -12,6 +12,7 @@ import { CarritoPageComponent } from './pages/cliente/carrito/carrito-page.compo
 import { CompraExitosaPageComponent } from './pages/cliente/compra-exitosa/compra-exitosa-page.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { HomeComponent } from './pages/home/home.component';
+import { HistorialClinicoProfesionalPageComponent } from './pages/profesional/historial-clinico/historial-clinico-profesional-page.component';
 import { LoginComponent } from './pages/login/login.component';
 import { MascotasPageComponent } from './pages/cliente/mascotas/mascotas-page.component';
 import { MisPacientesProfesionalPageComponent } from './pages/profesional/mis-pacientes/mis-pacientes-profesional-page.component';
@@ -56,6 +57,10 @@ export const routes: Routes = [
       { path: 'profesional', component: ProfesionalDashboardComponent },
       { path: 'profesional/mis-turnos', component: MisTurnosProfesionalPageComponent },
       { path: 'profesional/mis-pacientes', component: MisPacientesProfesionalPageComponent },
+      {
+        path: 'profesional/mis-pacientes/:idMascota/historial',
+        component: HistorialClinicoProfesionalPageComponent,
+      },
       { path: 'profesional/perfil', component: PerfilProfesionalPageComponent },
     ],
   },

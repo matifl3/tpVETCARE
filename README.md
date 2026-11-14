@@ -20,6 +20,7 @@ PetCare centraliza la información de las mascotas y conecta a los dueños con p
 - Registro como postulante (queda pendiente hasta que lo aprueba un administrador).
 - Turnos y pacientes asignados.
 - Seguimiento de entrenamiento de mascotas.
+- Historial clínico de sus pacientes (solo veterinarios): datos físicos, observaciones, vacunas y medicamentos.
 - Perfil profesional.
 
 ### 🔑 Administrador
@@ -35,7 +36,7 @@ PetCare centraliza la información de las mascotas y conecta a los dueños con p
 | ------------- | ---------------------------------------------------------------- |
 | Backend       | Java 21, Spring Boot 4, Spring Security, Spring Data JPA, Maven  |
 | Autenticación | JWT (jjwt 0.12)                                                  |
-| Frontend      | Angular 18 (componentes standalone + signals), TypeScript, CSS   |
+| Frontend      | Angular 22 (componentes standalone + signals), TypeScript, CSS   |
 | Base de datos | MySQL 8 (H2 en memoria para los tests)                           |
 | Tests         | JUnit 5 + Mockito (backend), Jasmine + Karma (frontend)          |
 
@@ -64,7 +65,7 @@ PetCare/
     ├── pages/
     │   ├── home/  login/  dashboard-home/  seguimiento/
     │   ├── cliente/       # mascotas, tienda, carrito, turnos, tarjetas...
-    │   ├── profesional/   # inicio, mis turnos, mis pacientes, perfil...
+    │   ├── profesional/   # inicio, mis turnos, mis pacientes, historial, perfil...
     │   └── admin/         # usuarios, postulaciones, productos, reportes...
     └── testing/       # Helpers compartidos por los tests
 ```
@@ -80,6 +81,21 @@ mascotas/
 ```
 
 Los estilos que se repiten entre pantallas (márgenes, texto gris, botones chicos, etc.) están como clases utilitarias en `frontend/src/styles.css`.
+
+### Formularios
+
+En el proyecto usamos las dos formas de armar formularios que vimos en la cursada, cada una en pantallas distintas:
+
+| Formularios | Cómo están hechos |
+| ----------- | ----------------- |
+| Login, registro e historial clínico del veterinario | **Signal Forms** (`@angular/forms/signals`) |
+| Todos los demás (mascotas, tarjetas, perfil, productos, filtros...) | **Reactive Forms** (`FormGroup`, `FormBuilder`, `Validators`) |
+
+Reglas que seguimos:
+
+- Un mismo componente nunca mezcla las dos formas.
+- Las validaciones se declaran en el TypeScript y cada campo muestra su mensaje de error debajo, recién cuando el usuario lo tocó.
+- Las validaciones propias (por ejemplo, que la fecha de nacimiento no sea futura) son funciones que devuelven `null` si el valor está bien, o un objeto con el nombre del error si está mal.
 
 ---
 
@@ -151,7 +167,7 @@ cd PetCare
 
 - `JwtServiceTest`: generación y validación de tokens (modificados, vencidos, de otra clave).
 - `AuthIntegrationTest`: flujo completo registro → login → token → endpoints protegidos, 401 sin token y 403 por rol.
-- `TurnoServiceTest`, `MascotaServiceTest`, `CarritoServiceTest`, `ProfesionalServiceTest`: lógica de negocio con Mockito.
+- `TurnoServiceTest`, `MascotaServiceTest`, `HistorialClinicoServiceTest`, `CarritoServiceTest`, `ProfesionalServiceTest`: lógica de negocio con Mockito.
 
 ### Frontend
 
@@ -168,7 +184,6 @@ Cada componente tiene su `.spec.ts`. Además hay tests del login con JWT: `AuthS
 ## 👥 Autores
 
 - Matías Zwicker
-- Matías Godoy
 - Matias Felissia
 - Tiziana Ponce
 

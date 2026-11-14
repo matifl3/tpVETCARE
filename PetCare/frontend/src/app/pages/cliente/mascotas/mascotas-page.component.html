@@ -14,20 +14,25 @@
     }
 
     @if (mostrarForm()) {
-      <form class="panel-formulario" (submit)="handleSubmit($event)">
+      <form class="panel-formulario" [formGroup]="form" (ngSubmit)="guardar()">
         <h3 class="mt-0">{{ editandoId() ? 'Editar Mascota' : 'Nueva Mascota' }}</h3>
-        <div class="grilla-2">
+      <div class="grilla-2">
           <div class="input-group">
             <label>Nombre</label>
-            <input required [value]="form().nombre" (input)="upd({ nombre: inputValue($event) })" />
+            <input formControlName="nombre" />
+            @if (form.controls.nombre.touched) {
+              @if (form.controls.nombre.hasError('required')) {
+                <small class="error-campo">El nombre es obligatorio</small>
+              }
+              @if (form.controls.nombre.hasError('maxlength')) {
+                <small class="error-campo">Máximo 50 caracteres</small>
+              }
+            }
           </div>
-          <div class="input-group">
+       <div class="input-group">
             <label>Especie</label>
-            <select
-              class="input-group campo"
-              [value]="form().especie"
-              (change)="upd({ especie: inputValue($event) })"
-            >
+            <select class="input-group campo" formControlName="especie">
+              <option value="" disabled>Seleccionar especie</option>
               <option value="PERRO">Perro</option>
               <option value="GATO">Gato</option>
               <option value="AVE">Ave</option>
@@ -35,33 +40,51 @@
               <option value="ROEDOR">Roedor</option>
               <option value="OTRO">Otro</option>
             </select>
+            @if (form.controls.especie.touched && form.controls.especie.hasError('required')) {
+              <small class="error-campo">Elegí la especie</small>
+            }
           </div>
           <div class="input-group">
             <label>Raza</label>
-            <input [value]="form().raza" (input)="upd({ raza: inputValue($event) })" />
+            <input formControlName="raza" placeholder="Ej: Caniche, Mestizo" />
+            @if (form.controls.raza.touched && form.controls.raza.hasError('required')) {
+              <small class="error-campo">La raza es obligatoria</small>
+            }
           </div>
           <div class="input-group">
             <label>Sexo</label>
-            <select class="campo"
-              [value]="form().sexo"
-              (change)="upd({ sexo: inputValue($event) })"
-            >
+            <select class="campo" formControlName="sexo">
               <option value="">Seleccionar</option>
               <option value="MACHO">Macho</option>
               <option value="HEMBRA">Hembra</option>
             </select>
+            @if (form.controls.sexo.touched && form.controls.sexo.hasError('required')) {
+              <small class="error-campo">Elegí el sexo</small>
+            }
           </div>
           <div class="input-group">
             <label>Peso (kg)</label>
-            <input type="number" step="0.1" [value]="form().peso" (input)="upd({ peso: inputValue($event) })" />
+            <input type="number" step="0.1" formControlName="peso" />
+            @if (form.controls.peso.touched) {
+              @if (form.controls.peso.hasError('required')) {
+                <small class="error-campo">El peso es obligatorio</small>
+              }
+              @if (form.controls.peso.hasError('min')) {
+                <small class="error-campo">El peso tiene que ser mayor a 0</small>
+              }
+            }
           </div>
           <div class="input-group">
             <label>Fecha de nacimiento</label>
-            <input
-              type="date"
-              [value]="form().fechaNacimiento"
-              (input)="upd({ fechaNacimiento: inputValue($event) })"
-            />
+            <input type="date" formControlName="fechaNacimiento" />
+            @if (form.controls.fechaNacimiento.touched) {
+              @if (form.controls.fechaNacimiento.hasError('required')) {
+                <small class="error-campo">La fecha de nacimiento es obligatoria</small>
+              }
+              @if (form.controls.fechaNacimiento.hasError('fechaFutura')) {
+                <small class="error-campo">La fecha no puede ser futura</small>
+              }
+            }
           </div>
         </div>
         <button type="submit" class="btn-primary mt-16">
@@ -111,4 +134,4 @@
 
     <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
   </div>
-}
+}   

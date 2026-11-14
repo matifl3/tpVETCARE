@@ -24,7 +24,7 @@
               <th>Especie</th>
               <th>Raza</th>
               <th>Sexo</th>
-              @if (user.rol === 'ADIESTRADOR') {
+              @if (user.rol === 'ADIESTRADOR' || user.rol === 'VETERINARIO') {
                 <th>Acción</th>
               }
             </tr>
@@ -37,7 +37,16 @@
                 <td>{{ m.especie }}</td>
                 <td>{{ m.raza || '—' }}</td>
                 <td>{{ m.sexo || '—' }}</td>
-                @if (user.rol === 'ADIESTRADOR') {
+                @if (user.rol === 'VETERINARIO') {
+                  <td>
+                    <a
+                      [routerLink]="['/dashboard/profesional/mis-pacientes', m.idMascota, 'historial']"
+                      class="btn-primary btn-sm sin-subrayado"
+                    >
+                      Ver detalles
+                    </a>
+                  </td>
+                } @else if (user.rol === 'ADIESTRADOR') {
                   <td>
                     <a
                       [routerLink]="['/dashboard/mascotas', m.idMascota, 'seguimiento']"

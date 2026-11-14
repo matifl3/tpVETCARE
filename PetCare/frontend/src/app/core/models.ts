@@ -188,6 +188,47 @@ export interface Seguimiento {
   [key: string]: any;
 }
 
+/** Vacuna registrada en el historial clínico de una mascota. */
+export interface Vacuna {
+  id: number;
+  nombre: string;
+  fechaAplicacion?: string | null;
+  fechaProximaDosis?: string | null;
+  lote?: string | null;
+  observaciones?: string | null;
+  idProfesional?: number;
+  nombreProfesional?: string | null;
+  [key: string]: any;
+}
+
+/** Medicamento recetado en el historial clínico de una mascota. */
+export interface Medicamento {
+  id: number;
+  nombre: string;
+  dosis?: string | null;
+  frecuencia?: string | null;
+  duracion?: string | null;
+  fechaPrescripcion?: string | null;
+  indicaciones?: string | null;
+  activo?: boolean;
+  idProfesional?: number;
+  nombreProfesional?: string | null;
+  [key: string]: any;
+}
+
+/** Historial clínico completo de una mascota. */
+export interface HistorialClinico {
+  id: number;
+  fechaCreacion?: string | null;
+  activo?: boolean;
+  observaciones?: string | null;
+  idMascota: number;
+  nombreMascota?: string | null;
+  vacunas?: Vacuna[];
+  medicamentos?: Medicamento[];
+  [key: string]: any;
+}
+
 /** Reporte de ganancias mensuales. */
 export interface GananciaMensual {
   anio: number;

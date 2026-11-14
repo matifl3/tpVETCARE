@@ -1,43 +1,42 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { inputValue } from '../../../core/form.helpers';
 import { Tarjeta } from '../../../core/models';
+import {
+  PATRON_CVV,
+  PATRON_NUMERO_TARJETA,
+  PATRON_VENCIMIENTO,
+  tarjetaNoVencida,
+} from '../../../core/tarjeta.validators';
 import { TarjetaService } from '../../../services/tarjeta.service';
-
-interface TarjetaForm {
-  titular: string;
-  numeroTarjeta: string;
-  vencimiento: string;
-  cvv: string;
-}
-
-const FORM_VACIO: TarjetaForm = { titular: '', numeroTarjeta: '', vencimiento: '', cvv: '' };
 
 @Component({
     selector: 'app-tarjetas-page',
-    imports: [RouterLink],
+    imports: [RouterLink, ReactiveFormsModule],
     templateUrl: './tarjetas-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './tarjetas-page.component.css'
 })
 export class TarjetasPageComponent implements OnInit {
-  private readonly tarjetaService = inject(TarjetaService);
-
-  protected readonly inputValue = inputValue;
+   private readonly tarjetaService = inject(TarjetaService);
+  private readonly fb = inject(NonNullableFormBuilder);
 
   readonly tarjetas = signal<Tarjeta[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly success = signal('');
   readonly mostrarForm = signal(false);
-  readonly form = signal<TarjetaForm>({ ...FORM_VACIO });
+ 
+
+   readonly form = this.fb.group({
+    titular: ['', [Validators.required, Validators.maxLength(60)]],
+    numeroTarjeta: ['', [Validators.required, Validators.pattern(PATRON_NUMERO_TARJETA)]],
+    vencimiento: ['', [Validators.required, Validators.pattern(PATRON_VENCIMIENTO), tarjetaNoVencida]],
+    cvv: ['', [Validators.required, Validators.pattern(PATRON_CVV)]],
+  });
 
   ngOnInit(): void {
     this.cargarTarjetas();
-  }
-
-  upd(patch: Partial<TarjetaForm>): void {
-    this.form.set({ ...this.form(), ...patch });
   }
 
   cargarTarjetas(): void {
@@ -53,14 +52,22 @@ export class TarjetasPageComponent implements OnInit {
     });
   }
 
-  handleAgregar(event: Event): void {
-    event.preventDefault();
+  toggleForm(): void {
+    this.form.reset();
+    this.mostrarForm.update((v)=> !v);
+  }
+
+  agregar(): void {
+    if (this.form.invalid){
+      this.form.markAllAsTouched();
+      return;
+    }
     this.error.set('');
-    this.tarjetaService.agregar({ ...this.form() }).subscribe({
+    this.tarjetaService.agregar(this.form.getRawValue()).subscribe({
       next: () => {
         this.success.set('Tarjeta agregada correctamente');
         this.mostrarForm.set(false);
-        this.form.set({ ...FORM_VACIO });
+        this.form.reset();
         this.cargarTarjetas();
         setTimeout(() => this.success.set(''), 3000);
       },

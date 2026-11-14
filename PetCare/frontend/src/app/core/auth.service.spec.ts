@@ -22,7 +22,7 @@ describe('AuthService', () => {
   it('login guarda el token y el usuario', () => {
     service.login('ana@test.com', '123456').subscribe();
 
-    const req = http.expectOne('/api/auth/login');
+    const req = http.expectOne((r) => r.url.endsWith('/api/auth/login'));
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ email: 'ana@test.com', password: '123456' });
     req.flush({ ...USUARIO_CLIENTE, token: 'token-123' });
@@ -44,7 +44,7 @@ describe('AuthService', () => {
   it('check carga el usuario desde /api/auth/me', () => {
     service.check().subscribe();
 
-    http.expectOne('/api/auth/me').flush(USUARIO_CLIENTE);
+    http.expectOne((r) => r.url.endsWith('/api/auth/me')).flush(USUARIO_CLIENTE);
 
     expect(service.user()).toEqual(USUARIO_CLIENTE);
   });
@@ -52,7 +52,7 @@ describe('AuthService', () => {
   it('registro no guarda token (después hay que loguearse)', () => {
     service.registro({ email: 'nuevo@test.com' }).subscribe();
 
-    http.expectOne('/api/auth/registro').flush({ mensaje: 'ok' });
+    http.expectOne((r) => r.url.endsWith('/api/auth/registro')).flush({ mensaje: 'ok' });
 
     expect(service.getToken()).toBeNull();
   });

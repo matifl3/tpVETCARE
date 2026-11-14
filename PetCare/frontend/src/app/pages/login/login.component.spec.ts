@@ -40,7 +40,9 @@ describe('LoginComponent', () => {
     component.updLogin({ email: 'ana@test.com', password: '123456' });
     component.handleLogin(new Event('submit'));
 
-    http.expectOne('/api/auth/login').flush({ ...USUARIO_CLIENTE, token: 'token-123' });
+    http
+      .expectOne((r) => r.url.endsWith('/api/auth/login'))
+      .flush({ ...USUARIO_CLIENTE, token: 'token-123' });
 
     expect(TestBed.inject(AuthService).getToken()).toBe('token-123');
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
@@ -51,7 +53,7 @@ describe('LoginComponent', () => {
     component.handleLogin(new Event('submit'));
 
     http
-      .expectOne('/api/auth/login')
+      .expectOne((r) => r.url.endsWith('/api/auth/login'))
       .flush({ error: 'Credenciales inválidas' }, { status: 401, statusText: 'Unauthorized' });
     fixture.detectChanges();
 

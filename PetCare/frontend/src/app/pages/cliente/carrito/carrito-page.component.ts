@@ -1,25 +1,22 @@
 import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { inputValue } from '../../../core/form.helpers';
 import { Carrito, Tarjeta } from '../../../core/models';
 import { CarritoService } from '../../../services/carrito.service';
 import { TarjetaService } from '../../../services/tarjeta.service';
+import {
+  PATRON_CVV,
+  PATRON_NUMERO_TARJETA,
+  PATRON_VENCIMIENTO,
+  tarjetaNoVencida,
+} from '../../../core/tarjeta.validators';
 
 type Pestana = 'carrito' | 'historial';
 
-interface NuevaTarjetaForm {
-  titular: string;
-  numeroTarjeta: string;
-  vencimiento: string;
-  cvv: string;
-}
-
-const TARJETA_VACIA: NuevaTarjetaForm = { titular: '', numeroTarjeta: '', vencimiento: '', cvv: '' };
-
 @Component({
     selector: 'app-carrito-page',
-    imports: [RouterLink],
+    imports: [RouterLink, ReactiveFormsModule],
     templateUrl: './carrito-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './carrito-page.component.css'
@@ -29,7 +26,7 @@ export class CarritoPageComponent implements OnInit {
   private readonly carritoService = inject(CarritoService);
   private readonly tarjetaService = inject(TarjetaService);
 
-  protected readonly inputValue = inputValue;
+  protected readonly fb = inject(NonNullableFormBuilder);
 
   readonly carrito = signal<Carrito | null>(null);
   readonly historial = signal<Carrito[]>([]);
@@ -43,7 +40,13 @@ export class CarritoPageComponent implements OnInit {
   readonly metodoPago = signal('TARJETA');
   readonly idTarjetaGuardada = signal<number | ''>('');
   readonly mostrarNuevaTarjeta = signal(false);
-  readonly nuevaTarjeta = signal<NuevaTarjetaForm>({ ...TARJETA_VACIA });
+  /** Formulario de "Usar otra tarjeta": mismas reglas que Métodos de Pago. */
+  readonly tarjetaNueva = this.fb.group({
+    titular: ['', [Validators.required, Validators.maxLength(60)]],
+    numeroTarjeta: ['', [Validators.required, Validators.pattern(PATRON_NUMERO_TARJETA)]],
+    vencimiento: ['', [Validators.required, Validators.pattern(PATRON_VENCIMIENTO), tarjetaNoVencida]],
+    cvv: ['', [Validators.required, Validators.pattern(PATRON_CVV)]],
+  });
 
   readonly hayItems = computed(() => {
     const c = this.carrito();
@@ -52,10 +55,6 @@ export class CarritoPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos();
-  }
-
-  updTarjeta(patch: Partial<NuevaTarjetaForm>): void {
-    this.nuevaTarjeta.set({ ...this.nuevaTarjeta(), ...patch });
   }
 
   cargarDatos(): void {
@@ -104,18 +103,29 @@ export class CarritoPageComponent implements OnInit {
   toggleNuevaTarjeta(): void {
     this.mostrarNuevaTarjeta.update((v) => !v);
     this.idTarjetaGuardada.set('');
+    this.tarjetaNueva.reset();
   }
 
   handleComprar(): void {
+
+    const idTarjeta = this.idTarjetaGuardada();
+    const usaTarjetaNueva = !idTarjeta && this.mostrarNuevaTarjeta();
+    
+    // Si paga con una tarjeta nueva, primero tiene que estar bien cargada.
+    if (usaTarjetaNueva && this.tarjetaNueva.invalid) {
+      this.tarjetaNueva.markAllAsTouched();
+      return;
+    }
+
     this.error.set('');
     this.success.set('');
     this.comprando.set(true);
     const body: Record<string, unknown> = { metodoPago: 'TARJETA' };
-    const idTarjeta = this.idTarjetaGuardada();
+    
     if (idTarjeta) {
       body['idTarjetaGuardada'] = Number(idTarjeta);
-    } else if (this.mostrarNuevaTarjeta()) {
-      body['tarjetaNueva'] = this.nuevaTarjeta();
+    } else if (usaTarjetaNueva) {
+      body['tarjetaNueva'] = this.tarjetaNueva.getRawValue();
     }
     this.carritoService.comprar(body).subscribe({
       next: (resultado) => {
