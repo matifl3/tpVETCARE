@@ -1,0 +1,54 @@
+@let f = form();
+<div class="campos-tarjeta" [formGroup]="f">
+  <div class="input-group">
+    <label>Titular</label>
+    <input formControlName="titular" placeholder="Como figura en la tarjeta" />
+    @if (f.controls.titular.touched) {
+      @if (f.controls.titular.hasError('required')) {
+        <small class="error-campo">El titular es obligatorio</small>
+      }
+      @if (f.controls.titular.hasError('maxlength')) {
+        <small class="error-campo">Máximo 60 caracteres</small>
+      }
+    }
+  </div>
+  <div class="input-group">
+    <label>Número de tarjeta</label>
+    <input formControlName="numeroTarjeta" placeholder="1234567890123456" maxlength="19" inputmode="numeric" />
+    @if (f.controls.numeroTarjeta.touched) {
+      @if (f.controls.numeroTarjeta.hasError('required')) {
+        <small class="error-campo">El número es obligatorio</small>
+      }
+      @if (f.controls.numeroTarjeta.hasError('pattern')) {
+        <small class="error-campo">Entre 13 y 19 números, sin espacios</small>
+      }
+    }
+  </div>
+  <div class="input-group">
+    <label>Vencimiento (MM/AA)</label>
+    <input formControlName="vencimiento" placeholder="12/28" maxlength="5" />
+    @if (f.controls.vencimiento.touched) {
+      @if (f.controls.vencimiento.hasError('required')) {
+        <small class="error-campo">El vencimiento es obligatorio</small>
+      }
+      @if (f.controls.vencimiento.hasError('pattern')) {
+        <small class="error-campo">Usá el formato MM/AA, por ejemplo 08/29</small>
+      }
+      @if (f.controls.vencimiento.hasError('tarjetaVencida')) {
+        <small class="error-campo">La tarjeta está vencida</small>
+      }
+    }
+  </div>
+  <div class="input-group">
+    <label>CVV</label>
+    <input formControlName="cvv" placeholder="123" maxlength="4" inputmode="numeric" />
+    @if (f.controls.cvv.touched) {
+      @if (f.controls.cvv.hasError('required')) {
+        <small class="error-campo">El CVV es obligatorio</small>
+      }
+      @if (f.controls.cvv.hasError('pattern')) {
+        <small class="error-campo">3 o 4 números</small>
+      }
+    }
+  </div>
+</div>
