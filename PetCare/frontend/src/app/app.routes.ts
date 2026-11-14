@@ -24,10 +24,12 @@ import { ReservarTurnoPageComponent } from './pages/cliente/reservar-turno/reser
 import { SeguimientoPageComponent } from './pages/seguimiento/seguimiento-page.component';
 import { TarjetasPageComponent } from './pages/cliente/tarjetas/tarjetas-page.component';
 import { TiendaPageComponent } from './pages/cliente/tienda/tienda-page.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   {
     path: 'dashboard',
     component: DashboardComponent,

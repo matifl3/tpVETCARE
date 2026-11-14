@@ -33,6 +33,9 @@ export class RegisterComponent {
   
   protected readonly rolesProfesionales = ROLES_PROFESIONALES;
 
+  protected readonly errorRegistro = signal<string | null>(null);
+  protected readonly registroExitoso = signal(false);
+
   protected readonly formVacio : RegistroForm = {
     nombre: '',
     apellido: '',
@@ -68,9 +71,12 @@ export class RegisterComponent {
     },{
       submission : {
         action : async (campos) => {
+          this.errorRegistro.set(null);
+          this.registroExitoso.set(false);
           const registro = campos().value();
-          await firstValueFrom(this.auth.registro(registro));
-          await this.router.navigate(['/login']);
+          this.formModel.set({ ...this.formVacio });
+          this.formularioRegistro().reset();
+          this.registroExitoso.set(true);
         }
       }
     }

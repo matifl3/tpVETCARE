@@ -38,9 +38,15 @@ export class LoginComponent {
     },{
       submission : {
         action : async (campos) => {
-          const mail = campos().value().email;
-          const contraseña = campos().value().password;
-          await firstValueFrom(this.auth.login(mail, contraseña));
+          try{
+            const mail = campos().value().email;
+            const contraseña = campos().value().password;
+            await firstValueFrom(this.auth.login(mail, contraseña));
+            await this.router.navigate(['/dashboard']);
+          }catch(err : any){
+          const mensaje = err?.error?.message || 'Correo o contraseña incorrectos.';
+          this.error.set(mensaje);
+          }
         }
       }
     }
