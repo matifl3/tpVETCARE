@@ -8,7 +8,7 @@ import { AdminReportesPageComponent } from './pages/admin/reportes/admin-reporte
 import { AdminTurnosPageComponent } from './pages/admin/turnos/admin-turnos-page.component';
 import { AdminTurnosEstadisticasPageComponent } from './pages/admin/turnos/estadisticas/admin-turnos-estadisticas-page.component';
 import { AdminUsuariosPageComponent } from './pages/admin/usuarios/admin-usuarios-page.component';
-import { CarritoPageComponent } from './pages/cliente/carrito/carrito-page.component';
+import { CarritoPageComponent } from './pages/cliente/carrito-page/carrito-page.component';
 import { CompraExitosaPageComponent } from './pages/cliente/compra-exitosa/compra-exitosa-page.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { HomeComponent } from './pages/home/home.component';

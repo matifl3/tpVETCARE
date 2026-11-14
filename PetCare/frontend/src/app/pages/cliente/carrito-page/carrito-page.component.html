@@ -1,0 +1,37 @@
+@if (pestana() === 'carrito') {
+  @if (carrito(); as cart) {
+    @if (hayItems()) {
+      <div class="carrito-grid">
+        <app-carrito-items
+          [carrito]="cart"
+          [disabled]="comprando()"
+          (modificarCantidad)="handleModificar($event)"
+          (eliminarProducto)="handleEliminar($event)"
+          (eliminarTurno)="handleEliminarTurno($event)"
+          (verHistorial)="pestana.set('historial')"
+        />
+
+        <app-carrito-pago
+          [carrito]="cart"
+          [tarjetas]="tarjetas()"
+          [comprando]="comprando()"
+          (confirmarCompra)="handleComprar($event)"
+        />
+      </div>
+    } @else {
+      <div class="empty-cart">
+        <p>Tu carrito está vacío.</p>
+        <div class="header-actions">
+          <button type="button" class="btn-secondary" (click)="pestana.set('historial')">
+            Ver historial
+          </button>
+          <a routerLink="/dashboard/tienda" class="btn-outline">Volver al catálogo</a>
+        </div>
+      </div>
+    }
+  }
+}
+
+@if (pestana() === 'historial') {
+  <app-carrito-historial [historial]="historial()" />
+}

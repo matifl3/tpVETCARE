@@ -1,0 +1,96 @@
+<section class="items-card">
+  <header class="items-header">
+    <div>
+      <h2>Tu carrito</h2>
+      <p class="subtitulo">Revisá tus productos y turnos antes de confirmar</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="verHistorial.emit()"
+      >
+        Ver historial
+      </button>
+      <a routerLink="/" class="btn-outline">
+        Volver al catálogo
+      </a>
+    </div>
+  </header>
+
+  @if (carrito().items?.length) {
+    <div class="seccion-lista">
+      <h3>Productos</h3>
+      @for (item of carrito().items; track item.idProducto) {
+        <article class="item-row">
+          <div class="item-info">
+            <span class="item-nombre">{{ item.nombre }}</span>
+            <span class="item-precio">${{ item.precioUnitario }} c/u</span>
+          </div>
+
+          <div class="item-controls">
+            <div class="qty-box">
+              <button
+                type="button"
+                class="qty-btn"
+                [disabled]="disabled() || item.cantidad <= 1"
+                (click)="onCambiarCantidad(item.idProducto, item.cantidad - 1)"
+              >
+                −
+              </button>
+              <span class="qty-value">{{ item.cantidad }}</span>
+              <button
+                type="button"
+                class="qty-btn"
+                [disabled]="disabled()"
+                (click)="onCambiarCantidad(item.idProducto, item.cantidad + 1)"
+              >
+                +
+              </button>
+            </div>
+
+            <span class="item-subtotal">${{ item.subtotal }}</span>
+
+            <button
+              type="button"
+              class="btn-delete"
+              title="Quitar producto"
+              [disabled]="disabled()"
+              (click)="eliminarProducto.emit(item.idProducto)"
+            >
+              ✕
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+  @if (carrito().turnos?.length) {
+    <div class="seccion-lista">
+      <h3>Turnos reservados</h3>
+      @for (turno of carrito().turnos; track turno.id) {
+        <article class="item-row">
+          <div class="item-info">
+            <span class="item-nombre">{{ turno.servicio }}</span>
+            <span class="item-precio">{{ turno.fecha }}</span>
+          </div>
+
+          <div class="item-controls">
+            <span class="item-subtotal">${{ turno.precio }}</span>
+            <button
+              type="button"
+              class="btn-delete"
+              title="Cancelar turno"
+              [disabled]="disabled()"
+              (click)="eliminarTurno.emit(turno.id)"
+            >
+              ✕
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
