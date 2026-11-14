@@ -1,50 +1,27 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { inputValue } from '../../../../core/form.helpers';
 import { EstadisticasTurnos } from '../../../../core/models';
 import { TurnoService } from '../../../../services/turno.service';
-
-/** Atajos de período: al elegirlos también se ajusta la agrupación. */
-interface Preset {
-  id: string;
-  label: string;
-  agrupacion: string | null;
-}
-
-interface Agrupacion {
-  id: string;
-  label: string;
-}
-
-interface RangoFechas {
-  desde: string;
-  hasta: string;
-}
-
-const PRESETS: Preset[] = [
-  { id: '30d', label: 'Últimos 30 días', agrupacion: 'DIA' },
-  { id: '6m', label: 'Últimos 6 meses', agrupacion: 'SEMANA' },
-  { id: '12m', label: 'Últimos 12 meses', agrupacion: 'MES' },
-  { id: 'prox30d', label: 'Próximos 30 días', agrupacion: 'DIA' },
-  { id: 'prox12m', label: 'Próximos 12 meses', agrupacion: 'MES' },
-  { id: 'anio', label: 'Este año', agrupacion: 'MES' },
-  { id: 'custom', label: 'Personalizado', agrupacion: null },
-];
-
-const AGRUPACIONES: Agrupacion[] = [
-  { id: 'DIA', label: 'Día' },
-  { id: 'SEMANA', label: 'Semana' },
-  { id: 'MES', label: 'Mes' },
-];
+import { AGRUPACIONES, PRESETS, Preset, RangoFechas } from './estadisticas.model';
+import { PeriodoFiltrosComponent } from './components/periodo-filtros/periodo-filtros.component';
+import { KpiGridComponent } from './components/kpi-grid/kpi-grid.component';
+import { GraficoBarrasComponent } from './components/grafico-barras/grafico-barras.component';
+import { RankingServiciosComponent } from './components/ranking-servicios/ranking-servicios.component';
 
 /**
  * Panel de estadísticas de turnos (solo ADMIN).
- * Cada cambio de filtro consulta de nuevo al backend, así el administrador
- * siempre ve el estado actual de la base (sin caché ni polling).
+ * Maneja los filtros, el rango de fechas y la consulta al backend; los
+ * bloques visuales (filtros, KPIs, gráficos) son componentes aparte.
  */
 @Component({
   selector: 'app-admin-turnos-estadisticas-page',
-  imports: [RouterLink],
+  imports: [
+    RouterLink,
+    PeriodoFiltrosComponent,
+    KpiGridComponent,
+    GraficoBarrasComponent,
+    RankingServiciosComponent,
+  ],
   templateUrl: './admin-turnos-estadisticas-page.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-turnos-estadisticas-page.component.css',
@@ -72,15 +49,10 @@ export class AdminTurnosEstadisticasPageComponent implements OnInit {
     return !rango || rango.desde > rango.hasta;
   });
 
-  readonly maximo = computed(() => {
-    const actual = this.data();
-    return actual ? Math.max(1, ...actual.porPeriodo.map((p) => p.cantidad)) : 1;
-  });
-
   readonly hayDatos = computed(() => (this.data()?.resumen.total ?? 0) > 0);
 
   readonly etiquetaPreset = computed(
-    () => this.presets.find((p) => p.id === this.preset())?.label ?? ''
+    () => this.presets.find((p) => p.id === this.preset())?.label ?? '',
   );
 
   ngOnInit(): void {
@@ -100,10 +72,9 @@ export class AdminTurnosEstadisticasPageComponent implements OnInit {
     this.cargar();
   }
 
-  cambiarFecha(cual: 'desde' | 'hasta', event: Event): void {
-    const valor = inputValue(event);
-    if (cual === 'desde') this.desdeCustom.set(valor);
-    else this.hastaCustom.set(valor);
+  cambiarFecha(cambio: { cual: 'desde' | 'hasta'; valor: string }): void {
+    if (cambio.cual === 'desde') this.desdeCustom.set(cambio.valor);
+    else this.hastaCustom.set(cambio.valor);
     this.cargar();
   }
 
@@ -144,19 +115,6 @@ export class AdminTurnosEstadisticasPageComponent implements OnInit {
         this.refreshing.set(false);
       },
     });
-  }
-
-  // ==================== GRÁFICOS ====================
-
-  /** Altura de la barra en % (mínimo visible para que un turno no sea una línea). */
-  altoBarra(cantidad: number): number {
-    if (cantidad === 0) return 0;
-    return Math.max(4, Math.round((cantidad / this.maximo()) * 100));
-  }
-
-  /** Ancho de la barra del ranking en % (mínimo visible para porcentajes chicos). */
-  anchoBarra(porcentaje: number): number {
-    return Math.max(porcentaje, 2);
   }
 
   // ==================== FECHAS ====================

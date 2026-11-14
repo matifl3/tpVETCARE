@@ -1,0 +1,28 @@
+<div class="admin-card stats-block">
+  <div class="chart-header">
+    <h3>Turnos por período</h3>
+    <span class="chart-legend">Máximo: {{ maximo() }}</span>
+  </div>
+  <div class="chart-plot">
+    <div class="chart-bars">
+      @for (p of periodos(); track p.periodo) {
+        <div
+          class="chart-col"
+          [title]="p.etiqueta + ': ' + p.cantidad + ' ' + (p.cantidad === 1 ? 'turno' : 'turnos')"
+        >
+          <span class="chart-value">{{ p.cantidad > 0 ? p.cantidad : '' }}</span>
+          <div
+            class="chart-bar"
+            [style.height.%]="altoBarra(p.cantidad)"
+            [style.opacity]="p.cantidad === 0 ? 0.15 : 1"
+          ></div>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="chart-labels">
+    @for (p of periodos(); track p.periodo) {
+      <span class="chart-label" [title]="p.etiqueta">{{ p.etiqueta }}</span>
+    }
+  </div>
+</div>

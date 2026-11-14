@@ -1,0 +1,118 @@
+<div class="admin-card mb-24">
+  <div class="seccion-titulo">
+    <h2 class="mt-0">Medicamentos</h2>
+    <button type="button" class="btn-primary btn-sm" (click)="nuevo()">
+      + Agregar medicamento
+    </button>
+  </div>
+
+  @if (mostrarForm()) {
+    <form class="panel-formulario mb-24" (submit)="guardar($event)">
+      <h3 class="mt-0">{{ editandoId() ? 'Editar medicamento' : 'Nuevo medicamento' }}</h3>
+      <div class="grilla-2">
+        <div class="input-group">
+          <label>Nombre</label>
+          <input [formField]="medicamentoForm.nombre" placeholder="Ej: Amoxicilina" />
+          @if (medicamentoForm.nombre().touched() && medicamentoForm.nombre().invalid()) {
+            @for (err of medicamentoForm.nombre().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+
+        <div class="input-group">
+          <label>Dosis</label>
+          <input [formField]="medicamentoForm.dosis" placeholder="Ej: 250 mg" />
+          @if (medicamentoForm.dosis().touched() && medicamentoForm.dosis().invalid()) {
+            @for (err of medicamentoForm.dosis().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+
+        <div class="input-group">
+          <label>Frecuencia</label>
+          <input [formField]="medicamentoForm.frecuencia" placeholder="Ej: Cada 12 horas" />
+          @if (medicamentoForm.frecuencia().touched() && medicamentoForm.frecuencia().invalid()) {
+            @for (err of medicamentoForm.frecuencia().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+
+        <div class="input-group">
+          <label>Duración</label>
+          <input [formField]="medicamentoForm.duracion" placeholder="Ej: 7 días" />
+        </div>
+
+        <div class="input-group">
+          <label>Fecha de prescripción</label>
+          <input type="date" [formField]="medicamentoForm.fechaPrescripcion" />
+          @if (medicamentoForm.fechaPrescripcion().touched() && medicamentoForm.fechaPrescripcion().invalid()) {
+            @for (err of medicamentoForm.fechaPrescripcion().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="input-group mt-16">
+        <label>Indicaciones</label>
+        <textarea class="campo campo-textarea" [formField]="medicamentoForm.indicaciones"></textarea>
+      </div>
+
+      <div class="acciones-form">
+        <button type="submit" class="btn-primary btn-sm">
+          {{ editandoId() ? 'Guardar cambios' : 'Registrar medicamento' }}
+        </button>
+        <button type="button" class="btn-secondary btn-sm" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (!medicamentos().length) {
+    <p class="estado-vacio">No hay medicamentos registrados para esta mascota.</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Dosis</th>
+            <th>Frecuencia</th>
+            <th>Duración</th>
+            <th>Prescripción</th>
+            <th>Indicaciones</th>
+            <th>Profesional</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of medicamentos(); track m.id) {
+            <tr>
+              <td>{{ m.nombre }}</td>
+              <td>{{ m.dosis || '—' }}</td>
+              <td>{{ m.frecuencia || '—' }}</td>
+              <td>{{ m.duracion || '—' }}</td>
+              <td>{{ m.fechaPrescripcion || '—' }}</td>
+              <td>{{ m.indicaciones || '—' }}</td>
+              <td>{{ m.nombreProfesional || '—' }}</td>
+              <td>
+                <div class="lista-acciones">
+                  <button type="button" class="btn-sm accion" (click)="editar(m)">Editar</button>
+                  <button
+                    type="button"
+                    class="btn-sm accion accion-eliminar"
+                    (click)="eliminar(m)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

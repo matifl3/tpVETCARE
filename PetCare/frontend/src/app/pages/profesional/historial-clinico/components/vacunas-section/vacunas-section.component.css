@@ -1,4 +1,4 @@
-/* Encabezado de cada sección (título + botón de acción) */
+/* Encabezado de la sección (título + botón de acción) */
 .seccion-titulo {
   display: flex;
   justify-content: space-between;
@@ -8,14 +8,14 @@
   margin-bottom: 16px;
 }
 
-/* Acciones dentro de las tablas de vacunas / medicamentos */
+/* Acciones dentro de la tabla */
 .lista-acciones {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-/* Botones al pie de los formularios de vacuna / medicamento */
+/* Botones al pie del formulario */
 .acciones-form {
   display: flex;
   gap: 12px;
@@ -24,7 +24,7 @@
   margin-top: 16px;
 }
 
-/* Las tablas pueden tener muchas columnas: permitir scroll horizontal */
+/* La tabla puede tener muchas columnas: permitir scroll horizontal */
 .tabla-scroll {
   width: 100%;
   overflow-x: auto;

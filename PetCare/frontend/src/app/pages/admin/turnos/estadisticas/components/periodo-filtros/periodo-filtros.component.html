@@ -1,0 +1,54 @@
+<div class="admin-card stats-filters">
+  <div class="stats-filters-row">
+    <span class="stats-filters-label">Período</span>
+    <div class="chips">
+      @for (p of presets(); track p.id) {
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="preset() === p.id"
+          (click)="presetElegido.emit(p)"
+        >
+          {{ p.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (preset() === 'custom') {
+    <div class="stats-filters-row">
+      <span class="stats-filters-label">Fechas</span>
+      <div class="fechas-custom">
+        <input
+          type="date"
+          [value]="desde()"
+          (change)="cambiarFecha('desde', $event)"
+          aria-label="Fecha desde"
+        />
+        <span>hasta</span>
+        <input
+          type="date"
+          [value]="hasta()"
+          (change)="cambiarFecha('hasta', $event)"
+          aria-label="Fecha hasta"
+        />
+      </div>
+    </div>
+  }
+
+  <div class="stats-filters-row">
+    <span class="stats-filters-label">Agrupación</span>
+    <div class="chips">
+      @for (a of agrupaciones(); track a.id) {
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="agrupacion() === a.id"
+          (click)="agrupacionCambiada.emit(a.id)"
+        >
+          {{ a.label }}
+        </button>
+      }
+    </div>
+  </div>
+</div>
