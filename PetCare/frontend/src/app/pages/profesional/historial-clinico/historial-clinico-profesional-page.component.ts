@@ -1,6 +1,15 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { form, maxLength, min, required, validate } from '@angular/forms/signals';
 import { forkJoin } from 'rxjs';
 import { HistorialClinico, Mascota } from '../../../core/models';
@@ -28,12 +37,13 @@ import { MedicamentosSectionComponent } from './components/medicamentos-section/
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class HistorialClinicoProfesionalPageComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
   private readonly mascotaService = inject(MascotaService);
   private readonly historialService = inject(HistorialClinicoService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected idMascota = 0;
+  /** Parámetro `:idMascota` de la URL (con withComponentInputBinding). */
+  readonly idMascota = input.required<string>();
+  protected readonly idMascotaNum = computed(() => Number(this.idMascota()));
 
   readonly loading = signal(true);
   readonly error = signal('');
@@ -57,7 +67,6 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.idMascota = Number(this.route.snapshot.paramMap.get('idMascota'));
     this.cargar();
   }
 
@@ -65,8 +74,8 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
     this.loading.set(true);
     this.error.set('');
     forkJoin({
-      mascota: this.mascotaService.buscarPorId(this.idMascota),
-      historial: this.historialService.obtener(this.idMascota),
+      mascota: this.mascotaService.buscarPorId(this.idMascotaNum()),
+      historial: this.historialService.obtener(this.idMascotaNum()),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -96,7 +105,7 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
   /** Vuelve a pedir solo el historial (lo usan las secciones de vacunas y medicamentos). */
   recargarHistorial(): void {
     this.historialService
-      .obtener(this.idMascota)
+      .obtener(this.idMascotaNum())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (historial) => this.historial.set(historial),
@@ -126,8 +135,8 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
 
     this.guardando.set(true);
     forkJoin({
-      mascota: this.mascotaService.actualizarVeterinario(this.idMascota, mascota),
-      historial: this.historialService.actualizar(this.idMascota, {
+      mascota: this.mascotaService.actualizarVeterinario(this.idMascotaNum(), mascota),
+      historial: this.historialService.actualizar(this.idMascotaNum(), {
         observaciones: f.observacionesHistorial.trim(),
       }),
     })

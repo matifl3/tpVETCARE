@@ -5,11 +5,11 @@ import {
   OnInit,
   computed,
   inject,
+  input,
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { inputValue } from '../../core/form.helpers';
 import { Seguimiento } from '../../core/models';
@@ -32,7 +32,6 @@ const FORM_VACIO: ProgresoForm = { descripcion: '', tecnicas: '', observaciones:
   styleUrl: './seguimiento-page.component.css',
 })
 export class SeguimientoPageComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
   private readonly location = inject(Location);
   private readonly auth = inject(AuthService);
   private readonly seguimientoService = inject(SeguimientoService);
@@ -40,7 +39,9 @@ export class SeguimientoPageComponent implements OnInit {
 
   protected readonly inputValue = inputValue;
 
-  private idMascota = 0;
+  /** Parámetro `:idMascota` de la URL (con withComponentInputBinding). */
+  readonly idMascota = input.required<string>();
+  private readonly idMascotaNum = computed(() => Number(this.idMascota()));
   private readonly user = this.auth.user;
   protected readonly esAdiestradorOAdmin = computed(
     () => this.user()?.rol === 'ADIESTRADOR' || this.user()?.rol === 'ADMIN',
@@ -54,7 +55,6 @@ export class SeguimientoPageComponent implements OnInit {
   readonly form = signal<ProgresoForm>({ ...FORM_VACIO });
 
   ngOnInit(): void {
-    this.idMascota = Number(this.route.snapshot.paramMap.get('idMascota'));
     this.cargar();
   }
 
@@ -65,7 +65,7 @@ export class SeguimientoPageComponent implements OnInit {
   cargar(): void {
     this.loading.set(true);
     this.seguimientoService
-      .obtener(this.idMascota)
+      .obtener(this.idMascotaNum())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
@@ -90,7 +90,7 @@ export class SeguimientoPageComponent implements OnInit {
     this.error.set('');
     this.success.set('');
     this.seguimientoService
-      .registrarProgreso(this.idMascota, { ...this.form() })
+      .registrarProgreso(this.idMascotaNum(), { ...this.form() })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpRequest } from '@angular/common/http';
 import { HttpTestingController } from '@angular/common/http/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { HistorialClinicoProfesionalPageComponent } from './historial-clinico-profesional-page.component';
 import { HistorialClinico, Mascota, Medicamento, Vacuna } from '../../../core/models';
 import { providersDePrueba } from '../../../testing/test-utils';
@@ -74,20 +73,13 @@ describe('HistorialClinicoProfesionalPageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HistorialClinicoProfesionalPageComponent],
-      providers: [
-        ...providersDePrueba(),
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: { paramMap: convertToParamMap({ idMascota: String(ID_MASCOTA) }) },
-          },
-        },
-      ],
+      providers: providersDePrueba(),
     }).compileComponents();
 
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(HistorialClinicoProfesionalPageComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('idMascota', String(ID_MASCOTA));
     fixture.detectChanges();
   });
 

@@ -5,11 +5,22 @@ import {
   OnInit,
   computed,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, debounce, distinctUntilChanged, forkJoin, map, of, switchMap, timer } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
+import {
+  catchError,
+  combineLatest,
+  debounce,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  of,
+  switchMap,
+  timer,
+} from 'rxjs';
 import { inputValue } from '../../../core/form.helpers';
 import { Mascota, Profesional } from '../../../core/models';
 import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
@@ -29,7 +40,6 @@ const ROLES_CON_HORAS = ['PASEADOR', 'CUIDADOR'];
     styleUrl: './reservar-turno-page.component.css'
 })
 export class ReservarTurnoPageComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly profesionalService = inject(ProfesionalService);
@@ -41,7 +51,8 @@ export class ReservarTurnoPageComponent implements OnInit {
   protected readonly String = String;
   protected readonly hoy = new Date().toISOString().split('T')[0];
 
-  private readonly idProfesional = this.route.snapshot.paramMap.get('idProfesional') ?? '';
+  /** Parámetro `:idProfesional` de la URL (con withComponentInputBinding). */
+  readonly idProfesional = input.required<string>();
 
   readonly profesional = signal<Profesional | null>(null);
   readonly mascotas = signal<Mascota[]>([]);
@@ -66,12 +77,17 @@ export class ReservarTurnoPageComponent implements OnInit {
    * destruirse el componente, `toSignal` corta la suscripción y con ella el
    * pedido pendiente.
    */
-  private readonly disponibilidad$ = toObservable(this.fecha).pipe(
-    debounce((fecha) => timer(fecha ? 500 : 0)),
-    distinctUntilChanged(),
-    switchMap((fecha) =>
+  private readonly disponibilidad$ = combineLatest([
+    toObservable(this.fecha),
+    toObservable(this.idProfesional),
+  ]).pipe(
+    debounce(([fecha]) => timer(fecha ? 500 : 0)),
+    distinctUntilChanged(
+      ([fechaA, idA], [fechaB, idB]) => fechaA === fechaB && idA === idB,
+    ),
+    switchMap(([fecha, idProfesional]) =>
       fecha
-        ? this.turnoService.disponibilidad(this.idProfesional, fecha).pipe(
+        ? this.turnoService.disponibilidad(idProfesional, fecha).pipe(
             map((res) => res?.disponible ?? false),
             catchError(() => of(false)),
           )
@@ -83,7 +99,7 @@ export class ReservarTurnoPageComponent implements OnInit {
 
   ngOnInit(): void {
     forkJoin([
-      this.profesionalService.buscarPorId(Number(this.idProfesional)),
+      this.profesionalService.buscarPorId(Number(this.idProfesional())),
       this.mascotaService.misMascotas(),
     ])
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -117,7 +133,7 @@ export class ReservarTurnoPageComponent implements OnInit {
     this.enviando.set(true);
     this.carritoService
       .agregarTurno({
-        idProfesional: Number(this.idProfesional),
+        idProfesional: Number(this.idProfesional()),
         idMascota: Number(this.idMascota()),
         fecha: this.fecha(),
         horas: this.permiteHoras() ? Number(this.horas()) : 1,

@@ -19,6 +19,7 @@ describe('SeguimientoPageComponent', () => {
     http = TestBed.inject(HttpTestingController);
 
     fixture = TestBed.createComponent(SeguimientoPageComponent);
+    fixture.componentRef.setInput('idMascota', '0');
     fixture.detectChanges();
   });
 

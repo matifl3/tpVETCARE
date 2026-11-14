@@ -21,7 +21,7 @@
     />
 
     <app-vacunas-section
-      [idMascota]="idMascota"
+      [idMascota]="idMascotaNum()"
       [vacunas]="historial()?.vacunas ?? []"
       (recargar)="recargarHistorial()"
       (exito)="success.set($event)"
@@ -29,7 +29,7 @@
     />
 
     <app-medicamentos-section
-      [idMascota]="idMascota"
+      [idMascota]="idMascotaNum()"
       [medicamentos]="historial()?.medicamentos ?? []"
       (recargar)="recargarHistorial()"
       (exito)="success.set($event)"

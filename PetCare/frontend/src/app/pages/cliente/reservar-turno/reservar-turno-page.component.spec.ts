@@ -26,6 +26,7 @@ describe('ReservarTurnoPageComponent', () => {
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(ReservarTurnoPageComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('idProfesional', String(PROFESIONAL.id));
     fixture.detectChanges();
 
     // Carga inicial del profesional y las mascotas.
