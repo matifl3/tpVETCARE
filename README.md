@@ -149,23 +149,6 @@ La app queda en `http://localhost:4200`. Las llamadas a `/api` se redirigen al b
 
 Para generar el build de producción (`frontend/dist/`, que también sirve Spring Boot en el puerto 8080):
 
-```bash                                   |
-| `JWT_SECRET`        | Clave para firmar los tokens (Base64)     | clave de desarrollo                       |
-| `JWT_EXPIRATION_MS` | Duración del token en milisegundos        | `28800000` (8 horas)                      |
-| `CORS_ALLOWED_ORIGINS` | Orígenes permitidos, separados por coma | `http://localhost:4200,http://localhost:8080` |
-
-### Frontend
-
-```bash
-cd PetCare/frontend
-npm install
-npm start
-```
-
-La app queda en `http://localhost:4200`. Las llamadas a `/api` se redirigen al backend (`http://localhost:8080`) mediante `proxy.conf.json`.
-
-Para generar el build de producción (`frontend/dist/`, que también sirve Spring Boot en el puerto 8080):
-
 ```bash
 npm run build
 ```
@@ -182,7 +165,9 @@ cd PetCare
 ```
 
 - `JwtServiceTest`: generación y validación de tokens (modificados, vencidos, de otra clave).
-- `AuthIntegra
+- `AuthIntegrationTest`: flujo completo registro → login → token → endpoints protegidos, 401 sin token y 403 por rol.
+- `TurnoServiceTest`, `MascotaServiceTest`, `CarritoServiceTest`, `ProfesionalServiceTest`: lógica de negocio con Mockito.
+
 ### Frontend
 
 ```bash
@@ -202,4 +187,3 @@ Cada componente tiene su `.spec.ts`. Además hay tests del login con JWT: `AuthS
 - Tiziana Ponce
 
 Proyecto desarrollado para la carrera de Programación – UTN.
-
