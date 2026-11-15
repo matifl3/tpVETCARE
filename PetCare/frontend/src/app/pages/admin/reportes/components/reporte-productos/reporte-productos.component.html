@@ -1,0 +1,67 @@
+@if (error()) {
+  <div class="alert alert-error show">{{ error() }}</div>
+}
+
+<div class="admin-card mb-24">
+  <div class="filtros">
+    @let anio = periodoMes.controls.anio;
+    <div class="input-group mb-0">
+      <label>Año</label>
+      <input class="input-anio" type="number" [formControl]="anio" />
+      @if (anio.touched && anio.invalid) {
+        <small class="error-campo">
+          {{ anio.hasError('required') ? 'El año es obligatorio' : 'Entre 2000 y el año actual' }}
+        </small>
+      }
+    </div>
+
+    <div class="input-group mb-0">
+      <label>Mes</label>
+      <select class="select-mes" [formControl]="periodoMes.controls.mes">
+        @for (m of meses; track $index) {
+          <option [ngValue]="$index + 1">{{ m }}</option>
+        }
+      </select>
+    </div>
+
+    <button type="button" class="btn-primary" (click)="consultar()" [disabled]="loading()">
+      {{ loading() ? 'Consultando...' : 'Consultar' }}
+    </button>
+  </div>
+</div>
+
+@if (data(); as data) {
+  <div class="admin-card">
+    <h3 class="mb-16">
+      Productos más vendidos — {{ meses[periodoMes.controls.mes.value - 1] }}
+      {{ periodoMes.controls.anio.value }}
+    </h3>
+
+    @if (isArray(data) && data.length === 0) {
+      <p class="estado-vacio estado-vacio-chico">No hay datos para ese período.</p>
+    }
+
+    @if (isArray(data) && data.length > 0) {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Cantidad vendida</th>
+            <th>Ganancia</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of data; track $index) {
+            <tr>
+              <td>{{ p.nombreProducto }}</td>
+              <td>{{ p.categoria }}</td>
+              <td>{{ p.cantidadVendida || 0 }}</td>
+              <td>${{ (p.gananciaTotal || 0).toFixed(2) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+}

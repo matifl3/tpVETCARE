@@ -28,13 +28,13 @@ public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin);
 
-    // Calcula la ganancia total de un mes específico: suma los totales de carritos completados
+    // Calcula la ganancia total de un mes específico: suma los totales de carritos completados o en envío
     // Retorna una lista con un Object[] donde [0] = cantidad de ventas, [1] = ganancia total
     @Query("SELECT COUNT(c), COALESCE(SUM(c.total), 0) FROM Carrito c " +
-           "WHERE c.estado = 'COMPLETADO' " +
-           "AND YEAR(c.fechaActualizacion) = :anio " +
-           "AND MONTH(c.fechaActualizacion) = :mes")
-    List<Object[]> calcularGananciaMensual(@Param("anio") int anio, @Param("mes") int mes);
+          "WHERE c.estado IN ('ENVIO', 'COMPLETADO') " +
+          "AND YEAR(c.fechaActualizacion) = :anio " +
+          "AND MONTH(c.fechaActualizacion) = :mes")
+       List<Object[]> calcularGananciaMensual(@Param("anio") int anio, @Param("mes") int mes);
 
     // Busca los productos más vendidos en un mes específico.
     // Hace JOIN entre Carrito y CarritoProducto, agrupa por producto y ordena por cantidad vendida descendente.
@@ -44,7 +44,7 @@ public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
            "SUM(cp.cantidad * cp.precioUnitario) as gananciaTotal " +
            "FROM CarritoProducto cp " +
            "JOIN cp.carrito c " +
-           "WHERE c.estado = 'COMPLETADO' " +
+           "WHERE c.estado IN ('ENVIO', 'COMPLETADO') " +
            "AND YEAR(c.fechaActualizacion) = :anio " +
            "AND MONTH(c.fechaActualizacion) = :mes " +
            "GROUP BY cp.producto.id, cp.producto.nombre, cp.producto.categoria " +

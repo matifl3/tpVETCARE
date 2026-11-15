@@ -1,0 +1,41 @@
+@if (error()) {
+  <div class="alert alert-error show">{{ error() }}</div>
+}
+
+<div class="admin-card mb-24">
+  <div class="filtros">
+    @let anio = periodoMes.controls.anio;
+    <div class="input-group mb-0">
+      <label>Año</label>
+      <input class="input-anio" type="number" [formControl]="anio" />
+      @if (anio.touched && anio.invalid) {
+        <small class="error-campo">
+          {{ anio.hasError('required') ? 'El año es obligatorio' : 'Entre 2000 y el año actual' }}
+        </small>
+      }
+    </div>
+
+    <div class="input-group mb-0">
+      <label>Mes</label>
+      <select class="select-mes" [formControl]="periodoMes.controls.mes">
+        @for (m of meses; track $index) {
+          <option [ngValue]="$index + 1">{{ m }}</option>
+        }
+      </select>
+    </div>
+
+    <button type="button" class="btn-primary" (click)="consultar()" [disabled]="loading()">
+      {{ loading() ? 'Consultando...' : 'Consultar' }}
+    </button>
+  </div>
+</div>
+
+@if (data(); as data) {
+  <div class="admin-card">
+    <h3 class="mb-16">
+      Ganancias — {{ meses[periodoMes.controls.mes.value - 1] }} {{ periodoMes.controls.anio.value }}
+    </h3>
+    <p class="mb-8"><strong>Cantidad de ventas:</strong> {{ data.cantidadVentas || 0 }}</p>
+    <p class="total-ganancia">${{ (data.gananciaTotal || 0).toFixed(2) }}</p>
+  </div>
+}
