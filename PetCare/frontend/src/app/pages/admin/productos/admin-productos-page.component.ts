@@ -1,45 +1,38 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { inputValue } from '../../../core/form.helpers';
 import { Producto } from '../../../core/models';
 import { ProductoService } from '../../../services/producto.service';
 
-interface ProductoForm {
-  nombre: string;
-  descripcion: string;
-  categoria: string;
-  precio: string;
-  stock: string;
-  activo: boolean;
-}
-
-const FORM_VACIO: ProductoForm = { nombre: '', descripcion: '', categoria: '', precio: '', stock: '', activo: true };
 
 @Component({
     selector: 'app-admin-productos-page',
-    imports: [RouterLink],
+    imports: [RouterLink, ReactiveFormsModule],
     templateUrl: './admin-productos-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-productos-page.component.css'
 })
 export class AdminProductosPageComponent implements OnInit {
   private readonly productoService = inject(ProductoService);
-
-  protected readonly inputValue = inputValue;
+  private readonly fb = inject(NonNullableFormBuilder);
 
   readonly productos = signal<Producto[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly success = signal('');
   readonly editId = signal<number | null>(null);
-  readonly form = signal<ProductoForm>({ ...FORM_VACIO });
+ readonly form = this.fb.group({
+    nombre: ['', [Validators.required, Validators.maxLength(100)]],
+    descripcion: ['', [Validators.required, Validators.maxLength(255)]],
+    categoria: ['', Validators.required],
+    precio: this.fb.control<number | null>(null, [Validators.required, Validators.min(0.01)]),
+    // Stock: número entero, 0 o más.
+    stock: this.fb.control<number | null>(null, [Validators.required, Validators.min(0), Validators.pattern(/^\d+$/)]),
+    activo: [true],
+  });
 
   ngOnInit(): void {
     this.cargar();
-  }
-
-  upd(patch: Partial<ProductoForm>): void {
-    this.form.set({ ...this.form(), ...patch });
   }
 
   cargar(): void {
@@ -55,12 +48,18 @@ export class AdminProductosPageComponent implements OnInit {
       },
     });
   }
-
-  handleSubmit(event: Event): void {
-    event.preventDefault();
+guardar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.error.set('');
-    const form = this.form();
-    const body: Partial<Producto> = { ...form, precio: parseFloat(form.precio), stock: parseInt(form.stock) };
+    const valores = this.form.getRawValue();
+    const body: Partial<Producto> = {
+      ...valores,
+      precio: valores.precio ?? 0,
+      stock: valores.stock ?? 0,
+    };
     const id = this.editId();
     const req = id ? this.productoService.actualizar(id, body) : this.productoService.crear(body);
     req.subscribe({
@@ -72,20 +71,21 @@ export class AdminProductosPageComponent implements OnInit {
       error: (err) => this.error.set(err.message),
     });
   }
+  
 
   cancelarEdicion(): void {
     this.editId.set(null);
-    this.form.set({ ...FORM_VACIO });
+    this.form.reset();
   }
 
   editar(p: Producto): void {
     this.editId.set(p.id);
-    this.form.set({
+    this.form.patchValue({
       nombre: p.nombre,
       descripcion: p.descripcion || '',
       categoria: p.categoria,
-      precio: String(p.precio),
-      stock: String(p.stock),
+      precio: p.precio,
+      stock: p.stock,
       activo: p.activo ?? true,
     });
   }

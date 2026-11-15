@@ -13,28 +13,70 @@
       <div class="alert alert-success show">{{ success() }}</div>
     }
 
-    <form (submit)="handleSubmit($event)" class="admin-card mb-24">
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="admin-card mb-24">      
       <div class="form-fila mb-12">
         <div class="input-group mb-0">
           <label>Nombre</label>
-          <input required [value]="form().nombre" (input)="upd({ nombre: inputValue($event) })" />
+          <input formControlName="nombre" />
+          @if (form.controls.nombre.touched) {
+            @if (form.controls.nombre.hasError('required')) {
+              <small class="error-campo">El nombre es obligatorio</small>
+            }
+            @if (form.controls.nombre.hasError('maxlength')) {
+              <small class="error-campo">Máximo 100 caracteres</small>
+            }
+          }
         </div>
+
+
         <div class="input-group mb-0">
           <label>Descripción</label>
-          <input required [value]="form().descripcion" (input)="upd({ descripcion: inputValue($event) })" />
+           <input formControlName="descripcion" />
+          @if (form.controls.descripcion.touched) {
+            @if (form.controls.descripcion.hasError('required')) {
+              <small class="error-campo">La descripción es obligatoria</small>
+            }
+            @if (form.controls.descripcion.hasError('maxlength')) {
+              <small class="error-campo">Máximo 255 caracteres</small>
+            }
+          }
         </div>
+
+
         <div class="input-group mb-0">
           <label>Categoría</label>
-          <input required [value]="form().categoria" (input)="upd({ categoria: inputValue($event) })" />
+           <input formControlName="categoria" />
+          @if (form.controls.categoria.touched && form.controls.categoria.hasError('required')) {
+            <small class="error-campo">La categoría es obligatoria</small>
+          }
         </div>
+
+
         <div class="form-fila">
           <div class="input-group mb-0">
             <label>Precio</label>
-            <input type="number" step="0.01" required [value]="form().precio" (input)="upd({ precio: inputValue($event) })" />
+             <input type="number" step="0.01" formControlName="precio" />
+            @if (form.controls.precio.touched) {
+              @if (form.controls.precio.hasError('required')) {
+                <small class="error-campo">El precio es obligatorio</small>
+              }
+              @if (form.controls.precio.hasError('min')) {
+                <small class="error-campo">El precio tiene que ser mayor a 0</small>
+              }
+            }
           </div>
+
           <div class="input-group mb-0">
             <label>Stock</label>
-            <input type="number" required [value]="form().stock" (input)="upd({ stock: inputValue($event) })" />
+           <input type="number" step="1" formControlName="stock" />
+            @if (form.controls.stock.touched) {
+              @if (form.controls.stock.hasError('required')) {
+                <small class="error-campo">El stock es obligatorio</small>
+              }
+              @if (form.controls.stock.hasError('min') || form.controls.stock.hasError('pattern')) {
+                <small class="error-campo">Tiene que ser un número entero, 0 o más</small>
+              }
+            }
           </div>
         </div>
       </div>
