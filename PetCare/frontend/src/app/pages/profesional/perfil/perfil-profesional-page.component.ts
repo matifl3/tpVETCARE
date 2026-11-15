@@ -1,18 +1,16 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  AbstractControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Profesional } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
 import { UsuarioService } from '../../../services/usuario.service';
-import { inputValue } from '../../../core/form.helpers';
-
-interface PasswordForm {
-  actual: string;
-  nueva: string;
-  repetir: string;
-}
-
-const PASSWORD_FORM_VACIO: PasswordForm = { actual: '', nueva: '', repetir: '' };
 
 const ROL_LABELS: Record<string, string> = {
   VETERINARIO: 'Veterinario',
@@ -22,9 +20,20 @@ const ROL_LABELS: Record<string, string> = {
   CUIDADOR: 'Cuidador',
 };
 
+/**
+ * Validador de GRUPO: mira dos campos juntos.
+ * La nueva contraseña y la repetida tienen que ser iguales.
+ */
+function passwordsIguales(grupo: AbstractControl): ValidationErrors | null {
+  const nueva = grupo.get('nueva')?.value;
+  const repetir = grupo.get('repetir')?.value;
+  if (!nueva || !repetir) return null; // si falta alguna, avisa el required de cada campo
+  return nueva !== repetir ? { noCoinciden: true } : null;
+}
+
 @Component({
     selector: 'app-perfil-profesional-page',
-    imports: [RouterLink],
+    imports: [RouterLink, ReactiveFormsModule],
     templateUrl: './perfil-profesional-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './perfil-profesional-page.component.css'
@@ -33,9 +42,9 @@ export class PerfilProfesionalPageComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly profesionalService = inject(ProfesionalService);
   private readonly usuarioService = inject(UsuarioService);
+  private readonly fb = inject(NonNullableFormBuilder);
 
   protected readonly rolLabels = ROL_LABELS;
-  protected readonly inputValue = inputValue;
 
   readonly perfil = signal<Profesional | null>(null);
   readonly loading = signal(true);
@@ -43,47 +52,41 @@ export class PerfilProfesionalPageComponent implements OnInit {
 
   // Cambio de contraseña
   readonly mostrarPassword = signal(false);
-  readonly passwordForm = signal<PasswordForm>({ ...PASSWORD_FORM_VACIO });
   readonly passwordError = signal('');
   readonly passwordOk = signal('');
   readonly guardandoPassword = signal(false);
 
-  updPassword(patch: Partial<PasswordForm>): void {
-    this.passwordForm.update((f) => ({ ...f, ...patch }));
-  }
+  readonly passwordForm = this.fb.group(
+    {
+      actual: ['', Validators.required],
+      nueva: ['', [Validators.required, Validators.minLength(6)]],
+      repetir: ['', Validators.required],
+    },
+    { validators: passwordsIguales },
+  );
 
   togglePassword(): void {
     this.mostrarPassword.update((v) => !v);
-    this.passwordForm.set({ ...PASSWORD_FORM_VACIO });
+    this.passwordForm.reset();
     this.passwordError.set('');
     this.passwordOk.set('');
   }
 
-  cambiarPassword(event: Event): void {
-    event.preventDefault();
-    const { actual, nueva, repetir } = this.passwordForm();
+  cambiarPassword(): void {
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
+
+    const { actual, nueva } = this.passwordForm.getRawValue();
     this.passwordError.set('');
     this.passwordOk.set('');
-
-    if (!actual || !nueva || !repetir) {
-      this.passwordError.set('Completá todos los campos');
-      return;
-    }
-    if (nueva.length < 6) {
-      this.passwordError.set('La nueva contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-    if (nueva !== repetir) {
-      this.passwordError.set('Las contraseñas nuevas no coinciden');
-      return;
-    }
-
     this.guardandoPassword.set(true);
     this.usuarioService.cambiarMiPassword(actual, nueva).subscribe({
       next: (res) => {
         this.guardandoPassword.set(false);
         this.passwordOk.set(res.mensaje);
-        this.passwordForm.set({ ...PASSWORD_FORM_VACIO });
+        this.passwordForm.reset();
         this.mostrarPassword.set(false);
       },
       error: (err) => {
