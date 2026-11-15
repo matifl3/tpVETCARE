@@ -1,23 +1,15 @@
 import { Location } from '@angular/common';
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
-import { inputValue } from '../../core/form.helpers';
 import { Seguimiento } from '../../core/models';
 import { SeguimientoService } from '../../services/seguimiento.service';
-
-interface ProgresoForm {
-  descripcion: string;
-  tecnicas: string;
-  observaciones: string;
-  evaluacion: string;
-}
-
-const FORM_VACIO: ProgresoForm = { descripcion: '', tecnicas: '', observaciones: '', evaluacion: '' };
 
 @Component({
   selector: 'app-seguimiento-page',
   standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './seguimiento-page.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './seguimiento-page.component.css',
@@ -27,8 +19,7 @@ export class SeguimientoPageComponent implements OnInit {
   private readonly location = inject(Location);
   private readonly auth = inject(AuthService);
   private readonly seguimientoService = inject(SeguimientoService);
-
-  protected readonly inputValue = inputValue;
+  private readonly fb = inject(NonNullableFormBuilder);
 
   private idMascota = 0;
   private readonly user = this.auth.user();
@@ -39,15 +30,22 @@ export class SeguimientoPageComponent implements OnInit {
   readonly error = signal('');
   readonly success = signal('');
   readonly mostrarForm = signal(false);
-  readonly form = signal<ProgresoForm>({ ...FORM_VACIO });
+
+  readonly form = this.fb.group({
+    descripcion: ['', [Validators.required, Validators.maxLength(500)]],
+    tecnicas: ['', [Validators.required, Validators.maxLength(500)]],
+    observaciones: ['', Validators.maxLength(500)], // opcional
+    evaluacion: ['', Validators.required],
+  });
 
   ngOnInit(): void {
     this.idMascota = Number(this.route.snapshot.paramMap.get('idMascota'));
     this.cargar();
   }
 
-  upd(patch: Partial<ProgresoForm>): void {
-    this.form.set({ ...this.form(), ...patch });
+  toggleForm(): void {
+    this.form.reset();
+    this.mostrarForm.update((v) => !v);
   }
 
   cargar(): void {
@@ -70,14 +68,17 @@ export class SeguimientoPageComponent implements OnInit {
     this.location.back();
   }
 
-  handleSubmit(event: Event): void {
-    event.preventDefault();
+  guardar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.error.set('');
     this.success.set('');
-    this.seguimientoService.registrarProgreso(this.idMascota, { ...this.form() }).subscribe({
+    this.seguimientoService.registrarProgreso(this.idMascota, this.form.getRawValue()).subscribe({
       next: () => {
         this.success.set('Progreso registrado correctamente');
-        this.form.set({ ...FORM_VACIO });
+        this.form.reset();
         this.mostrarForm.set(false);
         this.cargar();
       },
