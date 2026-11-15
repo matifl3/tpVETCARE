@@ -40,7 +40,10 @@ const MEDICAMENTO: Medicamento = {
   nombreProfesional: 'Juan',
 };
 
-function historial(vacunas: Vacuna[] = [VACUNA], medicamentos: Medicamento[] = [MEDICAMENTO]): HistorialClinico {
+function historial(
+  vacunas: Vacuna[] = [VACUNA],
+  medicamentos: Medicamento[] = [MEDICAMENTO],
+): HistorialClinico {
   return {
     id: 3,
     idMascota: ID_MASCOTA,
@@ -62,12 +65,6 @@ const esPutMascotaVeterinario = (req: HttpRequest<unknown>) =>
 
 const esPutHistorial = (req: HttpRequest<unknown>) =>
   req.method === 'PUT' && req.url.endsWith(`/api/mascotas/${ID_MASCOTA}/historial`);
-
-const esVacunas = (metodo: string) => (req: HttpRequest<unknown>) =>
-  req.method === metodo && req.url.includes(`/api/mascotas/${ID_MASCOTA}/historial/vacunas`);
-
-const esMedicamentos = (metodo: string) => (req: HttpRequest<unknown>) =>
-  req.method === metodo && req.url.includes(`/api/mascotas/${ID_MASCOTA}/historial/medicamentos`);
 
 describe('HistorialClinicoProfesionalPageComponent', () => {
   let fixture: ComponentFixture<HistorialClinicoProfesionalPageComponent>;
@@ -130,7 +127,7 @@ describe('HistorialClinicoProfesionalPageComponent', () => {
       observacionesHistorial: 'Control anual',
     });
 
-    component.guardarFicha(new Event('submit'));
+    component.guardarFicha();
 
     const pedidoMascota = http.expectOne(esPutMascotaVeterinario);
     expect(pedidoMascota.request.body.nombre).toBe('Firulais II');
@@ -149,6 +146,7 @@ describe('HistorialClinicoProfesionalPageComponent', () => {
     fixture.detectChanges();
 
     expect(component.success()).toContain('guardados correctamente');
+    expect(component.guardando()).toBeFalse();
   });
 
   it('no envía la ficha si los datos obligatorios están vacíos', () => {
@@ -165,125 +163,24 @@ describe('HistorialClinicoProfesionalPageComponent', () => {
       observacionesHistorial: '',
     });
 
-    component.guardarFicha(new Event('submit'));
+    component.guardarFicha();
 
     http.expectNone(esPutMascotaVeterinario);
     http.expectNone(esPutHistorial);
     expect(component.fichaForm.nombre().touched()).toBeTrue();
   });
 
-  it('registra, edita y elimina vacunas', () => {
+  it('delega el alta de vacunas en su sección', () => {
     cargarInicial();
-    spyOn(window, 'confirm').and.returnValue(true);
 
-    // Registrar
-    component.nuevaVacuna();
-    component.vacunaModel.set({
-      nombre: 'Moquillo',
-      lote: 'L-200',
-      fechaAplicacion: '2026-03-01',
-      fechaProximaDosis: '2027-03-01',
-      observaciones: '',
-    });
-    component.guardarVacuna(new Event('submit'));
+    const boton = Array.from<HTMLButtonElement>(
+      fixture.nativeElement.querySelectorAll('button'),
+    ).find((b) => b.textContent?.includes('Agregar vacuna'));
+    expect(boton).toBeDefined();
 
-    const alta = http.expectOne(esVacunas('POST'));
-    expect(alta.request.body.nombre).toBe('Moquillo');
-    expect(alta.request.body.lote).toBe('L-200');
-    alta.flush({ ...VACUNA, id: 12, nombre: 'Moquillo' });
-    http.expectOne(esGetHistorial).flush(historial());
-
-    // Editar
-    component.editarVacuna(VACUNA);
-    expect(component.vacunaModel().nombre).toBe('Antirrábica');
-    component.vacunaModel.set({
-      nombre: 'Antirrábica',
-      lote: 'L-101',
-      fechaAplicacion: '2026-01-10',
-      fechaProximaDosis: '2027-01-10',
-      observaciones: 'Dosis de refuerzo',
-    });
-    component.guardarVacuna(new Event('submit'));
-
-    const edicion = http.expectOne(esVacunas('PUT'));
-    expect(edicion.request.url).toContain('/vacunas/11');
-    expect(edicion.request.body.lote).toBe('L-101');
-    edicion.flush(VACUNA);
-    http.expectOne(esGetHistorial).flush(historial());
-
-    // Eliminar
-    component.eliminarVacuna(VACUNA);
-
-    const baja = http.expectOne(esVacunas('DELETE'));
-    expect(baja.request.url).toContain('/vacunas/11');
-    baja.flush(null);
-    http.expectOne(esGetHistorial).flush(historial([]));
+    boton!.click();
     fixture.detectChanges();
 
-    expect(component.success()).toContain('eliminada correctamente');
-  });
-
-  it('no registra una vacuna sin los datos obligatorios', () => {
-    cargarInicial();
-    component.nuevaVacuna();
-
-    component.guardarVacuna(new Event('submit'));
-
-    http.expectNone(esVacunas('POST'));
-    expect(component.vacunaForm.nombre().touched()).toBeTrue();
-    expect(component.vacunaForm.lote().touched()).toBeTrue();
-  });
-
-  it('registra, edita y elimina medicamentos', () => {
-    cargarInicial();
-    spyOn(window, 'confirm').and.returnValue(true);
-
-    // Registrar
-    component.nuevoMedicamento();
-    component.medicamentoModel.set({
-      nombre: 'Ibuprofeno',
-      dosis: '100 mg',
-      frecuencia: 'Cada 8 horas',
-      duracion: '3 días',
-      fechaPrescripcion: '2026-04-01',
-      indicaciones: '',
-    });
-    component.guardarMedicamento(new Event('submit'));
-
-    const alta = http.expectOne(esMedicamentos('POST'));
-    expect(alta.request.body.nombre).toBe('Ibuprofeno');
-    expect(alta.request.body.dosis).toBe('100 mg');
-    alta.flush({ ...MEDICAMENTO, id: 22, nombre: 'Ibuprofeno' });
-    http.expectOne(esGetHistorial).flush(historial());
-
-    // Editar
-    component.editarMedicamento(MEDICAMENTO);
-    expect(component.medicamentoModel().nombre).toBe('Amoxicilina');
-    component.medicamentoModel.set({
-      nombre: 'Amoxicilina',
-      dosis: '500 mg',
-      frecuencia: 'Cada 12 horas',
-      duracion: '10 días',
-      fechaPrescripcion: '2026-02-01',
-      indicaciones: 'Con comida',
-    });
-    component.guardarMedicamento(new Event('submit'));
-
-    const edicion = http.expectOne(esMedicamentos('PUT'));
-    expect(edicion.request.url).toContain('/medicamentos/21');
-    expect(edicion.request.body.dosis).toBe('500 mg');
-    edicion.flush(MEDICAMENTO);
-    http.expectOne(esGetHistorial).flush(historial());
-
-    // Eliminar
-    component.eliminarMedicamento(MEDICAMENTO);
-
-    const baja = http.expectOne(esMedicamentos('DELETE'));
-    expect(baja.request.url).toContain('/medicamentos/21');
-    baja.flush(null);
-    http.expectOne(esGetHistorial).flush(historial([VACUNA], []));
-    fixture.detectChanges();
-
-    expect(component.success()).toContain('eliminado correctamente');
+    expect(fixture.nativeElement.textContent).toContain('Nueva vacuna');
   });
 });

@@ -1,0 +1,27 @@
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <span class="kpi-label">Turnos en el período</span>
+    <span class="kpi-value">{{ resumen().total }}</span>
+    <span class="kpi-hint">{{ etiquetaPreset() }}</span>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-label">Confirmados</span>
+    <span class="kpi-value">{{ resumen().confirmados }}</span>
+    <span class="kpi-hint">Activos no cancelados</span>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-label">Cancelados</span>
+    <span class="kpi-value">{{ resumen().cancelados }}</span>
+    <span class="kpi-hint">No incluidos en los gráficos</span>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-label">Próximos</span>
+    <span class="kpi-value">{{ resumen().proximos }}</span>
+    <span class="kpi-hint">Con fecha de hoy en adelante</span>
+  </div>
+  <div class="kpi-card kpi-card-accent">
+    <span class="kpi-label">Servicio más solicitado</span>
+    <span class="kpi-value kpi-value-text">{{ resumen().servicioTop }}</span>
+    <span class="kpi-hint">Según cantidad de turnos</span>
+  </div>
+</div>

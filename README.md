@@ -80,6 +80,8 @@ mascotas/
 └── mascotas-page.component.spec.ts  # tests
 ```
 
+Las pantallas más grandes delegan partes de la UI a subcomponentes dentro de su propia carpeta `components/`. Es el caso del historial clínico (`ficha-mascota-form`, `vacunas-section`, `medicamentos-section`) y de las estadísticas de turnos (`periodo-filtros`, `kpi-grid`, `grafico-barras`, `ranking-servicios`). Cada subcomponente mantiene la misma convención de 4 archivos; la página queda como dueña del estado, las llamadas al backend y las alertas.
+
 Los estilos que se repiten entre pantallas (márgenes, texto gris, botones chicos, etc.) están como clases utilitarias en `frontend/src/styles.css`.
 
 ### Formularios
