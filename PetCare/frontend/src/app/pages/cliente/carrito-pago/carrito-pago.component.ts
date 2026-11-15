@@ -1,18 +1,23 @@
-import { ChangeDetectionStrategy, Component,  inject,  input,  linkedSignal,  output,  signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, input, linkedSignal, output, signal } from '@angular/core';
+import { FormField, form, maxLength, pattern, required, validate, FormRoot } from '@angular/forms/signals';
 import { Carrito, Tarjeta } from '../../../core/models';
-import {  PATRON_CVV,  PATRON_NUMERO_TARJETA,  PATRON_VENCIMIENTO,  tarjetaNoVencida } from '../../../core/tarjeta.validators';
+import { PATRON_CVV, PATRON_NUMERO_TARJETA, PATRON_VENCIMIENTO } from '../../../core/tarjeta.validators';
+
+interface TarjetaNuevaModel {
+  titular: string;
+  numeroTarjeta: string;
+  vencimiento: string;
+  cvv: string;
+}
 
 @Component({
   selector: 'app-carrito-pago',
-  imports: [ReactiveFormsModule],
+  imports: [FormField, FormRoot],
   templateUrl: './carrito-pago.component.html',
   styleUrl: './carrito-pago.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CarritoPagoComponent {
-  private readonly fb = inject(NonNullableFormBuilder);
-
   readonly carrito = input.required<Carrito>();
   readonly tarjetas = input.required<Tarjeta[]>();
   readonly comprando = input(false);
@@ -20,46 +25,113 @@ export class CarritoPagoComponent {
   readonly confirmarCompra = output<Record<string, unknown>>();
 
   readonly mostrarNuevaTarjeta = signal(false);
-  readonly idTarjetaGuardada = linkedSignal<Tarjeta[], number | ''>({
-    source: this.tarjetas,
-    computation: (cards) => (cards.length > 0 ? cards[0].idTarjeta : ''),
+
+  private readonly tarjetaSeleccionada = signal<number | '' | null>(null);
+
+  readonly idTarjetaGuardada = computed<number | ''>(() => {
+    const elegida = this.tarjetaSeleccionada();
+    if (elegida !== null) return elegida; 
+
+    const cards = this.tarjetas();
+    return cards.length > 0 ? cards[0].idTarjeta : ''; 
   });
 
-  readonly tarjetaNueva = this.fb.group({
-    titular: ['', [Validators.required, Validators.maxLength(60)]],
-    numeroTarjeta: ['', [Validators.required, Validators.pattern(PATRON_NUMERO_TARJETA)]],
-    vencimiento: ['', [Validators.required, Validators.pattern(PATRON_VENCIMIENTO), tarjetaNoVencida]],
-    cvv: ['', [Validators.required, Validators.pattern(PATRON_CVV)]],
+  readonly usaTarjetaNueva = computed(
+    () => this.mostrarNuevaTarjeta() || this.tarjetas().length === 0
+  );
+
+  readonly totalPagar = computed(() => {
+    const c = this.carrito();
+    if (typeof c.total === 'number') return c.total;
+    const totalItems = (c.items ?? []).reduce((acc, item) => acc + (item.subtotal ?? 0), 0);
+    const totalTurnos = (c.turnos ?? []).reduce((acc, turno) => acc + (turno.precio ?? 0), 0);
+    return totalItems + totalTurnos;
   });
+
+  private readonly tarjetaVacia: TarjetaNuevaModel = {
+    titular: '',
+    numeroTarjeta: '',
+    vencimiento: '',
+    cvv: '',
+  };
+
+  readonly tarjetaModel = signal<TarjetaNuevaModel>({ ...this.tarjetaVacia });
+
+  readonly formularioTarjeta = form(
+    this.tarjetaModel,
+    (campos) => {
+      required(campos.titular, { message: 'Ingresá el nombre del titular.',
+        when: () => this.usaTarjetaNueva() });
+      maxLength(campos.titular, 60, { message: 'El titular no puede superar los 60 caracteres.' });
+
+      required(campos.numeroTarjeta, { message: 'Ingresá el número de tarjeta.',
+        when: () => this.usaTarjetaNueva() });
+      pattern(campos.numeroTarjeta, PATRON_NUMERO_TARJETA, { message: 'Ingresá un número de tarjeta válido.' });
+
+      required(campos.vencimiento, { message: 'Ingresá la fecha de vencimiento.',
+        when: () => this.usaTarjetaNueva() });
+      pattern(campos.vencimiento, PATRON_VENCIMIENTO, { message: 'Usá el formato MM/AA.' });
+      validate(campos.vencimiento, ({ value }) => {
+        const valor = value();
+        if (!valor || !PATRON_VENCIMIENTO.test(valor)) return undefined;
+        return this.estaVencida(valor)
+          ? { kind: 'vencida', message: 'La tarjeta está vencida.' }
+          : undefined;
+      });
+
+      required(campos.cvv, { message: 'Ingresá el código de seguridad.',
+        when: () => this.usaTarjetaNueva() });
+      pattern(campos.cvv, PATRON_CVV, { message: 'El CVV debe tener 3 o 4 dígitos.' });
+    },
+    {
+      submission: {
+        action: async (campos) => {
+          const body: Record<string, unknown> = { metodoPago: 'TARJETA' };
+          const idTarjeta = this.idTarjetaGuardada();
+
+          if (idTarjeta && !this.usaTarjetaNueva()) {
+            body['idTarjetaGuardada'] = Number(idTarjeta);
+          } else {
+            body['tarjetaNueva'] = campos().value();
+          }
+
+          this.confirmarCompra.emit(body);
+        },
+      },
+    }
+  );
 
   seleccionarTarjeta(id: number): void {
-    this.idTarjetaGuardada.set(id);
+    this.tarjetaSeleccionada.set(id);
     this.mostrarNuevaTarjeta.set(false);
+    this.limpiarFormularioTarjeta();
   }
 
   toggleNuevaTarjeta(): void {
-    this.mostrarNuevaTarjeta.update((v) => !v);
-    this.idTarjetaGuardada.set('');
-    this.tarjetaNueva.reset();
+    const abrir = !this.mostrarNuevaTarjeta();
+    this.mostrarNuevaTarjeta.set(abrir);
+    this.limpiarFormularioTarjeta();
+
+    if (abrir) {
+      this.tarjetaSeleccionada.set('');
+    } else if (this.tarjetas().length > 0) {
+      this.tarjetaSeleccionada.set(null);
+    }
   }
 
-  submitCompra(): void {
-    const idTarjeta = this.idTarjetaGuardada();
-    const usaTarjetaNueva = !idTarjeta && this.mostrarNuevaTarjeta();
+  private limpiarFormularioTarjeta(): void {
+    this.tarjetaModel.set({ ...this.tarjetaVacia });
+    this.formularioTarjeta().reset();
+  }
 
-    if (usaTarjetaNueva && this.tarjetaNueva.invalid) {
-      this.tarjetaNueva.markAllAsTouched();
-      return;
-    }
+  private estaVencida(vencimiento: string): boolean {
+    const [mesStr, anioStr] = vencimiento.split('/');
+    const mes = Number(mesStr);
+    const anio = 2000 + Number(anioStr);
+    const hoy = new Date();
+    const anioActual = hoy.getFullYear();
+    const mesActual = hoy.getMonth() + 1;
 
-    const body: Record<string, unknown> = { metodoPago: 'TARJETA' };
-
-    if (idTarjeta) {
-      body['idTarjetaGuardada'] = Number(idTarjeta);
-    } else if (usaTarjetaNueva) {
-      body['tarjetaNueva'] = this.tarjetaNueva.getRawValue();
-    }
-
-    this.confirmarCompra.emit(body);
+    return anio < anioActual || (anio === anioActual && mes < mesActual);
   }
 }

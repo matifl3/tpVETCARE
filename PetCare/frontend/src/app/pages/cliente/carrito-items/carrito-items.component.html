@@ -1,36 +1,17 @@
-<section class="items-card">
-  <header class="items-header">
-    <div>
-      <h2>Tu carrito</h2>
-      <p class="subtitulo">Revisá tus productos y turnos antes de confirmar</p>
-    </div>
-
-    <div class="header-actions">
-      <button
-        type="button"
-        class="btn-secondary"
-        (click)="verHistorial.emit()"
-      >
-        Ver historial
-      </button>
-      <a routerLink="/" class="btn-outline">
-        Volver al catálogo
-      </a>
-    </div>
-  </header>
-
+<section class="items-section">
   @if (carrito().items?.length) {
-    <div class="seccion-lista">
-      <h3>Productos</h3>
+    <div class="grupo-items">
+      <h3 class="grupo-titulo">Productos</h3>
+
       @for (item of carrito().items; track item.idProducto) {
         <article class="item-row">
           <div class="item-info">
             <span class="item-nombre">{{ item.nombre }}</span>
-            <span class="item-precio">${{ item.precioUnitario }} c/u</span>
+            <span class="item-detalle">${{ item.precioUnitario }} c/u</span>
           </div>
 
-          <div class="item-controls">
-            <div class="qty-box">
+          <div class="item-actions">
+            <div class="qty-control">
               <button
                 type="button"
                 class="qty-btn"
@@ -54,7 +35,7 @@
 
             <button
               type="button"
-              class="btn-delete"
+              class="btn-remove"
               title="Quitar producto"
               [disabled]="disabled()"
               (click)="eliminarProducto.emit(item.idProducto)"
@@ -68,20 +49,22 @@
   }
 
   @if (carrito().turnos?.length) {
-    <div class="seccion-lista">
-      <h3>Turnos reservados</h3>
+    <div class="grupo-items">
+      <h3 class="grupo-titulo">Turnos reservados</h3>
+
       @for (turno of carrito().turnos; track turno.id) {
         <article class="item-row">
           <div class="item-info">
             <span class="item-nombre">{{ turno.servicio }}</span>
-            <span class="item-precio">{{ turno.fecha }}</span>
+            <span class="item-detalle">{{ turno.fecha }}</span>
           </div>
 
-          <div class="item-controls">
+          <div class="item-actions">
             <span class="item-subtotal">${{ turno.precio }}</span>
+
             <button
               type="button"
-              class="btn-delete"
+              class="btn-remove"
               title="Cancelar turno"
               [disabled]="disabled()"
               (click)="eliminarTurno.emit(turno.id)"
@@ -93,4 +76,10 @@
       }
     </div>
   }
+
+  <div class="items-footer">
+    <a routerLink="/dashboard" class="btn-volver">
+      ← Volver al Dashboard
+    </a>
+  </div>
 </section>

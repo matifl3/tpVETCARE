@@ -57,10 +57,7 @@ export const routes: Routes = [
       { path: 'profesional', component: ProfesionalDashboardComponent },
       { path: 'profesional/mis-turnos', component: MisTurnosProfesionalPageComponent },
       { path: 'profesional/mis-pacientes', component: MisPacientesProfesionalPageComponent },
-      {
-        path: 'profesional/mis-pacientes/:idMascota/historial',
-        component: HistorialClinicoProfesionalPageComponent,
-      },
+      { path: 'profesional/mis-pacientes/:idMascota/historial', component: HistorialClinicoProfesionalPageComponent},
       { path: 'profesional/perfil', component: PerfilProfesionalPageComponent },
     ],
   },

@@ -16,7 +16,6 @@ export class CarritoItemsComponent {
   readonly modificarCantidad = output<{ idProducto: number; cantidad: number }>();
   readonly eliminarProducto = output<number>();
   readonly eliminarTurno = output<number>();
-  readonly verHistorial = output<void>();
 
   onCambiarCantidad(idProducto: number, cantidad: number): void {
     if (cantidad < 1) return;

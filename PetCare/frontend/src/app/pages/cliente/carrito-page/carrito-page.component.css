@@ -1,98 +1,83 @@
-/* Items del carrito (productos y turnos) */
-.item-fila {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  border-bottom: 1px solid var(--color-borde);
+.carrito-wrapper {
+  max-width: 1120px;
+  margin: 36px auto;
+  padding: 0 24px;
 }
 
-.item-turno {
-  background: var(--color-superficie-lila);
+.carrito-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 48px;
+  box-shadow: 0 10px 30px rgba(31, 41, 55, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.7);
 }
 
-.item-acciones {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.carrito-titulo {
+  margin: 0 0 24px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
 }
 
-/* Resumen y pago */
-.resumen {
-  text-align: right;
-  margin-top: 24px;
-  padding: 24px;
-  background: var(--color-superficie-gris);
-  border-radius: 12px;
-}
-
-.seccion-pago {
-  text-align: left;
-  margin-bottom: 16px;
-}
-
-.seccion-titulo {
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.opciones-pago {
-  display: flex;
-  gap: 8px;
-}
-
-.opcion-pago {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: 2px solid var(--color-acento);
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.lista-tarjetas {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.tarjeta-opcion {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.form-tarjeta-nueva {
+.tabs-bar {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  padding: 16px;
-  background: var(--color-blanco);
+  background: #f4f4f9;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 28px;
+}
+
+.tab-btn {
+  border: none;
+  background: transparent;
+  padding: 11px 16px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover:not(.active) {
+  color: #374151;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: var(--color-primario, #7c3aed);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.texto-estado {
+  margin: 0 0 24px;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
   border-radius: 10px;
+  border: 1.5px solid var(--color-borde-lila, #d8b4fe);
+  background: #ffffff;
+  color: var(--color-primario, #7c3aed);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
-/* Historial de compras */
-.compra-historial {
-  padding: 16px;
-  border-bottom: 1px solid var(--color-borde);
+.btn-volver:hover {
+  background: var(--color-primario-06, #f5f3ff);
+  border-color: var(--color-primario, #7c3aed);
 }
 
-.detalle-compra {
-  font-size: 13px;
-  color: var(--color-texto-suave);
-}
-.error-campo {
-  display: block;
-  margin-top: 4px;
-  color: var(--color-error);
-  font-size: 0.85rem;
-}
-
-.form-tarjeta-nueva input.ng-invalid.ng-touched {
-  border-color: var(--color-error);
+.carrito-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
