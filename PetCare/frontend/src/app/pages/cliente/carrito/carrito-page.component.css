@@ -86,13 +86,3 @@
   font-size: 13px;
   color: var(--color-texto-suave);
 }
-.error-campo {
-  display: block;
-  margin-top: 4px;
-  color: var(--color-error);
-  font-size: 0.85rem;
-}
-
-.form-tarjeta-nueva input.ng-invalid.ng-touched {
-  border-color: var(--color-error);
-}
