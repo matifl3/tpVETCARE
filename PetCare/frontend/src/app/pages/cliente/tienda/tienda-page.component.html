@@ -12,19 +12,18 @@
       <div class="alert alert-success show">{{ success() }}</div>
     }
 
-    <form class="buscador" (submit)="handleBuscar($event)">
+    <form class="buscador" [formGroup]="filtros" (ngSubmit)="buscar()">
       <input class="input-busqueda"
         type="text"
         placeholder="Buscar producto..."
-        [value]="busqueda()"
-        (input)="busqueda.set(inputValue($event))"
+        formControlName="busqueda"
       />
       <button type="submit" class="btn-primary">Buscar</button>
     </form>
 
     <div class="barra-filtros">
       <button
-        [class]="'btn-' + (categoria() === '' && busqueda() === '' ? 'primary' : 'secondary')"
+        [class]="'btn-' + (categoria() === '' && filtros.controls.busqueda.value === '' ? 'primary' : 'secondary')"
         (click)="filtrarCategoria('')"
       >
         Todas
