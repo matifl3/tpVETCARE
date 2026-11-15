@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { inputValue } from '../../../core/form.helpers';
 import { Producto } from '../../../core/models';
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductoService } from '../../../services/producto.service';
@@ -9,7 +9,7 @@ const CATEGORIAS = ['ALIMENTO', 'JUGUETE', 'HIGIENE', 'ACCESORIO', 'SALUD', 'ROP
 
 @Component({
     selector: 'app-tienda-page',
-    imports: [RouterLink],
+    imports: [RouterLink, ReactiveFormsModule],
     templateUrl: './tienda-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './tienda-page.component.css'
@@ -17,8 +17,8 @@ const CATEGORIAS = ['ALIMENTO', 'JUGUETE', 'HIGIENE', 'ACCESORIO', 'SALUD', 'ROP
 export class TiendaPageComponent implements OnInit {
   private readonly productoService = inject(ProductoService);
   private readonly carritoService = inject(CarritoService);
+  private readonly fb = inject(NonNullableFormBuilder);
 
-  protected readonly inputValue = inputValue;
   protected readonly categorias = CATEGORIAS;
 
   readonly productos = signal<Producto[]>([]);
@@ -26,7 +26,11 @@ export class TiendaPageComponent implements OnInit {
   readonly error = signal('');
   readonly success = signal('');
   readonly categoria = signal('');
-  readonly busqueda = signal('');
+
+  /** Buscador por nombre (opcional, sin validaciones). */
+  readonly filtros = this.fb.group({
+    busqueda: [''],
+  });
 
   ngOnInit(): void {
     this.cargar();
@@ -58,14 +62,14 @@ export class TiendaPageComponent implements OnInit {
     });
   }
 
-  handleBuscar(event: Event): void {
-    event.preventDefault();
-    this.cargar(this.categoria(), this.busqueda());
+  buscar(): void {
+    const texto = this.filtros.controls.busqueda.value.trim();
+    this.cargar(this.categoria(), texto);
   }
 
   filtrarCategoria(cat: string): void {
     this.categoria.set(cat);
-    this.busqueda.set('');
+    this.filtros.reset();
     this.cargar(cat, '');
   }
 
