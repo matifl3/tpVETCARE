@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { inputValue } from '../../../../../../core/form.helpers';
 import { Agrupacion, Preset } from '../../estadisticas.model';
 
 /** Filtros del panel: período (presets o fechas) y agrupación. */
@@ -21,7 +20,7 @@ export class PeriodoFiltrosComponent {
   readonly agrupacionCambiada = output<string>();
   readonly fechaCambiada = output<{ cual: 'desde' | 'hasta'; valor: string }>();
 
-  cambiarFecha(cual: 'desde' | 'hasta', event: Event): void {
-    this.fechaCambiada.emit({ cual, valor: inputValue(event) });
+  cambiarFecha(cual: 'desde' | 'hasta', valor: string): void {
+    this.fechaCambiada.emit({ cual, valor });
   }
 }
