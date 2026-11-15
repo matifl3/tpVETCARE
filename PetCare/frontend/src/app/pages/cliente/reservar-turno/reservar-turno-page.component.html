@@ -24,28 +24,34 @@
       <div class="alert alert-success show">{{ success() }}</div>
     }
 
-    <form class="contenido-angosto" (submit)="handleSubmit($event)">
+    <form class="contenido-angosto" [formGroup]="form" (ngSubmit)="guardar()">
       <div class="input-group">
         <label>Mascota</label>
-        <select class="campo"
-          (change)="idMascota.set(inputValue($event))"
-          required
-        >
-          <option value="" [selected]="idMascota() === ''">Seleccionar mascota</option>
+        <select class="campo" formControlName="idMascota">
+          <option [ngValue]="null" disabled>Seleccionar mascota</option>
           @for (m of mascotas(); track m.idMascota) {
-            <option [value]="m.idMascota" [selected]="idMascota() === String(m.idMascota)">
-              {{ m.nombre }} ({{ m.especie }})
-            </option>
+            <option [ngValue]="m.idMascota">{{ m.nombre }} ({{ m.especie }})</option>
           }
         </select>
+        @if (form.controls.idMascota.touched && form.controls.idMascota.hasError('required')) {
+          <small class="error-campo">Elegí una mascota</small>
+        }
       </div>
 
       <div class="input-group">
         <label>Fecha del turno</label>
-        <input type="date" [value]="fecha()" (input)="onFecha(inputValue($event))" required [min]="hoy" />
+        <input type="date" formControlName="fecha" [min]="hoy" />
+        @if (form.controls.fecha.touched) {
+          @if (form.controls.fecha.hasError('required')) {
+            <small class="error-campo">La fecha es obligatoria</small>
+          }
+          @if (form.controls.fecha.hasError('fechaPasada')) {
+            <small class="error-campo">La fecha no puede ser anterior a hoy</small>
+          }
+        }
       </div>
 
-      @if (fecha()) {
+      @if (form.controls.fecha.value && form.controls.fecha.valid) {
         <div class="mb-16">
           @if (disponible() === null) {
             <p class="texto-gris">Verificando disponibilidad...</p>
@@ -60,7 +66,10 @@
       @if (permiteHoras()) {
         <div class="input-group">
           <label>Horas de servicio</label>
-          <input type="number" min="1" max="8" [value]="horas()" (input)="onHoras(inputValue($event))" />
+          <input type="number" min="1" max="8" formControlName="horas" />
+          @if (form.controls.horas.invalid) {
+            <small class="error-campo">Las horas tienen que ser entre 1 y 8</small>
+          }
           <p class="ayuda">Cargo adicional por hora extra: ${{ precioHora().toFixed(2) }}</p>
         </div>
       }
@@ -70,19 +79,15 @@
         @if (permiteHoras()) {
           <p>Precio base: ${{ precioBase().toFixed(2) }}</p>
         }
-        @if (permiteHoras() && horas() > 1) {
+        @if (permiteHoras() && horasValidas() > 1) {
           <p>
-            Horas extra: {{ horas() - 1 }} × ${{ precioHora().toFixed(2) }} = ${{ (precioHora() * (horas() - 1)).toFixed(2) }}
+            Horas extra: {{ horasValidas() - 1 }} × ${{ precioHora().toFixed(2) }} = ${{ (precioHora() * (horasValidas() - 1)).toFixed(2) }}
           </p>
         }
         <p class="precio-total">Total: ${{ total().toFixed(2) }}</p>
       </div>
 
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="enviando() || !disponible() || !fecha() || !idMascota()"
-      >
+      <button type="submit" class="btn-primary" [disabled]="enviando() || disponible() === false">
         {{ enviando() ? 'Agregando...' : 'Agregar al carrito' }}
       </button>
     </form>
