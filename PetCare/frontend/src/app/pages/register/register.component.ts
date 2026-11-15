@@ -3,6 +3,7 @@ import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { AuthService } from '../../core/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
+import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
 
 interface RegistroForm {
   nombre: string;
@@ -22,7 +23,7 @@ const ROLES_PROFESIONALES = ['VETERINARIO',
   'CUIDADOR'];
 
 @Component({
-  imports: [FormRoot, FormField, RouterLink],
+  imports: [FormRoot, FormField, RouterLink, MensajeAlertaComponent],
   selector: 'app-register',
   styleUrl: './register.component.css',
   templateUrl: './register.component.html',

@@ -5,9 +5,7 @@
     <h1>Profesionales</h1>
     <p class="mb-24">Buscá profesionales para el cuidado de tus mascotas.</p>
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
 
     <div class="barra-filtros">
       <button [class]="'btn-' + (filtroRol() === '' ? 'primary' : 'secondary')" (click)="handleFiltrar('')">

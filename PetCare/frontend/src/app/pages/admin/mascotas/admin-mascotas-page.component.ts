@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
     selector: 'app-admin-mascotas-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './admin-mascotas-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-mascotas-page.component.css'

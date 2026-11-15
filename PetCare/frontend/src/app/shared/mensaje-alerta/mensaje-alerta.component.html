@@ -1,0 +1,16 @@
+@if (mensaje()) {
+  <div
+    class="alert show"
+    [class.alert-error]="tipo() === 'error'"
+    [class.alert-success]="tipo() === 'success'"
+    [attr.role]="tipo() === 'error' ? 'alert' : 'status'"
+  >
+    <span>
+      @if (mensaje()) {
+        {{ mensaje() }}
+      } @else {
+        <ng-content />
+      }
+    </span>
+  </div>
+}

@@ -21,9 +21,7 @@
     </div>
   </div>
 
-  @if (error()) {
-    <div class="alert alert-error show">{{ error() }}</div>
-  }
+  <app-mensaje-alerta [mensaje]="error()" />
 
   <app-periodo-filtros
     [preset]="preset()"

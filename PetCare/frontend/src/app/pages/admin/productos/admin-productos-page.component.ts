@@ -3,11 +3,12 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { RouterLink } from '@angular/router';
 import { Producto } from '../../../core/models';
 import { ProductoService } from '../../../services/producto.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 
 @Component({
     selector: 'app-admin-productos-page',
-    imports: [RouterLink, ReactiveFormsModule],
+    imports: [RouterLink, ReactiveFormsModule, MensajeAlertaComponent],
     templateUrl: './admin-productos-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-productos-page.component.css'

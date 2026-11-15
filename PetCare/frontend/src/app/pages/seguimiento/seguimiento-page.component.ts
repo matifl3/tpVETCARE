@@ -5,11 +5,12 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { Seguimiento } from '../../core/models';
 import { SeguimientoService } from '../../services/seguimiento.service';
+import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
   selector: 'app-seguimiento-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MensajeAlertaComponent],
   templateUrl: './seguimiento-page.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './seguimiento-page.component.css',
@@ -20,7 +21,6 @@ export class SeguimientoPageComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly seguimientoService = inject(SeguimientoService);
   private readonly fb = inject(NonNullableFormBuilder);
-
   private idMascota = 0;
   private readonly user = this.auth.user();
   protected readonly esAdiestradorOAdmin = this.user?.rol === 'ADIESTRADOR' || this.user?.rol === 'ADMIN';

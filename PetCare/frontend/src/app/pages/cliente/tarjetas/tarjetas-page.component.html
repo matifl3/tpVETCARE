@@ -9,12 +9,8 @@
       </button>
     </div>
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="alert alert-success show">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
     @if (mostrarForm()) {
       <form class="panel-formulario" [formGroup]="form" (ngSubmit)="agregar()">

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ReporteService } from '../../../../../services/reporte.service';
+import { MensajeAlertaComponent } from '../../../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 function rangoFechasValido(grupo: AbstractControl): ValidationErrors | null {
   const inicio = grupo.get('fechaInicio')?.value;
@@ -11,7 +12,7 @@ function rangoFechasValido(grupo: AbstractControl): ValidationErrors | null {
 
 @Component({
   selector: 'app-reporte-ventas',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MensajeAlertaComponent],
   templateUrl: './reporte-ventas.component.html',
   styleUrls: ['./reporte-ventas.component.css', '../../reportes-filtros.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

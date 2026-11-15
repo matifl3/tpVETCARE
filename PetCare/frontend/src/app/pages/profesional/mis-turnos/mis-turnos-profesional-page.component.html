@@ -6,9 +6,7 @@
       <h1>Mis Turnos</h1>
       <a routerLink="/dashboard/profesional" class="btn-secondary btn-volver">← Volver</a>
     </div>
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
 
     @if (turnos().length === 0) {
       <div class="admin-card">

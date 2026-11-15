@@ -4,10 +4,11 @@ import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
 import { MascotaCardComponent } from './mascota-card/mascota-card.component';
 import { MascotaFormComponent } from './mascota-form/mascota-form.component';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
   selector: 'app-mascotas-page',
-  imports: [RouterLink, MascotaCardComponent, MascotaFormComponent],
+  imports: [RouterLink, MascotaCardComponent, MascotaFormComponent, MensajeAlertaComponent],
   templateUrl: './mascotas-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './mascotas-page.component.css',

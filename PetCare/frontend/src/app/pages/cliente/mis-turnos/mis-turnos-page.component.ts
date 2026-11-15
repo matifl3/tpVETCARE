@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { RouterLink } from '@angular/router';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
     selector: 'app-mis-turnos-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './mis-turnos-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './mis-turnos-page.component.css'

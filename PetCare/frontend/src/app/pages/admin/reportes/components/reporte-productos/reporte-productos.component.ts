@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReporteService } from '../../../../../services/reporte.service';
 import { ANIO_ACTUAL, MESES } from '../../resportes.model';
+import { MensajeAlertaComponent } from '../../../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
   selector: 'app-reporte-productos',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MensajeAlertaComponent],
   templateUrl: './reporte-productos.component.html',
   styleUrl: '../../reportes-filtros.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

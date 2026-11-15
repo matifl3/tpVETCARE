@@ -9,6 +9,7 @@ import { FICHA_VACIA, FichaModel, fechaHoy } from './historial-clinico.model';
 import { FichaMascotaFormComponent } from './components/ficha-mascota-form/ficha-mascota-form.component';
 import { VacunasSectionComponent } from './components/vacunas-section/vacunas-section.component';
 import { MedicamentosSectionComponent } from './components/medicamentos-section/medicamentos-section.component';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 /**
  * Página del historial clínico del veterinario.
@@ -22,7 +23,8 @@ import { MedicamentosSectionComponent } from './components/medicamentos-section/
     FichaMascotaFormComponent,
     VacunasSectionComponent,
     MedicamentosSectionComponent,
-  ],
+    MensajeAlertaComponent
+],
   templateUrl: './historial-clinico-profesional-page.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
 })

@@ -7,12 +7,13 @@ import { CarritoHistorialComponent } from '../carrito-historial/carrito-historia
 import { CarritoService } from '../../../../services/carrito.service';
 import { TarjetaService } from '../../../../services/tarjeta.service';
 import { Carrito, Tarjeta } from '../../../../core/models';
+import { MensajeAlertaComponent } from '../../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 type Pestana = 'carrito' | 'historial';
 
 @Component({
   selector: 'app-carrito-page',
-  imports: [RouterLink, CarritoItemsComponent, CarritoPagoComponent, CarritoHistorialComponent],
+  imports: [RouterLink, CarritoItemsComponent, CarritoPagoComponent, CarritoHistorialComponent, MensajeAlertaComponent],
   templateUrl: './carrito-page.component.html',
   styleUrl: './carrito-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

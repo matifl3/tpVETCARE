@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
     selector: 'app-mis-turnos-profesional-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './mis-turnos-profesional-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './mis-turnos-profesional-page.component.css'

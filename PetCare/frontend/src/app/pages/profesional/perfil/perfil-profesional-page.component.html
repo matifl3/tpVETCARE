@@ -6,9 +6,7 @@
       <h1>Perfil Profesional</h1>
       <a routerLink="/dashboard/profesional" class="btn-secondary btn-volver">← Volver</a>
     </div>
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+   <app-mensaje-alerta [mensaje]="error()" />
 
     @if (perfil(); as perfil) {
       <div class="contenedor">
@@ -40,14 +38,10 @@
           </button>
         </div>
 
-        @if (passwordOk()) {
-          <div class="alert alert-success show">{{ passwordOk() }}</div>
-        }
+        <app-mensaje-alerta [mensaje]="passwordOk()" tipo="success" />
 
         @if (mostrarPassword()) {
-          @if (passwordError()) {
-            <div class="alert alert-error show">{{ passwordError() }}</div>
-          }
+          <app-mensaje-alerta [mensaje]="passwordError()" />
           @let f = passwordForm.controls;
           <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()">
             <div class="input-group">

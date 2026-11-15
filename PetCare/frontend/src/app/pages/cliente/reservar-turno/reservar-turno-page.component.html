@@ -17,12 +17,8 @@
       </div>
     }
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="alert alert-success show">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
     <form class="contenido-angosto" [formGroup]="form" (ngSubmit)="guardar()">
       <div class="input-group">

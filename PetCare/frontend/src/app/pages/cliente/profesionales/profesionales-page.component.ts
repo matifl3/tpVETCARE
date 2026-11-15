@@ -2,12 +2,13 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { RouterLink } from '@angular/router';
 import { Profesional } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 const ROLES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
 
 @Component({
     selector: 'app-profesionales-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './profesionales-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './profesionales-page.component.css'

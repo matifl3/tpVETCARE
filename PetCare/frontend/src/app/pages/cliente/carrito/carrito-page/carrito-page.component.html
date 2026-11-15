@@ -23,13 +23,8 @@
       </button>
     </div>
 
-    @if (error()) {
-      <div class="alert-error" role="alert">{{ error() }}</div>
-    }
-
-    @if (success()) {
-      <div class="alert-success" role="status">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
     @if (loading()) {
       <p class="texto-estado">Cargando carrito...</p>

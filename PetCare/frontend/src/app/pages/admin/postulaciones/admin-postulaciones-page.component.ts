@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { RouterLink } from '@angular/router';
 import { Profesional } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
     selector: 'app-admin-postulaciones-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './admin-postulaciones-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-postulaciones-page.component.css'

@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
+import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
 
 interface LoginForm {
   email: string;
@@ -12,7 +13,7 @@ interface LoginForm {
 
 @Component({
     selector: 'app-login',
-    imports: [RouterLink, FormField, FormRoot],
+    imports: [RouterLink, FormField, FormRoot, MensajeAlertaComponent],
     templateUrl: './login.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './login.component.css'

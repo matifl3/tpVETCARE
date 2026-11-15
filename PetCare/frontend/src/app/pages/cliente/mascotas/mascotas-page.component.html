@@ -9,9 +9,7 @@
       </button>
     </div>
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
 
     @if (mostrarForm()) {
       <app-mascota-form

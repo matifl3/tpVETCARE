@@ -18,9 +18,7 @@
         <p class="subtitulo">Accedé a tu cuenta</p>
       </div>
 
-      @if (error()) {
-        <div class="alert alert-error show">{{ error() }}</div>
-      }
+      <app-mensaje-alerta [mensaje]="error()" />
 
         <div class="form-container active">
           <form [formRoot]="formularioLogin">

@@ -4,12 +4,13 @@ import { RouterLink } from '@angular/router';
 import { Producto } from '../../../core/models';
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductoService } from '../../../services/producto.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 const CATEGORIAS = ['ALIMENTO', 'JUGUETE', 'HIGIENE', 'ACCESORIO', 'SALUD', 'ROPA', 'CAMA', 'TRANSPORTE'];
 
 @Component({
     selector: 'app-tienda-page',
-    imports: [RouterLink, ReactiveFormsModule],
+    imports: [RouterLink, MensajeAlertaComponent, ReactiveFormsModule],
     templateUrl: './tienda-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './tienda-page.component.css'

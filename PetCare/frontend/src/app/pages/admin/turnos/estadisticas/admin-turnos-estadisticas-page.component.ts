@@ -7,6 +7,7 @@ import { PeriodoFiltrosComponent } from './components/periodo-filtros/periodo-fi
 import { KpiGridComponent } from './components/kpi-grid/kpi-grid.component';
 import { GraficoBarrasComponent } from './components/grafico-barras/grafico-barras.component';
 import { RankingServiciosComponent } from './components/ranking-servicios/ranking-servicios.component';
+import { MensajeAlertaComponent } from '../../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 /**
  * Panel de estadísticas de turnos (solo ADMIN).
@@ -21,7 +22,8 @@ import { RankingServiciosComponent } from './components/ranking-servicios/rankin
     KpiGridComponent,
     GraficoBarrasComponent,
     RankingServiciosComponent,
-  ],
+    MensajeAlertaComponent
+],
   templateUrl: './admin-turnos-estadisticas-page.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-turnos-estadisticas-page.component.css',

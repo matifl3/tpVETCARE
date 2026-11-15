@@ -2,16 +2,17 @@ import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@ang
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Tarjeta } from '../../../core/models';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 import { TarjetaService } from '../../../services/tarjeta.service';
 import { crearFormTarjeta, TarjetaFormComponent } from '../../../shared/tarjeta-form/tarjeta-form.component';
 
 @Component({
-    selector: 'app-tarjetas-page',
-    imports: [RouterLink, ReactiveFormsModule, TarjetaFormComponent],
-    templateUrl: './tarjetas-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './tarjetas-page.component.css'
+  selector: 'app-tarjetas-page',
+  imports: [RouterLink, ReactiveFormsModule, TarjetaFormComponent, MensajeAlertaComponent],
+  templateUrl: './tarjetas-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  styleUrls: ['./tarjetas-page.component.css']
 })
 export class TarjetasPageComponent implements OnInit {
    private readonly tarjetaService = inject(TarjetaService);

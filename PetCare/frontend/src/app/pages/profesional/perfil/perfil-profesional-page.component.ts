@@ -1,16 +1,19 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import {
-  AbstractControl,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Profesional } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
 import { UsuarioService } from '../../../services/usuario.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
+
+interface PasswordForm {
+  actual: string;
+  nueva: string;
+  repetir: string;
+}
+
+const PASSWORD_FORM_VACIO: PasswordForm = { actual: '', nueva: '', repetir: '' };
 
 const ROL_LABELS: Record<string, string> = {
   VETERINARIO: 'Veterinario',
@@ -33,7 +36,7 @@ function passwordsIguales(grupo: AbstractControl): ValidationErrors | null {
 
 @Component({
     selector: 'app-perfil-profesional-page',
-    imports: [RouterLink, ReactiveFormsModule],
+    imports: [RouterLink, MensajeAlertaComponent, ReactiveFormsModule],
     templateUrl: './perfil-profesional-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './perfil-profesional-page.component.css'

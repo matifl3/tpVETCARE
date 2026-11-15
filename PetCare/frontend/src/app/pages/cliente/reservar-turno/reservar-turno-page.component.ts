@@ -7,6 +7,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { Mascota, Profesional } from '../../../core/models';
@@ -28,7 +29,7 @@ function fechaNoPasada(control: AbstractControl): ValidationErrors | null {
 
 @Component({
     selector: 'app-reservar-turno-page',
-    imports: [RouterLink, ReactiveFormsModule],
+    imports: [RouterLink, ReactiveFormsModule, MensajeAlertaComponent],
     templateUrl: './reservar-turno-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './reservar-turno-page.component.css'

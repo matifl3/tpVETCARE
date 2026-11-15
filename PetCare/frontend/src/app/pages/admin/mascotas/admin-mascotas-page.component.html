@@ -6,9 +6,9 @@
       <h1>Mascotas</h1>
       <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
     </div>
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+    
+    <app-mensaje-alerta [mensaje]="error()" />
+    
 
     <div class="admin-card">
       <table class="admin-table">
