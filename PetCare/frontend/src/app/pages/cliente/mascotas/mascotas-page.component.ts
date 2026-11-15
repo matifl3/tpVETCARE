@@ -1,40 +1,26 @@
-import {Component,OnInit,inject,signal,ChangeDetectionStrategy,} from '@angular/core';
-import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
-
-/** La fecha de nacimiento no puede ser posterior a hoy. */
-function fechaNoFutura(control: AbstractControl): ValidationErrors | null {
-  if (!control.value) return null;
-  const hoy = new Date().toLocaleDateString('en-CA');
-  return control.value>hoy ? {fechaFutura: true} : null;
-}
+import { MascotaCardComponent } from './mascota-card/mascota-card.component';
+import { MascotaFormComponent } from './mascota-form/mascota-form.component';
 
 @Component({
   selector: 'app-mascotas-page',
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, MascotaCardComponent, MascotaFormComponent],
   templateUrl: './mascotas-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './mascotas-page.component.css',
 })
 export class MascotasPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);
-  private readonly fb = inject(NonNullableFormBuilder);
 
   readonly mascotas = signal<Mascota[]>([]);
   readonly loading = signal(true);
+  readonly guardando = signal(false);
   readonly error = signal('');
   readonly mostrarForm = signal(false);
-  readonly editandoId = signal<number | null>(null);
- readonly form = this.fb.group({
-  nombre: ['', [Validators.required, Validators.maxLength(50)]],
-  especie: ['', Validators.required],
-  raza: ['', Validators.required],
-  sexo: ['', Validators.required],
-  peso: this.fb.control<number | null>(null, [Validators.required, Validators.min(0.1)]),
-  fechaNacimiento: ['', [Validators.required, fechaNoFutura]],
-});
+  readonly mascotaEditar = signal<Mascota | null>(null);
 
   ngOnInit(): void {
     this.cargarMascotas();
@@ -54,51 +40,43 @@ export class MascotasPageComponent implements OnInit {
     });
   }
 
-  resetForm(): void {
-    this.form.reset();
-    this.editandoId.set(null);
+  cerrarForm(): void {
+    this.mascotaEditar.set(null);
     this.mostrarForm.set(false);
   }
 
   toggleForm(): void {
-    if (this.mostrarForm()) this.resetForm();
-    else this.mostrarForm.set(true);
+    if (this.mostrarForm()) {
+      this.cerrarForm();
+    } else {
+      this.mascotaEditar.set(null);
+      this.mostrarForm.set(true);
+    }
   }
 
-  guardar(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  onGuardar(evento: { id: number | null; data: Partial<Mascota> }): void {
     this.error.set('');
-    const valores = this.form.getRawValue();
-    const data: Partial<Mascota> = {
-      ...valores,
-      fechaNacimiento: valores.fechaNacimiento || null,
-    };
-    const id = this.editandoId();
-    const req = id
-      ? this.mascotaService.actualizarMia(id, data)
-      : this.mascotaService.crear(data);
+    this.guardando.set(true);
+
+    const req = evento.id
+      ? this.mascotaService.actualizarMia(evento.id, evento.data)
+      : this.mascotaService.crear(evento.data);
+
     req.subscribe({
       next: () => {
-        this.resetForm();
+        this.guardando.set(false);
+        this.cerrarForm();
         this.cargarMascotas();
       },
-      error: (err) => this.error.set(err.message),
+      error: (err) => {
+        this.guardando.set(false);
+        this.error.set(err.message);
+      },
     });
   }
 
   handleEditar(m: Mascota): void {
-    this.form.patchValue({
-      nombre: m.nombre,
-      especie: m.especie,
-      raza: m.raza || '',
-      sexo: m.sexo || '',
-      peso: m.peso ?? null,
-      fechaNacimiento: m.fechaNacimiento || '',
-    });
-    this.editandoId.set(m.idMascota);
+    this.mascotaEditar.set(m);
     this.mostrarForm.set(true);
   }
 
