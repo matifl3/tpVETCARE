@@ -1,18 +1,14 @@
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Tarjeta } from '../../../core/models';
-import {
-  PATRON_CVV,
-  PATRON_NUMERO_TARJETA,
-  PATRON_VENCIMIENTO,
-  tarjetaNoVencida,
-} from '../../../core/tarjeta.validators';
+
 import { TarjetaService } from '../../../services/tarjeta.service';
+import { crearFormTarjeta, TarjetaFormComponent } from '../../../shared/tarjeta-form/tarjeta-form.component';
 
 @Component({
     selector: 'app-tarjetas-page',
-    imports: [RouterLink, ReactiveFormsModule],
+    imports: [RouterLink, ReactiveFormsModule, TarjetaFormComponent],
     templateUrl: './tarjetas-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './tarjetas-page.component.css'
@@ -27,13 +23,7 @@ export class TarjetasPageComponent implements OnInit {
   readonly success = signal('');
   readonly mostrarForm = signal(false);
  
-
-   readonly form = this.fb.group({
-    titular: ['', [Validators.required, Validators.maxLength(60)]],
-    numeroTarjeta: ['', [Validators.required, Validators.pattern(PATRON_NUMERO_TARJETA)]],
-    vencimiento: ['', [Validators.required, Validators.pattern(PATRON_VENCIMIENTO), tarjetaNoVencida]],
-    cvv: ['', [Validators.required, Validators.pattern(PATRON_CVV)]],
-  });
+  readonly form = crearFormTarjeta(this.fb);
 
   ngOnInit(): void {
     this.cargarTarjetas();

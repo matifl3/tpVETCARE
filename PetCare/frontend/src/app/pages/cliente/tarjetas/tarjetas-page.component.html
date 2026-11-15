@@ -18,62 +18,8 @@
 
     @if (mostrarForm()) {
       <form class="panel-formulario" [formGroup]="form" (ngSubmit)="agregar()">
-        <div class="grilla-2">
-          <div class="input-group">
-            <label>Titular</label>
-            <input
-              formControlName="titular"
-              placeholder="Como figura en la tarjeta"
-            />
-            @if (form.controls.titular.touched) {
-              @if (form.controls.titular.hasError("required")) {
-                <small class="error-campo">El titular es obligatorio</small>
-              }
-              @if (form.controls.titular.hasError("maxlength")) {
-                <small class="error-campo">Máximo 60 caracteres</small>
-              }
-            }
-          </div>
-          <div class="input-group">
-            <label>Número de tarjeta</label>
-             <input formControlName="numeroTarjeta" placeholder="1234567890123456" maxlength="19" inputmode="numeric"/>
-              @if (form.controls.numeroTarjeta.touched) {
-              @if (form.controls.numeroTarjeta.hasError('required')) {
-                <small class="error-campo">El número es obligatorio</small>
-              }
-              @if (form.controls.numeroTarjeta.hasError('pattern')) {
-                <small class="error-campo">Entre 13 y 19 números, sin espacios</small>
-              }
-            }
-          </div>
-          <div class="input-group">
-            <label>Vencimiento (MM/AA)</label>
-            <input formControlName="vencimiento" placeholder="12/28" maxlength="5" />
-              @if (form.controls.vencimiento.touched) {
-              @if (form.controls.vencimiento.hasError('required')) {
-                <small class="error-campo">El vencimiento es obligatorio</small>
-              }
-              @if (form.controls.vencimiento.hasError('pattern')) {
-                <small class="error-campo">Usá el formato MM/AA, por ejemplo 08/29</small>
-              }
-              @if (form.controls.vencimiento.hasError('tarjetaVencida')) {
-                <small class="error-campo">La tarjeta está vencida</small>
-              }
-            }
-          </div>
-
-          <div class="input-group">
-            <label>CVV</label>
-            <input formControlName="cvv" placeholder="123" maxlength="4" inputmode="numeric" />
-             @if (form.controls.cvv.touched) {
-              @if (form.controls.cvv.hasError('required')) {
-                <small class="error-campo">El CVV es obligatorio</small>
-              }
-              @if (form.controls.cvv.hasError('pattern')) {
-                <small class="error-campo">3 o 4 números</small>
-              }
-            }
-          </div>
+         <div class="grilla-2">
+          <app-tarjeta-form [form]="form" />
         </div>
         <button type="submit" class="btn-primary mt-16">Guardar Tarjeta</button>
       </form>
