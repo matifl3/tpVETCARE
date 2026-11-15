@@ -17,28 +17,45 @@
 
     <div class="filtros">
       @if (tipo() === 'ganancias' || tipo() === 'productos') {
+        @let anio = periodoMes.controls.anio;
         <div class="input-group mb-0">
           <label>Año</label>
-          <input class="input-anio" type="number" [value]="anio()" (input)="anio.set(Number(inputValue($event)))" />
+          <input class="input-anio" type="number" [formControl]="anio" />
+          @if (anio.touched && anio.invalid) {
+            <small class="error-campo">
+              {{ anio.hasError('required') ? 'El año es obligatorio' : 'Entre 2000 y el año actual' }}
+            </small>
+          }
         </div>
         <div class="input-group mb-0">
           <label>Mes</label>
-          <select class="select-mes" (change)="mes.set(Number(inputValue($event)))">
+          <select class="select-mes" [formControl]="periodoMes.controls.mes">
             @for (m of meses; track $index) {
-              <option [value]="$index + 1" [selected]="mes() === $index + 1">{{ m }}</option>
+              <option [ngValue]="$index + 1">{{ m }}</option>
             }
           </select>
         </div>
       }
-      
+
       @if (tipo() === 'ventas') {
+        @let inicio = rangoFechas.controls.fechaInicio;
+        @let fin = rangoFechas.controls.fechaFin;
         <div class="input-group mb-0">
           <label>Fecha inicio</label>
-          <input type="date" [value]="fechaInicio()" (input)="fechaInicio.set(inputValue($event))" />
+          <input type="date" [formControl]="inicio" />
+          @if (inicio.touched && inicio.hasError('required')) {
+            <small class="error-campo">Elegí la fecha de inicio</small>
+          }
         </div>
         <div class="input-group mb-0">
           <label>Fecha fin</label>
-          <input type="date" [value]="fechaFin()" (input)="fechaFin.set(inputValue($event))" />
+          <input type="date" [formControl]="fin" />
+          @if (fin.touched && fin.hasError('required')) {
+            <small class="error-campo">Elegí la fecha de fin</small>
+          }
+          @if (fin.touched && rangoFechas.hasError('rangoInvalido')) {
+            <small class="error-campo">No puede ser anterior a la fecha de inicio</small>
+          }
         </div>
       }
       
@@ -52,7 +69,7 @@
     <div class="admin-card">
       @if (tipo() === 'ganancias') {
         <div>
-          <h3 class="mb-16">Ganancias — {{ meses[mes() - 1] }} {{ anio() }}</h3>
+          <h3 class="mb-16">Ganancias — {{ meses[periodoMes.controls.mes.value - 1] }} {{ periodoMes.controls.anio.value }}</h3>
           <p class="mb-8"><strong>Cantidad de ventas:</strong> {{ data.cantidadVentas || 0 }}</p>
           <p class="total-ganancia">${{ (data.gananciaTotal || 0).toFixed(2) }}</p>
         </div>
@@ -61,7 +78,7 @@
       @if (tipo() === 'ventas') {
         <div>
           <div class="header-ventas">
-            <h3>Ventas del {{ fechaInicio() }} al {{ fechaFin() }}</h3>
+            <h3>Ventas del {{ rangoFechas.controls.fechaInicio.value }} al {{ rangoFechas.controls.fechaFin.value }}</h3>
             
             <!-- Botonera de exportación visible solo si hay ventas -->
             @if (isArray(data) && data.length > 0) {
@@ -105,7 +122,7 @@
       
       @if (tipo() === 'productos') {
         <div>
-          <h3 class="mb-16">Productos más vendidos — {{ meses[mes() - 1] }} {{ anio() }}</h3>
+          <h3 class="mb-16">Productos más vendidos — {{ meses[periodoMes.controls.mes.value - 1] }} {{ periodoMes.controls.anio.value }}</h3>
           @if (isArray(data) && data.length === 0) {
             <p class="estado-vacio estado-vacio-chico">No hay datos para ese período.</p>
           }
