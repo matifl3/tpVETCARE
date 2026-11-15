@@ -8,7 +8,6 @@ import { AdminReportesPageComponent } from './pages/admin/reportes/admin-reporte
 import { AdminTurnosPageComponent } from './pages/admin/turnos/admin-turnos-page.component';
 import { AdminTurnosEstadisticasPageComponent } from './pages/admin/turnos/estadisticas/admin-turnos-estadisticas-page.component';
 import { AdminUsuariosPageComponent } from './pages/admin/usuarios/admin-usuarios-page.component';
-import { CarritoPageComponent } from './pages/cliente/carrito-page/carrito-page.component';
 import { CompraExitosaPageComponent } from './pages/cliente/compra-exitosa/compra-exitosa-page.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -26,6 +25,7 @@ import { SeguimientoPageComponent } from './pages/seguimiento/seguimiento-page.c
 import { TarjetasPageComponent } from './pages/cliente/tarjetas/tarjetas-page.component';
 import { TiendaPageComponent } from './pages/cliente/tienda/tienda-page.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { CarritoPageComponent } from './pages/cliente/carrito/carrito-page/carrito-page.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },

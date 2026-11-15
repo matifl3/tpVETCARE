@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { Carrito, Tarjeta } from '../../../core/models';
-import { CarritoService } from '../../../services/carrito.service';
-import { TarjetaService } from '../../../services/tarjeta.service';
 import { CarritoItemsComponent } from '../carrito-items/carrito-items.component';
 import { CarritoPagoComponent } from '../carrito-pago/carrito-pago.component';
 import { CarritoHistorialComponent } from '../carrito-historial/carrito-historial.component';
+import { CarritoService } from '../../../../services/carrito.service';
+import { TarjetaService } from '../../../../services/tarjeta.service';
+import { Carrito, Tarjeta } from '../../../../core/models';
 
 type Pestana = 'carrito' | 'historial';
 

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Carrito } from '../../../core/models';
+import { Carrito } from '../../../../core/models';
 
 @Component({
   selector: 'app-carrito-historial',
