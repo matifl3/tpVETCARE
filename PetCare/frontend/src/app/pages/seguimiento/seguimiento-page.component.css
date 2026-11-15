@@ -1,0 +1,12 @@
+
+.error-campo {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-error);
+  font-size: 0.85rem;
+}
+
+textarea.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: var(--color-error);
+}
