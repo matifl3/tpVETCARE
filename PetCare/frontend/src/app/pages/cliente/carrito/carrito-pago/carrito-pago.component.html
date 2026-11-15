@@ -1,0 +1,113 @@
+<form [formRoot]="formularioTarjeta" class="pago-section" novalidate>
+  <h3 class="grupo-titulo">Método de pago</h3>
+
+  @if (tarjetas().length > 0) {
+    <div class="tarjetas-lista">
+      @for (tarjeta of tarjetas(); track tarjeta.idTarjeta) {
+        <button
+          type="button"
+          class="tarjeta-option"
+          [class.selected]="idTarjetaGuardada() === tarjeta.idTarjeta && !mostrarNuevaTarjeta()"
+          [disabled]="comprando()"
+          (click)="seleccionarTarjeta(tarjeta.idTarjeta)"
+        >
+          <span class="radio-dot" aria-hidden="true"></span>
+          <div class="tarjeta-datos">
+            <span class="tarjeta-numero">
+              •••• •••• •••• {{ tarjeta.ultimosDigitos }}
+            </span>
+            <span class="tarjeta-meta">
+              {{ tarjeta.titular }} · Vence {{ tarjeta.vencimiento }}
+            </span>
+          </div>
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="btn-toggle-tarjeta"
+      [disabled]="comprando()"
+      (click)="toggleNuevaTarjeta()"
+    >
+      {{ mostrarNuevaTarjeta() ? '← Usar una tarjeta guardada' : '+ Usar otra tarjeta' }}
+    </button>
+  }
+
+  @if (usaTarjetaNueva()) {
+    <div class="nueva-tarjeta-card">
+      <div class="form-group">
+        <label for="titular">Nombre del titular</label>
+        <input
+          id="titular"
+          type="text"
+          [formField]="formularioTarjeta.titular"
+          placeholder="Como figura en la tarjeta"
+        />
+        @if (formularioTarjeta.titular().touched() && formularioTarjeta.titular().invalid()) {
+          <span class="error-msg">{{ formularioTarjeta.titular().errors()[0]?.message }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="numeroTarjeta">Número de tarjeta</label>
+        <input
+          id="numeroTarjeta"
+          type="text"
+          inputmode="numeric"
+          [formField]="formularioTarjeta.numeroTarjeta"
+          placeholder="16 dígitos sin espacios"
+        />
+        @if (
+          formularioTarjeta.numeroTarjeta().touched() &&
+          formularioTarjeta.numeroTarjeta().invalid()
+        ) {
+          <span class="error-msg">{{ formularioTarjeta.numeroTarjeta().errors()[0]?.message }}</span>
+        }
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="vencimiento">Vencimiento</label>
+          <input
+            id="vencimiento"
+            type="text"
+            [formField]="formularioTarjeta.vencimiento"
+            placeholder="MM/AA"
+          />
+          @if (
+            formularioTarjeta.vencimiento().touched() &&
+            formularioTarjeta.vencimiento().invalid()
+          ) {
+            <span class="error-msg">{{ formularioTarjeta.vencimiento().errors()[0]?.message }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="cvv">CVV</label>
+          <input
+            id="cvv"
+            type="password"
+            inputmode="numeric"
+            [formField]="formularioTarjeta.cvv"
+            placeholder="3 o 4 dígitos"
+          />
+          @if (formularioTarjeta.cvv().touched() && formularioTarjeta.cvv().invalid()) {
+            <span class="error-msg">{{ formularioTarjeta.cvv().errors()[0]?.message }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="pago-footer">
+    <div class="total-box">
+      <span class="total-label">Total a pagar</span>
+      <span class="total-valor">${{ totalPagar() }}</span>
+    </div>
+
+    <button type="submit" class="btn-confirmar" [disabled]="comprando()">
+      {{ comprando() ? 'Procesando pago...' : 'Confirmar compra' }}
+    </button>
+  </div>
+</form>

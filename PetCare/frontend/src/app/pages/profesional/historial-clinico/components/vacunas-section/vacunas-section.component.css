@@ -1,0 +1,36 @@
+/* Encabezado de la sección (título + botón de acción) */
+.seccion-titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* Acciones dentro de la tabla */
+.lista-acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Botones al pie del formulario */
+.acciones-form {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+/* La tabla puede tener muchas columnas: permitir scroll horizontal */
+.tabla-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabla-scroll .admin-table {
+  min-width: 680px;
+}

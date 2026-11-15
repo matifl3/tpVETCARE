@@ -1,0 +1,68 @@
+<div class="carrito-wrapper">
+  <main class="carrito-card">
+    <h1 class="carrito-titulo">Carrito</h1>
+
+    <div class="tabs-bar" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="tab-btn"
+        [class.active]="pestana() === 'carrito'"
+        (click)="pestana.set('carrito')"
+      >
+        Carrito Actual
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="tab-btn"
+        [class.active]="pestana() === 'historial'"
+        (click)="pestana.set('historial')"
+      >
+        Historial
+      </button>
+    </div>
+
+    @if (error()) {
+      <div class="alert-error" role="alert">{{ error() }}</div>
+    }
+
+    @if (success()) {
+      <div class="alert-success" role="status">{{ success() }}</div>
+    }
+
+    @if (loading()) {
+      <p class="texto-estado">Cargando carrito...</p>
+    } @else if (pestana() === 'carrito') {
+      @if (carrito(); as cart) {
+        @if (hayItems()) {
+          <div class="carrito-contenido">
+            <app-carrito-items
+              [carrito]="cart"
+              [disabled]="comprando()"
+              (modificarCantidad)="handleModificar($event)"
+              (eliminarProducto)="handleEliminar($event)"
+              (eliminarTurno)="handleEliminarTurno($event)"
+            />
+
+            <app-carrito-pago
+              [carrito]="cart"
+              [tarjetas]="tarjetas()"
+              [comprando]="comprando()"
+              (confirmarCompra)="handleComprar($event)"
+            />
+          </div>
+        } @else {
+          <div class="empty-state">
+            <p class="texto-estado">Tu carrito está vacío.</p>
+            <a routerLink="/dashboard" class="btn-volver">
+              ← Volver al Dashboard
+            </a>
+          </div>
+        }
+      }
+    } @else {
+      <app-carrito-historial [historial]="historial()" />
+    }
+  </main>
+</div>

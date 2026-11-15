@@ -1,0 +1,90 @@
+.stats-block {
+  margin-top: 24px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-texto-titulo);
+}
+
+.chart-legend {
+  font-size: 12px;
+  color: var(--color-texto-tenue);
+}
+
+.chart-plot {
+  position: relative;
+  height: 240px;
+  border-left: 1px solid var(--color-borde-tabla);
+  border-bottom: 1px solid var(--color-borde-tabla);
+  background-image: repeating-linear-gradient(
+    to top,
+    var(--color-superficie-lila) 0,
+    var(--color-superficie-lila) 1px,
+    transparent 1px,
+    transparent 25%
+  );
+}
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 100%;
+  padding: 0 6px;
+}
+
+.chart-col {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primario-profundo);
+  min-height: 14px;
+}
+
+.chart-bar {
+  width: 100%;
+  max-width: 46px;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--color-primario), var(--color-acento));
+  min-height: 2px;
+}
+
+.chart-labels {
+  display: flex;
+  gap: 6px;
+  padding: 8px 6px 0;
+}
+
+.chart-label {
+  flex: 1 1 0;
+  min-width: 0;
+  font-size: 11px;
+  color: var(--color-texto-tenue);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

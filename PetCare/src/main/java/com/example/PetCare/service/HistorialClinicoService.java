@@ -52,6 +52,7 @@ public class HistorialClinicoService {
 
         Mascota mascota = mascotaRepository.findById(idMascota)
                 .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        validarAccesoMascota(mascota);
 
         HistorialClinico historial = obtenerOCrearHistorial(mascota);
 
@@ -73,6 +74,7 @@ public class HistorialClinicoService {
 
         Mascota mascota = mascotaRepository.findById(idMascota)
                 .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        validarAccesoMascota(mascota);
 
         HistorialClinico historial = obtenerOCrearHistorial(mascota);
 
@@ -88,6 +90,91 @@ public class HistorialClinicoService {
         medicamento.setUsuario(profesional);
 
         return toMedicamentoDTO(medicamentoRepository.save(medicamento));
+    }
+
+    public HistorialClinicoDTO actualizarHistorial(int idMascota, HistorialClinicoUpdateRequest request) {
+        Usuario profesional = authUtils.getCurrentUsuario();
+        validarRolVeterinario(profesional);
+
+        Mascota mascota = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        validarAccesoMascota(mascota);
+
+        HistorialClinico historial = obtenerOCrearHistorial(mascota);
+        historial.setObservaciones(request.getObservaciones());
+        return toDTO(historialClinicoRepository.save(historial));
+    }
+
+    public VacunaDTO actualizarVacuna(int idMascota, int idVacuna, RegistroVacunaRequest request) {
+        Usuario profesional = authUtils.getCurrentUsuario();
+        validarRolVeterinario(profesional);
+
+        Mascota mascota = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        validarAccesoMascota(mascota);
+
+        HistorialClinico historial = obtenerOCrearHistorial(mascota);
+        Vacuna vacuna = vacunaRepository.findByIdAndHistorialClinico_Id(idVacuna, historial.getId())
+                .orElseThrow(() -> new NoEncontradoException("Vacuna no encontrada en el historial de la mascota"));
+
+        vacuna.setNombre(request.getNombre());
+        vacuna.setFechaAplicacion(request.getFechaAplicacion() != null ? request.getFechaAplicacion() : LocalDate.now());
+        vacuna.setFechaProximaDosis(request.getFechaProximaDosis());
+        vacuna.setLote(request.getLote());
+        vacuna.setObservaciones(request.getObservaciones());
+
+        return toVacunaDTO(vacunaRepository.save(vacuna));
+    }
+
+    public void eliminarVacuna(int idMascota, int idVacuna) {
+        Usuario profesional = authUtils.getCurrentUsuario();
+        validarRolVeterinario(profesional);
+
+        Mascota mascota = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        validarAccesoMascota(mascota);
+
+        HistorialClinico historial = obtenerOCrearHistorial(mascota);
+        Vacuna vacuna = vacunaRepository.findByIdAndHistorialClinico_Id(idVacuna, historial.getId())
+                .orElseThrow(() -> new NoEncontradoException("Vacuna no encontrada en el historial de la mascota"));
+        vacunaRepository.delete(vacuna);
+    }
+
+    public MedicamentoDTO actualizarMedicamento(int idMascota, int idMedicamento,
+                                                RegistroMedicamentoRequest request) {
+        Usuario profesional = authUtils.getCurrentUsuario();
+        validarRolVeterinario(profesional);
+
+        Mascota mascota = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        validarAccesoMascota(mascota);
+
+        HistorialClinico historial = obtenerOCrearHistorial(mascota);
+        Medicamento medicamento = medicamentoRepository.findByIdAndHistorialClinico_Id(idMedicamento, historial.getId())
+                .orElseThrow(() -> new NoEncontradoException("Medicamento no encontrado en el historial de la mascota"));
+
+        medicamento.setNombre(request.getNombre());
+        medicamento.setDosis(request.getDosis());
+        medicamento.setFrecuencia(request.getFrecuencia());
+        medicamento.setDuracion(request.getDuracion());
+        medicamento.setFechaPrescripcion(request.getFechaPrescripcion() != null ? request.getFechaPrescripcion() : LocalDate.now());
+        medicamento.setIndicaciones(request.getIndicaciones());
+
+        return toMedicamentoDTO(medicamentoRepository.save(medicamento));
+    }
+
+    public void eliminarMedicamento(int idMascota, int idMedicamento) {
+        Usuario profesional = authUtils.getCurrentUsuario();
+        validarRolVeterinario(profesional);
+
+        Mascota mascota = mascotaRepository.findById(idMascota)
+                .orElseThrow(() -> new NoEncontradoException("Mascota no encontrada"));
+        validarAccesoMascota(mascota);
+
+        HistorialClinico historial = obtenerOCrearHistorial(mascota);
+        Medicamento medicamento = medicamentoRepository.findByIdAndHistorialClinico_Id(idMedicamento, historial.getId())
+                .orElseThrow(() -> new NoEncontradoException("Medicamento no encontrado en el historial de la mascota"));
+        medicamentoRepository.delete(medicamento);
     }
 
     private void validarAccesoMascota(Mascota mascota) {

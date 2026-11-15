@@ -55,6 +55,14 @@
   cursor: pointer;
 }
 
+.input-group span,
+.error-msg {
+  display: block;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .role-selector {
   margin-bottom: 16px;
 }

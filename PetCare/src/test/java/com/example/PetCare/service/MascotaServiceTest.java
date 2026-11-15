@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -87,6 +88,58 @@ class MascotaServiceTest {
 
         assertThrows(NoEncontradoException.class,
                 () -> mascotaService.actualizarParaUsuario(10, new MascotaDTO(), cliente));
+        verify(mascotaRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("El veterinario actualiza los datos físicos sin cambiar dueño ni estado")
+    void actualizarDatosVeterinario() {
+        when(mascotaRepository.findById(10)).thenReturn(Optional.of(mascota));
+        when(mascotaRepository.save(any(Mascota.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        MascotaDTO cambios = new MascotaDTO();
+        cambios.setNombre("Firu");
+        cambios.setEspecie("PERRO");
+        cambios.setRaza("Caniche");
+        cambios.setSexo("MACHO");
+        cambios.setPeso(13.5);
+        cambios.setFechaNacimiento(LocalDate.of(2020, 5, 1));
+        cambios.setObservaciones("Pelaje sano");
+
+        MascotaDTO resultado = mascotaService.actualizarDatosVeterinario(10, cambios);
+
+        assertEquals("Firu", resultado.getNombre());
+        assertEquals("Caniche", resultado.getRaza());
+        assertEquals(Double.valueOf(13.5), resultado.getPeso());
+        assertEquals(LocalDate.of(2020, 5, 1), resultado.getFechaNacimiento());
+        assertEquals("Pelaje sano", resultado.getObservaciones());
+        assertEquals(cliente, mascota.getUsuario());
+        assertTrue(mascota.isActivo());
+        verify(mascotaRepository).save(mascota);
+    }
+
+    @Test
+    @DisplayName("Si el peso viene vacío se guarda 0")
+    void actualizarDatosVeterinarioSinPeso() {
+        when(mascotaRepository.findById(10)).thenReturn(Optional.of(mascota));
+        when(mascotaRepository.save(any(Mascota.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        MascotaDTO cambios = new MascotaDTO();
+        cambios.setNombre("Firu");
+        cambios.setEspecie("PERRO");
+
+        MascotaDTO resultado = mascotaService.actualizarDatosVeterinario(10, cambios);
+
+        assertEquals(Double.valueOf(0.0), resultado.getPeso());
+    }
+
+    @Test
+    @DisplayName("No se puede actualizar una mascota inexistente")
+    void actualizarDatosVeterinarioInexistente() {
+        when(mascotaRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(NoEncontradoException.class,
+                () -> mascotaService.actualizarDatosVeterinario(99, new MascotaDTO()));
         verify(mascotaRepository, never()).save(any());
     }
 

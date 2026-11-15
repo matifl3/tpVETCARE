@@ -114,6 +114,14 @@ public class MascotaController {
         else throw new NoEncontradoException("No se pudo actualizar la mascota, el usuario no existe");
     }
 
+    // Solo VETERINARIO y ADMIN pueden actualizar los datos fisicos y clinicos de una mascota.
+    // No se modifica el dueño, el estado activo ni el historial.
+    @PutMapping("/{id}/veterinario")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO')")
+    public MascotaDTO actualizarVeterinario(@PathVariable Integer id, @RequestBody @Valid MascotaDTO dto) {
+        return mascotaService.actualizarDatosVeterinario(id, dto);
+    }
+
     // Solo VETERINARIO y ADMIN pueden actualizar observaciones clínicas (es información médica)
     @PutMapping("/{id}/observaciones")
     @PreAuthorize("hasRole('ADMIN') or hasRole('VETERINARIO')")

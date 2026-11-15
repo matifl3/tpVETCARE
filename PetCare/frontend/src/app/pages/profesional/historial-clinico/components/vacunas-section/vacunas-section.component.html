@@ -1,0 +1,109 @@
+<div class="admin-card mb-24">
+  <div class="seccion-titulo">
+    <h2 class="mt-0">Vacunas</h2>
+    <button type="button" class="btn-primary btn-sm" (click)="nueva()">+ Agregar vacuna</button>
+  </div>
+
+  @if (mostrarForm()) {
+    <form class="panel-formulario mb-24" (submit)="guardar($event)">
+      <h3 class="mt-0">{{ editandoId() ? 'Editar vacuna' : 'Nueva vacuna' }}</h3>
+      <div class="grilla-2">
+        <div class="input-group">
+          <label>Nombre</label>
+          <input [formField]="vacunaForm.nombre" placeholder="Ej: Antirrábica" />
+          @if (vacunaForm.nombre().touched() && vacunaForm.nombre().invalid()) {
+            @for (err of vacunaForm.nombre().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+
+        <div class="input-group">
+          <label>Lote</label>
+          <input [formField]="vacunaForm.lote" />
+          @if (vacunaForm.lote().touched() && vacunaForm.lote().invalid()) {
+            @for (err of vacunaForm.lote().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+
+        <div class="input-group">
+          <label>Fecha de aplicación</label>
+          <input type="date" [formField]="vacunaForm.fechaAplicacion" />
+          @if (vacunaForm.fechaAplicacion().touched() && vacunaForm.fechaAplicacion().invalid()) {
+            @for (err of vacunaForm.fechaAplicacion().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+
+        <div class="input-group">
+          <label>Próxima dosis</label>
+          <input type="date" [formField]="vacunaForm.fechaProximaDosis" />
+          @if (vacunaForm.fechaProximaDosis().touched() && vacunaForm.fechaProximaDosis().invalid()) {
+            @for (err of vacunaForm.fechaProximaDosis().errors(); track $index) {
+              <small class="error-campo">{{ err.message }}</small>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="input-group mt-16">
+        <label>Observaciones</label>
+        <textarea class="campo campo-textarea" [formField]="vacunaForm.observaciones"></textarea>
+      </div>
+
+      <div class="acciones-form">
+        <button type="submit" class="btn-primary btn-sm">
+          {{ editandoId() ? 'Guardar cambios' : 'Registrar vacuna' }}
+        </button>
+        <button type="button" class="btn-secondary btn-sm" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (!vacunas().length) {
+    <p class="estado-vacio">No hay vacunas registradas para esta mascota.</p>
+  } @else {
+    <div class="tabla-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Aplicación</th>
+            <th>Próxima dosis</th>
+            <th>Lote</th>
+            <th>Observaciones</th>
+            <th>Profesional</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (v of vacunas(); track v.id) {
+            <tr>
+              <td>{{ v.nombre }}</td>
+              <td>{{ v.fechaAplicacion || '—' }}</td>
+              <td>{{ v.fechaProximaDosis || '—' }}</td>
+              <td>{{ v.lote || '—' }}</td>
+              <td>{{ v.observaciones || '—' }}</td>
+              <td>{{ v.nombreProfesional || '—' }}</td>
+              <td>
+                <div class="lista-acciones">
+                  <button type="button" class="btn-sm accion" (click)="editar(v)">Editar</button>
+                  <button
+                    type="button"
+                    class="btn-sm accion accion-eliminar"
+                    (click)="eliminar(v)"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

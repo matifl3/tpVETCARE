@@ -20,6 +20,7 @@ PetCare centraliza la información de las mascotas y conecta a los dueños con p
 - Registro como postulante (queda pendiente hasta que lo aprueba un administrador).
 - Turnos y pacientes asignados.
 - Seguimiento de entrenamiento de mascotas.
+- Historial clínico de sus pacientes (solo veterinarios): datos físicos, observaciones, vacunas y medicamentos.
 - Perfil profesional.
 
 ### 🔑 Administrador
@@ -64,7 +65,7 @@ PetCare/
     ├── pages/
     │   ├── home/  login/  dashboard-home/  seguimiento/
     │   ├── cliente/       # mascotas, tienda, carrito, turnos, tarjetas...
-    │   ├── profesional/   # inicio, mis turnos, mis pacientes, perfil...
+    │   ├── profesional/   # inicio, mis turnos, mis pacientes, historial, perfil...
     │   └── admin/         # usuarios, postulaciones, productos, reportes...
     └── testing/       # Helpers compartidos por los tests
 ```
@@ -79,6 +80,8 @@ mascotas/
 └── mascotas-page.component.spec.ts  # tests
 ```
 
+Las pantallas más grandes delegan partes de la UI a subcomponentes dentro de su propia carpeta `components/`. Es el caso del historial clínico (`ficha-mascota-form`, `vacunas-section`, `medicamentos-section`) y de las estadísticas de turnos (`periodo-filtros`, `kpi-grid`, `grafico-barras`, `ranking-servicios`). Cada subcomponente mantiene la misma convención de 4 archivos; la página queda como dueña del estado, las llamadas al backend y las alertas.
+
 Los estilos que se repiten entre pantallas (márgenes, texto gris, botones chicos, etc.) están como clases utilitarias en `frontend/src/styles.css`.
 
 ### Formularios
@@ -87,7 +90,7 @@ En el proyecto usamos las dos formas de armar formularios que vimos en la cursad
 
 | Formularios | Cómo están hechos |
 | ----------- | ----------------- |
-| Login y registro | **Signal Forms** (`@angular/forms/signals`) |
+| Login, registro e historial clínico del veterinario | **Signal Forms** (`@angular/forms/signals`) |
 | Todos los demás (mascotas, tarjetas, perfil, productos, filtros...) | **Reactive Forms** (`FormGroup`, `FormBuilder`, `Validators`) |
 
 Reglas que seguimos:
@@ -166,7 +169,7 @@ cd PetCare
 
 - `JwtServiceTest`: generación y validación de tokens (modificados, vencidos, de otra clave).
 - `AuthIntegrationTest`: flujo completo registro → login → token → endpoints protegidos, 401 sin token y 403 por rol.
-- `TurnoServiceTest`, `MascotaServiceTest`, `CarritoServiceTest`, `ProfesionalServiceTest`: lógica de negocio con Mockito.
+- `TurnoServiceTest`, `MascotaServiceTest`, `HistorialClinicoServiceTest`, `CarritoServiceTest`, `ProfesionalServiceTest`: lógica de negocio con Mockito.
 
 ### Frontend
 

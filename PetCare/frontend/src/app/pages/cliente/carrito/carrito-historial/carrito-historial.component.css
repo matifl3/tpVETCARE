@@ -1,0 +1,149 @@
+.texto-estado {
+  margin: 0 0 24px;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.historial-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.compra-card {
+  background: #fafafa;
+  border: 1px solid #ececf4;
+  border-radius: 12px;
+  padding: 18px 20px;
+  transition: border-color 0.2s ease;
+}
+
+.compra-card:hover {
+  border-color: var(--color-borde-lila, #d8b4fe);
+}
+
+.compra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ececf4;
+  margin-bottom: 12px;
+}
+
+.compra-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.compra-id {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.compra-fecha {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.compra-resumen {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge-estado {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.compra-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.compra-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detalle-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detalle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #374151;
+}
+
+.detalle-precio {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.historial-footer {
+  margin-top: 24px;
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-borde-lila, #d8b4fe);
+  background: #ffffff;
+  color: var(--color-primario, #7c3aed);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-volver:hover {
+  background: var(--color-primario-06, #f5f3ff);
+  border-color: var(--color-primario, #7c3aed);
+}
+
+.detalle-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detalle-subtitulo {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6b7280;
+}
+
+.detalle-nombre {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.detalle-cantidad {
+  font-weight: 400;
+  color: #6b7280;
+  margin-left: 4px;
+}

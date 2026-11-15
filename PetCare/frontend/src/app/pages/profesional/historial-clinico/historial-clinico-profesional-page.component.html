@@ -1,0 +1,39 @@
+@if (loading()) {
+  <div class="dashboard"><p>Cargando...</p></div>
+} @else {
+  <div class="dashboard">
+    <div class="admin-header">
+      <h1>Historial clínico de {{ mascota()?.nombre || 'la mascota' }}</h1>
+      <a routerLink="/dashboard/profesional/mis-pacientes" class="btn-secondary btn-volver">← Volver</a>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-error show">{{ error() }}</div>
+    }
+    @if (success()) {
+      <div class="alert alert-success show">{{ success() }}</div>
+    }
+
+    <app-ficha-mascota-form
+      [fichaForm]="fichaForm"
+      [guardando]="guardando()"
+      (guardar)="guardarFicha()"
+    />
+
+    <app-vacunas-section
+      [idMascota]="idMascota"
+      [vacunas]="historial()?.vacunas ?? []"
+      (recargar)="recargarHistorial()"
+      (exito)="success.set($event)"
+      (errorMsg)="error.set($event)"
+    />
+
+    <app-medicamentos-section
+      [idMascota]="idMascota"
+      [medicamentos]="historial()?.medicamentos ?? []"
+      (recargar)="recargarHistorial()"
+      (exito)="success.set($event)"
+      (errorMsg)="error.set($event)"
+    />
+  </div>
+}

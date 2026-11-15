@@ -27,6 +27,10 @@ export class MascotaService {
     return this.api.put<Mascota>(`/api/mascotas/${id}`, data);
   }
 
+  actualizarVeterinario(id: number | string, data: Partial<Mascota>): Observable<Mascota> {
+    return this.api.put<Mascota>(`/api/mascotas/${id}/veterinario`, data);
+  }
+
   actualizarMia(id: number | string, data: Partial<Mascota>): Observable<Mascota> {
     return this.api.put<Mascota>(`/api/mascotas/mias/${id}`, data);
   }

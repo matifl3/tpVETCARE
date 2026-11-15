@@ -1,0 +1,72 @@
+<section class="historial-section">
+  @if (historial().length === 0) {
+    <div class="empty-state">
+      <p class="texto-estado">Todavía no realizaste ninguna compra.</p>
+      <a routerLink="/dashboard-home" class="btn-volver">
+        ← Volver al Dashboard
+      </a>
+    </div>
+  } @else {
+    <div class="historial-lista">
+      @for (compra of historial(); track compra.id) {
+        <article class="compra-card">
+          <header class="compra-header">
+            <div class="compra-meta">
+              <span class="compra-id">Compra #{{ compra.id }}</span>
+              @if (compra.fechaCreacion) {
+                <span class="compra-fecha">{{ compra.fechaCreacion | date: 'dd/MM/yyyy' }}</span>
+              }
+            </div>
+
+            <div class="compra-resumen">
+              <span class="badge-estado">{{ compra.estado }}</span>
+              <span class="compra-total">${{ compra.total }}</span>
+            </div>
+          </header>
+
+          <div class="compra-detalle">
+            @if (compra.items?.length) {
+              <div class="detalle-bloque">
+                <span class="detalle-subtitulo">Productos comprados</span>
+                <ul class="detalle-lista">
+                  @for (item of compra.items; track item.idProducto ?? $index) {
+                    <li class="detalle-item">
+                      <span class="detalle-nombre">
+                        {{ item.productoNombre }}
+                        <span class="detalle-cantidad">(x{{ item.cantidad }})</span>
+                      </span>
+                      <span class="detalle-precio">${{ item.subtotal }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+
+            @if (compra.turnos?.length) {
+              <div class="detalle-bloque">
+                <span class="detalle-subtitulo">Turnos</span>
+                <ul class="detalle-lista">
+                  @for (turno of compra.turnos; track turno.id ?? $index) {
+                    <li class="detalle-item">
+                      <span class="detalle-nombre">
+                        {{ turno.servicio }}
+                        <span class="detalle-cantidad">({{ turno.fecha }})</span>
+                      </span>
+                      <span class="detalle-precio">${{ turno.precio }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="historial-footer">
+      <a routerLink="/dashboard" class="btn-volver">
+        ← Volver al Dashboard
+      </a>
+    </div>
+  }
+</section>
