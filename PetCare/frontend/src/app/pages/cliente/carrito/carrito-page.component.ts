@@ -1,22 +1,18 @@
 import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Carrito, Tarjeta } from '../../../core/models';
 import { CarritoService } from '../../../services/carrito.service';
 import { TarjetaService } from '../../../services/tarjeta.service';
-import {
-  PATRON_CVV,
-  PATRON_NUMERO_TARJETA,
-  PATRON_VENCIMIENTO,
-  tarjetaNoVencida,
-} from '../../../core/tarjeta.validators';
+
+import { TarjetaFormComponent, crearFormTarjeta } from '../../../shared/tarjeta-form/tarjeta-form.component';
 
 type Pestana = 'carrito' | 'historial';
 
 @Component({
     selector: 'app-carrito-page',
-    imports: [RouterLink, ReactiveFormsModule],
+    imports: [RouterLink, TarjetaFormComponent],
     templateUrl: './carrito-page.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './carrito-page.component.css'
@@ -26,7 +22,7 @@ export class CarritoPageComponent implements OnInit {
   private readonly carritoService = inject(CarritoService);
   private readonly tarjetaService = inject(TarjetaService);
 
-  protected readonly fb = inject(NonNullableFormBuilder);
+  private readonly fb = inject(NonNullableFormBuilder);
 
   readonly carrito = signal<Carrito | null>(null);
   readonly historial = signal<Carrito[]>([]);
@@ -40,13 +36,8 @@ export class CarritoPageComponent implements OnInit {
   readonly metodoPago = signal('TARJETA');
   readonly idTarjetaGuardada = signal<number | ''>('');
   readonly mostrarNuevaTarjeta = signal(false);
-  /** Formulario de "Usar otra tarjeta": mismas reglas que Métodos de Pago. */
-  readonly tarjetaNueva = this.fb.group({
-    titular: ['', [Validators.required, Validators.maxLength(60)]],
-    numeroTarjeta: ['', [Validators.required, Validators.pattern(PATRON_NUMERO_TARJETA)]],
-    vencimiento: ['', [Validators.required, Validators.pattern(PATRON_VENCIMIENTO), tarjetaNoVencida]],
-    cvv: ['', [Validators.required, Validators.pattern(PATRON_CVV)]],
-  });
+ 
+readonly tarjetaNueva = crearFormTarjeta(this.fb);
 
   readonly hayItems = computed(() => {
     const c = this.carrito();

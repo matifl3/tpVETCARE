@@ -108,63 +108,8 @@
                   </button>
 
                   @if (mostrarNuevaTarjeta()) {
-                    <div class="form-tarjeta-nueva"  [formGroup]="tarjetaNueva">
-                      <div class="input-group">
-                        <label>Titular</label>
-                         <input formControlName="titular" placeholder="Como figura en la tarjeta" />
-                         @if (tarjetaNueva.controls.titular.touched) {
-                          @if (tarjetaNueva.controls.titular.hasError('required')) {
-                            <small class="error-campo">El titular es obligatorio</small>
-                          }
-                          @if (tarjetaNueva.controls.titular.hasError('maxlength')) {
-                            <small class="error-campo">Máximo 60 caracteres</small>
-                          }
-                        }
-                      </div>
-
-
-                      <div class="input-group">
-                        <label>Número</label>
-                         <input formControlName="numeroTarjeta" maxlength="19" inputmode="numeric" />
-                         @if (tarjetaNueva.controls.numeroTarjeta.touched) {
-                          @if (tarjetaNueva.controls.numeroTarjeta.hasError('required')) {
-                            <small class="error-campo">El número es obligatorio</small>
-                          }
-                          @if (tarjetaNueva.controls.numeroTarjeta.hasError('pattern')) {
-                            <small class="error-campo">Entre 13 y 19 números, sin espacios</small>
-                          }
-                        }
-                      </div>
-                      <div class="input-group">
-                        <label>Vencimiento (MM/AA)</label>
-                        <input formControlName="vencimiento" placeholder="12/28" maxlength="5" />
-                        @if (tarjetaNueva.controls.vencimiento.touched) {
-                          @if (tarjetaNueva.controls.vencimiento.hasError('required')) {
-                            <small class="error-campo">El vencimiento es obligatorio</small>
-                          }
-                          @if (tarjetaNueva.controls.vencimiento.hasError('pattern')) {
-                            <small class="error-campo">Usá el formato MM/AA, por ejemplo 08/29</small>
-                          }
-                          @if (tarjetaNueva.controls.vencimiento.hasError('tarjetaVencida')) {
-                            <small class="error-campo">La tarjeta está vencida</small>
-                          }
-                        }
-                      </div>
-
-
-                      <div class="input-group">
-                        <label>CVV</label>
-                          <input formControlName="cvv" placeholder="123" maxlength="4" inputmode="numeric" />
-
-                           @if (tarjetaNueva.controls.cvv.touched) {
-                          @if (tarjetaNueva.controls.cvv.hasError('required')) {
-                            <small class="error-campo">El CVV es obligatorio</small>
-                          }
-                          @if (tarjetaNueva.controls.cvv.hasError('pattern')) {
-                            <small class="error-campo">3 o 4 números</small>
-                          }
-                        }
-                      </div>
+                    <div class="form-tarjeta-nueva">
+                      <app-tarjeta-form [form]="tarjetaNueva" />
                     </div>
                   }
 
