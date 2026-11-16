@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { form, maxLength, min, required, validate } from '@angular/forms/signals';
 import { forkJoin } from 'rxjs';
@@ -17,6 +17,7 @@ import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-a
  * vacunas y los medicamentos viven en sus propias secciones.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-historial-clinico-profesional-page',
   imports: [
     RouterLink,
@@ -26,7 +27,6 @@ import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-a
     MensajeAlertaComponent
 ],
   templateUrl: './historial-clinico-profesional-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class HistorialClinicoProfesionalPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);

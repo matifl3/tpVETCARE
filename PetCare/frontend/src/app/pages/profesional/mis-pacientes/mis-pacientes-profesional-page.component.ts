@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Mascota, SessionUser } from '../../../core/models';
@@ -6,10 +6,10 @@ import { MascotaService } from '../../../services/mascota.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-mis-pacientes-profesional-page',
     imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './mis-pacientes-profesional-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './mis-pacientes-profesional-page.component.css'
 })
 export class MisPacientesProfesionalPageComponent implements OnInit {

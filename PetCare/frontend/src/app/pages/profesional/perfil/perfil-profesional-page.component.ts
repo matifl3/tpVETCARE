@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
@@ -35,10 +35,10 @@ function passwordsIguales(grupo: AbstractControl): ValidationErrors | null {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-perfil-profesional-page',
     imports: [RouterLink, MensajeAlertaComponent, ReactiveFormsModule],
     templateUrl: './perfil-profesional-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './perfil-profesional-page.component.css'
 })
 export class PerfilProfesionalPageComponent implements OnInit {

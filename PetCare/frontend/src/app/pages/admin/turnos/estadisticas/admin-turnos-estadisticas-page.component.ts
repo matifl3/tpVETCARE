@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EstadisticasTurnos } from '../../../../core/models';
 import { TurnoService } from '../../../../services/turno.service';
@@ -15,6 +15,7 @@ import { MensajeAlertaComponent } from '../../../../shared/mensaje-alerta/mensaj
  * bloques visuales (filtros, KPIs, gráficos) son componentes aparte.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-turnos-estadisticas-page',
   imports: [
     RouterLink,
@@ -25,7 +26,6 @@ import { MensajeAlertaComponent } from '../../../../shared/mensaje-alerta/mensaj
     MensajeAlertaComponent
 ],
   templateUrl: './admin-turnos-estadisticas-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-turnos-estadisticas-page.component.css',
 })
 export class AdminTurnosEstadisticasPageComponent implements OnInit {

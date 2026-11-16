@@ -1,7 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { AuthService } from '../../core/auth.service';
-import { firstValueFrom } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
 
@@ -23,6 +22,7 @@ const ROLES_PROFESIONALES = ['VETERINARIO',
   'CUIDADOR'];
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormRoot, FormField, RouterLink, MensajeAlertaComponent],
   selector: 'app-register',
   styleUrl: './register.component.css',

@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TurnoPeriodo } from '../../../../../../core/models';
 
 /** Gráfico de barras de turnos por período (componente puramente presentacional). */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-grafico-barras',
   templateUrl: './grafico-barras.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './grafico-barras.component.css',
 })
 export class GraficoBarrasComponent {

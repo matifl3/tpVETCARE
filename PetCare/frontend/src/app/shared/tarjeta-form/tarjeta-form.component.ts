@@ -1,4 +1,4 @@
-
+﻿
 
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -27,10 +27,10 @@ export type TarjetaFormGroup = ReturnType<typeof crearFormTarjeta>;
  * El componente padre crea el formulario y se lo pasa con [form].
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tarjeta-form',
   imports: [ReactiveFormsModule],
   templateUrl: './tarjeta-form.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './tarjeta-form.component.css',
 })
 export class TarjetaFormComponent {

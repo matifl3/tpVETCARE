@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Producto } from '../../../core/models';
@@ -7,10 +7,10 @@ import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-a
 
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-admin-productos-page',
     imports: [RouterLink, ReactiveFormsModule, MensajeAlertaComponent],
     templateUrl: './admin-productos-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-productos-page.component.css'
 })
 export class AdminProductosPageComponent implements OnInit {

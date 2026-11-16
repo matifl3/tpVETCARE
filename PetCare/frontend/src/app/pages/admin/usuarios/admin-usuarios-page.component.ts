@@ -1,14 +1,14 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Usuario } from '../../../core/models';
 import { UsuarioService } from '../../../services/usuario.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-admin-usuarios-page',
     imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './admin-usuarios-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-usuarios-page.component.css'
 })
 export class AdminUsuariosPageComponent implements OnInit {

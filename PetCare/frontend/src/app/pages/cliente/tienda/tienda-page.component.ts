@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Producto } from '../../../core/models';
@@ -9,10 +9,10 @@ import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-a
 const CATEGORIAS = ['ALIMENTO', 'JUGUETE', 'HIGIENE', 'ACCESORIO', 'SALUD', 'ROPA', 'CAMA', 'TRANSPORTE'];
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-tienda-page',
     imports: [RouterLink, MensajeAlertaComponent, ReactiveFormsModule],
     templateUrl: './tienda-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './tienda-page.component.css'
 })
 export class TiendaPageComponent implements OnInit {

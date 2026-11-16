@@ -1,14 +1,14 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-admin-turnos-page',
     imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './admin-turnos-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-turnos-page.component.css'
 })
 export class AdminTurnosPageComponent implements OnInit {

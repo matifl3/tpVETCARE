@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Agrupacion, Preset } from '../../estadisticas.model';
 
 /** Filtros del panel: período (presets o fechas) y agrupación. */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-periodo-filtros',
   templateUrl: './periodo-filtros.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './periodo-filtros.component.css',
 })
 export class PeriodoFiltrosComponent {

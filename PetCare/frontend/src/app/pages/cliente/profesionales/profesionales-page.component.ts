@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Profesional } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
@@ -7,10 +7,10 @@ import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-a
 const ROLES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-profesionales-page',
     imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './profesionales-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './profesionales-page.component.css'
 })
 export class ProfesionalesPageComponent implements OnInit {

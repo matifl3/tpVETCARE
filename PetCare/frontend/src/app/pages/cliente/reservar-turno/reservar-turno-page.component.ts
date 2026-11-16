@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
@@ -28,10 +28,10 @@ function fechaNoPasada(control: AbstractControl): ValidationErrors | null {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-reservar-turno-page',
     imports: [RouterLink, ReactiveFormsModule, MensajeAlertaComponent],
     templateUrl: './reservar-turno-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './reservar-turno-page.component.css'
 })
 export class ReservarTurnoPageComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { SessionUser } from '../../../core/models';
@@ -12,10 +12,10 @@ const ROL_LABELS: Record<string, { icon: string; label: string }> = {
 };
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-profesional-dashboard',
     imports: [RouterLink],
     templateUrl: './profesional-dashboard.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './profesional-dashboard.component.css'
 })
 export class ProfesionalDashboardComponent {

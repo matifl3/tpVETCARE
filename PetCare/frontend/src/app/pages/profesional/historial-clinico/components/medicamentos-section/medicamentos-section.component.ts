@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormField, form, required, validate } from '@angular/forms/signals';
 import { Medicamento } from '../../../../../core/models';
 import { HistorialClinicoService } from '../../../../../services/historial-clinico.service';
@@ -10,10 +10,10 @@ import { fechaHoy, MEDICAMENTO_VACIO, MedicamentoForm } from '../../historial-cl
  * recargar el historial.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-medicamentos-section',
   imports: [FormField],
   templateUrl: './medicamentos-section.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './medicamentos-section.component.css',
 })
 export class MedicamentosSectionComponent {

@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+﻿import { Location } from '@angular/common';
 import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -8,11 +8,11 @@ import { SeguimientoService } from '../../services/seguimiento.service';
 import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-seguimiento-page',
   standalone: true,
   imports: [ReactiveFormsModule, MensajeAlertaComponent],
   templateUrl: './seguimiento-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './seguimiento-page.component.css',
 })
 export class SeguimientoPageComponent implements OnInit {
