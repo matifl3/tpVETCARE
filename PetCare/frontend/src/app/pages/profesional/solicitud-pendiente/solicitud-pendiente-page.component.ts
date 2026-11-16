@@ -1,5 +1,5 @@
 ﻿import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { SessionUser } from '../../../core/models';
 
@@ -16,7 +16,6 @@ import { SessionUser } from '../../../core/models';
 })
 export class SolicitudPendientePageComponent {
   private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
 
   private readonly user: SessionUser = this.auth.user()!;
 
@@ -25,7 +24,6 @@ export class SolicitudPendientePageComponent {
   }
 
   handleLogout(): void {
-    this.auth.logout();
-    this.router.navigate(['/login']);
-  }
+  this.auth.cerrarSesion();
+}
 }

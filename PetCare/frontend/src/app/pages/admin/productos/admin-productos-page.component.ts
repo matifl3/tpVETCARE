@@ -1,17 +1,20 @@
-﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Producto } from '../../../core/models';
 import { ProductoService } from '../../../services/producto.service';
+import {
+  ConfirmacionPendiente,
+  ConfirmarModalComponent,
+} from '../../../shared/confirmar-modal/confirmar-modal.component';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
-
 @Component({
+  selector: 'app-admin-productos-page',
+  imports: [RouterLink, ReactiveFormsModule, MensajeAlertaComponent, ConfirmarModalComponent],
+  templateUrl: './admin-productos-page.component.html',
+  styleUrl: './admin-productos-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-admin-productos-page',
-    imports: [RouterLink, ReactiveFormsModule, MensajeAlertaComponent],
-    templateUrl: './admin-productos-page.component.html',
-    styleUrl: './admin-productos-page.component.css'
 })
 export class AdminProductosPageComponent implements OnInit {
   private readonly productoService = inject(ProductoService);
@@ -22,7 +25,9 @@ export class AdminProductosPageComponent implements OnInit {
   readonly error = signal('');
   readonly success = signal('');
   readonly editId = signal<number | null>(null);
- readonly form = this.fb.group({
+  readonly confirmacion = signal<ConfirmacionPendiente | null>(null);
+
+  readonly form = this.fb.group({
     nombre: ['', [Validators.required, Validators.maxLength(100)]],
     descripcion: ['', [Validators.required, Validators.maxLength(255)]],
     categoria: ['', Validators.required],
@@ -49,7 +54,8 @@ export class AdminProductosPageComponent implements OnInit {
       },
     });
   }
-guardar(): void {
+
+  guardar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -72,7 +78,6 @@ guardar(): void {
       error: (err) => this.error.set(err.message),
     });
   }
-  
 
   cancelarEdicion(): void {
     this.editId.set(null);
@@ -92,13 +97,25 @@ guardar(): void {
   }
 
   eliminar(id: number): void {
-    if (!confirm('¿Eliminar producto?')) return;
-    this.productoService.eliminar(id).subscribe({
-      next: () => {
-        this.success.set('Producto eliminado');
-        this.cargar();
+    this.confirmacion.set({
+      titulo: 'Eliminar producto',
+      mensaje: '¿Eliminar producto?',
+      textoConfirmar: 'Eliminar',
+      accion: () => {
+        this.productoService.eliminar(id).subscribe({
+          next: () => {
+            this.success.set('Producto eliminado');
+            this.cargar();
+          },
+          error: (err) => this.error.set(err.message),
+        });
       },
-      error: (err) => this.error.set(err.message),
     });
+  }
+
+  protected ejecutarConfirmacion(): void {
+    const pendiente = this.confirmacion();
+    this.confirmacion.set(null);
+    pendiente?.accion();
   }
 }

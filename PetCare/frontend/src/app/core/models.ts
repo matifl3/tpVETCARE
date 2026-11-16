@@ -259,3 +259,34 @@ export interface DisponibilidadTurno {
   idProfesional?: number;
   mensaje?: string;
 }
+
+export const ROLES_PROFESIONALES = [
+  'VETERINARIO',
+  'PASEADOR',
+  'PELUQUERO',
+  'ADIESTRADOR',
+  'CUIDADOR',
+] as const;
+
+export type RolProfesional = (typeof ROLES_PROFESIONALES)[number];
+
+export const ROLES_CON_HORAS: readonly RolProfesional[] = ['PASEADOR', 'CUIDADOR'];
+
+export const CATEGORIAS_PRODUCTO = [
+  'ALIMENTO',
+  'JUGUETE',
+  'HIGIENE',
+  'ACCESORIO',
+  'SALUD',
+  'ROPA',
+  'CAMA',
+  'TRANSPORTE',
+] as const;
+
+export function esRolProfesional(rol: string | null | undefined): boolean {
+  return !!rol && (ROLES_PROFESIONALES as readonly string[]).includes(rol);
+}
+
+export function capitalizar(valor: string | undefined): string {
+  return valor ? valor.charAt(0).toUpperCase() + valor.slice(1).toLowerCase() : '';
+}

@@ -32,7 +32,15 @@
               <td>{{ t.nombreProfesional || '—' }}</td>
               <td>{{ t.nombreMascota || '—' }}</td>
               <td>{{ t.fecha || '—' }}</td>
-              <td><span class="estado-turno" [class.confirmado]="t.estadoTurno === 'CONFIRMADO'" [class.cancelado]="t.estadoTurno === 'CANCELADO'">{{ t.estadoTurno || '—' }}</span></td>
+              <td>
+                <span
+                  class="estado-turno"
+                  [class.confirmado]="t.estadoTurno === 'CONFIRMADO'"
+                  [class.cancelado]="t.estadoTurno === 'CANCELADO'"
+                >
+                  {{ t.estadoTurno || '—' }}
+                </span>
+              </td>
               <td>{{ t.activo ? '✅' : '❌' }}</td>
               <td>
                 @if (t.activo) {
@@ -50,4 +58,14 @@
       </table>
     </div>
   </div>
+}
+
+@if (confirmacion(); as conf) {
+  <app-confirmar-modal
+    [titulo]="conf.titulo"
+    [mensaje]="conf.mensaje"
+    [textoConfirmar]="conf.textoConfirmar ?? 'Confirmar'"
+    (confirmar)="ejecutarConfirmacion()"
+    (cancelar)="confirmacion.set(null)"
+  />
 }

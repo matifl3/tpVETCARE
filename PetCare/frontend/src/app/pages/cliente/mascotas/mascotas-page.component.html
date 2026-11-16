@@ -34,3 +34,13 @@
     <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
   </div>
 }
+
+@if (confirmacion(); as conf) {
+  <app-confirmar-modal
+    [titulo]="conf.titulo"
+    [mensaje]="conf.mensaje"
+    [textoConfirmar]="conf.textoConfirmar ?? 'Confirmar'"
+    (confirmar)="ejecutarConfirmacion()"
+    (cancelar)="confirmacion.set(null)"
+  />
+}

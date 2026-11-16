@@ -1,12 +1,10 @@
 ﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Producto } from '../../../core/models';
+import { CATEGORIAS_PRODUCTO, Producto } from '../../../core/models';
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductoService } from '../../../services/producto.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
-
-const CATEGORIAS = ['ALIMENTO', 'JUGUETE', 'HIGIENE', 'ACCESORIO', 'SALUD', 'ROPA', 'CAMA', 'TRANSPORTE'];
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,7 +18,7 @@ export class TiendaPageComponent implements OnInit {
   private readonly carritoService = inject(CarritoService);
   private readonly fb = inject(NonNullableFormBuilder);
 
-  protected readonly categorias = CATEGORIAS;
+  protected readonly categorias = CATEGORIAS_PRODUCTO;
 
   readonly productos = signal<Producto[]>([]);
   readonly loading = signal(true);

@@ -1,9 +1,7 @@
 ﻿import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
-import { SessionUser } from '../../core/models';
-
-const ROLES_PROFESIONALES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
+import { ROLES_PROFESIONALES, esRolProfesional, SessionUser } from '../../core/models';
 
 /** Inicio del panel: accesos según el rol del usuario. */
 @Component({
@@ -18,4 +16,5 @@ export class DashboardHomeComponent {
 
   protected readonly user: SessionUser = this.auth.user()!;
   protected readonly rolesProfesionales = ROLES_PROFESIONALES;
+  protected readonly esRolProfesional = esRolProfesional;
 }

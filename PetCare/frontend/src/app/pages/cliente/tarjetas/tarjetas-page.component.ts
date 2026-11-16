@@ -1,21 +1,33 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Tarjeta } from '../../../core/models';
-import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
-
 import { TarjetaService } from '../../../services/tarjeta.service';
-import { crearFormTarjeta, TarjetaFormComponent } from '../../../shared/tarjeta-form/tarjeta-form.component';
+import {
+  ConfirmacionPendiente,
+  ConfirmarModalComponent,
+} from '../../../shared/confirmar-modal/confirmar-modal.component';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
+import {
+  crearFormTarjeta,
+  TarjetaFormComponent,
+} from '../../../shared/tarjeta-form/tarjeta-form.component';
 
 @Component({
   selector: 'app-tarjetas-page',
-  imports: [RouterLink, ReactiveFormsModule, TarjetaFormComponent, MensajeAlertaComponent],
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    TarjetaFormComponent,
+    MensajeAlertaComponent,
+    ConfirmarModalComponent,
+  ],
   templateUrl: './tarjetas-page.component.html',
+  styleUrls: ['./tarjetas-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./tarjetas-page.component.css']
 })
 export class TarjetasPageComponent implements OnInit {
-   private readonly tarjetaService = inject(TarjetaService);
+  private readonly tarjetaService = inject(TarjetaService);
   private readonly fb = inject(NonNullableFormBuilder);
 
   readonly tarjetas = signal<Tarjeta[]>([]);
@@ -23,7 +35,8 @@ export class TarjetasPageComponent implements OnInit {
   readonly error = signal('');
   readonly success = signal('');
   readonly mostrarForm = signal(false);
- 
+  readonly confirmacion = signal<ConfirmacionPendiente | null>(null);
+
   readonly form = crearFormTarjeta(this.fb);
 
   ngOnInit(): void {
@@ -45,11 +58,11 @@ export class TarjetasPageComponent implements OnInit {
 
   toggleForm(): void {
     this.form.reset();
-    this.mostrarForm.update((v)=> !v);
+    this.mostrarForm.update((v) => !v);
   }
 
   agregar(): void {
-    if (this.form.invalid){
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
@@ -67,10 +80,22 @@ export class TarjetasPageComponent implements OnInit {
   }
 
   handleEliminar(id: number): void {
-    if (!confirm('¿Eliminar esta tarjeta?')) return;
-    this.tarjetaService.eliminar(id).subscribe({
-      next: () => this.cargarTarjetas(),
-      error: (err) => this.error.set(err.message),
+    this.confirmacion.set({
+      titulo: 'Eliminar tarjeta',
+      mensaje: '¿Eliminar esta tarjeta?',
+      textoConfirmar: 'Eliminar',
+      accion: () => {
+        this.tarjetaService.eliminar(id).subscribe({
+          next: () => this.cargarTarjetas(),
+          error: (err) => this.error.set(err.message),
+        });
+      },
     });
+  }
+
+  protected ejecutarConfirmacion(): void {
+    const pendiente = this.confirmacion();
+    this.confirmacion.set(null);
+    pendiente?.accion();
   }
 }

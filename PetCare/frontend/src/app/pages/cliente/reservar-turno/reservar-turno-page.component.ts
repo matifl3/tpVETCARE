@@ -10,13 +10,11 @@ import {
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, debounceTime, forkJoin, map, of, switchMap, tap } from 'rxjs';
-import { Mascota, Profesional } from '../../../core/models';
+import { Mascota, Profesional, ROLES_CON_HORAS, esRolProfesional, capitalizar } from '../../../core/models';
 import { CarritoService } from '../../../services/carrito.service';
 import { MascotaService } from '../../../services/mascota.service';
 import { ProfesionalService } from '../../../services/profesional.service';
 import { TurnoService } from '../../../services/turno.service';
-
-const ROLES_CON_HORAS = ['PASEADOR', 'CUIDADOR'];
 
 const HOY = new Date().toISOString().split('T')[0];
 
@@ -55,6 +53,10 @@ export class ReservarTurnoPageComponent implements OnInit {
   readonly success = signal('');
   readonly disponible = signal<boolean | null>(null);
 
+
+  protected readonly capitalizar = capitalizar;
+
+  
   readonly form = this.fb.group({
     idMascota: this.fb.control<number | null>(null, Validators.required),
     fecha: ['', [Validators.required, fechaNoPasada]],
@@ -70,7 +72,7 @@ export class ReservarTurnoPageComponent implements OnInit {
   readonly precioHora = computed(() => this.profesional()?.precioHora || 0);
   readonly horasValidas = computed(() => Math.min(Math.max(this.horas() || 1, 1), 8));
   readonly total = computed(() => this.precioBase() + this.precioHora() * (this.horasValidas() - 1));
-  readonly permiteHoras = computed(() => ROLES_CON_HORAS.includes(this.profesional()?.rol ?? ''));
+  readonly permiteHoras = computed(() => esRolProfesional(this.profesional()?.rol ?? ''));
 
   constructor() {
     // Cada vez que cambia la fecha, consultamos la disponibilidad.
@@ -108,9 +110,6 @@ export class ReservarTurnoPageComponent implements OnInit {
     });
   }
 
-  capitalizar(r: string | undefined): string {
-    return r ? r.charAt(0) + r.slice(1).toLowerCase() : '';
-  }
 
   guardar(): void {
     if (this.form.invalid) {

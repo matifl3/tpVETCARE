@@ -95,7 +95,7 @@
     </div>
   }
 
-  @if (rolesProfesionales.includes(user.rol)) {
+  @if (esRolProfesional(user.rol)) {
     <div class="card-grid">
       <a routerLink="/dashboard/profesional" class="dash-card link-tarjeta">
         <span class="dash-icon">📅</span>

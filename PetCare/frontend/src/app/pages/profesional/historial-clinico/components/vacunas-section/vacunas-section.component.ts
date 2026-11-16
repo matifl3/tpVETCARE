@@ -2,6 +2,10 @@
 import { FormField, form, required, validate } from '@angular/forms/signals';
 import { Vacuna } from '../../../../../core/models';
 import { HistorialClinicoService } from '../../../../../services/historial-clinico.service';
+import {
+  ConfirmacionPendiente,
+  ConfirmarModalComponent,
+} from '../../../../../shared/confirmar-modal/confirmar-modal.component';
 import { fechaHoy, VACUNA_VACIA, VacunaForm } from '../../historial-clinico.model';
 
 /**
@@ -10,11 +14,11 @@ import { fechaHoy, VACUNA_VACIA, VacunaForm } from '../../historial-clinico.mode
  * recargar el historial.
  */
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vacunas-section',
-  imports: [FormField],
+  imports: [FormField, ConfirmarModalComponent],
   templateUrl: './vacunas-section.component.html',
   styleUrl: './vacunas-section.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VacunasSectionComponent {
   private readonly historialService = inject(HistorialClinicoService);
@@ -28,6 +32,7 @@ export class VacunasSectionComponent {
 
   readonly mostrarForm = signal(false);
   readonly editandoId = signal<number | null>(null);
+  readonly confirmacion = signal<ConfirmacionPendiente | null>(null);
   readonly vacunaModel = signal<VacunaForm>({ ...VACUNA_VACIA });
   readonly vacunaForm = form(this.vacunaModel, (p) => {
     required(p.nombre, { message: 'El nombre de la vacuna es obligatorio' });
@@ -103,14 +108,26 @@ export class VacunasSectionComponent {
   }
 
   eliminar(vacuna: Vacuna): void {
-    if (!confirm(`¿Eliminar la vacuna "${vacuna.nombre}"?`)) return;
-    this.historialService.eliminarVacuna(this.idMascota(), vacuna.id).subscribe({
-      next: () => {
-        this.exito.emit('Vacuna eliminada correctamente');
-        if (this.editandoId() === vacuna.id) this.cancelar();
-        this.recargar.emit();
+    this.confirmacion.set({
+      titulo: 'Eliminar vacuna',
+      mensaje: `¿Eliminar la vacuna "${vacuna.nombre}"?`,
+      textoConfirmar: 'Eliminar',
+      accion: () => {
+        this.historialService.eliminarVacuna(this.idMascota(), vacuna.id).subscribe({
+          next: () => {
+            this.exito.emit('Vacuna eliminada correctamente');
+            if (this.editandoId() === vacuna.id) this.cancelar();
+            this.recargar.emit();
+          },
+          error: (err) => this.errorMsg.emit(err.message),
+        });
       },
-      error: (err) => this.errorMsg.emit(err.message),
     });
+  }
+
+  protected ejecutarConfirmacion(): void {
+    const pendiente = this.confirmacion();
+    this.confirmacion.set(null);
+    pendiente?.accion();
   }
 }

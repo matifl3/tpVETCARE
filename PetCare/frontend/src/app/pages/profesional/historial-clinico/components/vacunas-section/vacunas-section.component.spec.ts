@@ -105,11 +105,13 @@ describe('VacunasSectionComponent', () => {
   });
 
   it('elimina una vacuna', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
     const exitos: string[] = [];
     component.exito.subscribe((m) => exitos.push(m));
 
     component.eliminar(VACUNA);
+    expect(component.confirmacion()).not.toBeNull();
+    component.confirmacion()?.accion();
+    component.confirmacion.set(null);
 
     const baja = http.expectOne(esVacunas('DELETE'));
     expect(baja.request.url).toContain('/vacunas/11');

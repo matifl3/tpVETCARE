@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { SessionUser } from './models';
+import { Router } from '@angular/router';
 
 /** Respuesta de /api/auth/login: datos del usuario + token JWT. */
 export interface LoginResponse extends SessionUser {
@@ -14,6 +15,7 @@ const TOKEN_KEY = 'petcare_token';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
 
   /** Usuario logueado; `null` = sin sesión verificada. */
   readonly user = signal<SessionUser | null>(null);
@@ -55,6 +57,11 @@ export class AuthService {
       /* storage no disponible */
     }
     this.user.set(null);
+  }
+
+  cerrarSesion(): void {
+    this.logout();
+    this.router.navigate(['/login']);
   }
 
   private saveToken(token: string): void {

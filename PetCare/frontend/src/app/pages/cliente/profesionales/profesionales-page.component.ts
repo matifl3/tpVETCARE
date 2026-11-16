@@ -1,10 +1,9 @@
 ﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Profesional } from '../../../core/models';
+import { Profesional, ROLES_PROFESIONALES, capitalizar } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
-const ROLES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,12 +15,14 @@ const ROLES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'
 export class ProfesionalesPageComponent implements OnInit {
   private readonly profesionalService = inject(ProfesionalService);
 
-  protected readonly roles = ROLES;
+  protected readonly roles = ROLES_PROFESIONALES;
 
   readonly profesionales = signal<Profesional[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly filtroRol = signal('');
+
+  protected readonly capitalizar = capitalizar;
 
   ngOnInit(): void {
     this.cargar();
@@ -45,9 +46,5 @@ export class ProfesionalesPageComponent implements OnInit {
   handleFiltrar(rol: string): void {
     this.filtroRol.set(rol);
     this.cargar(rol);
-  }
-
-  capitalizar(r: string | undefined): string {
-    return r ? r.charAt(0) + r.slice(1).toLowerCase() : '';
   }
 }

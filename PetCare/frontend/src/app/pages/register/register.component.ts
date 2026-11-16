@@ -3,6 +3,7 @@ import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { AuthService } from '../../core/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
+import { ROLES_PROFESIONALES, esRolProfesional } from '../../core/models';
 
 interface RegistroForm {
   nombre: string;
@@ -14,12 +15,6 @@ interface RegistroForm {
   matricula: string;
   experiencia: string;
 }
-
-const ROLES_PROFESIONALES = ['VETERINARIO', 
-  'PASEADOR', 
-  'PELUQUERO', 
-  'ADIESTRADOR', 
-  'CUIDADOR'];
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,7 +46,7 @@ export class RegisterComponent {
   protected readonly formModel = signal({...this.formVacio});
 
   protected readonly camposProfesionales = computed(() =>
-    ROLES_PROFESIONALES.includes(this.formModel().rol)
+    esRolProfesional(this.formModel().rol)
   );
 
   readonly formularioRegistro = form(

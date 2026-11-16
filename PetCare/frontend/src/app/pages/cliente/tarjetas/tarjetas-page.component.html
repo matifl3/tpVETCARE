@@ -14,7 +14,7 @@
 
     @if (mostrarForm()) {
       <form class="panel-formulario" [formGroup]="form" (ngSubmit)="agregar()">
-         <div class="grilla-2">
+        <div class="grilla-2">
           <app-tarjeta-form [form]="form" />
         </div>
         <button type="submit" class="btn-primary mt-16">Guardar Tarjeta</button>
@@ -47,4 +47,14 @@
       >← Volver al Dashboard</a
     >
   </div>
+}
+
+@if (confirmacion(); as conf) {
+  <app-confirmar-modal
+    [titulo]="conf.titulo"
+    [mensaje]="conf.mensaje"
+    [textoConfirmar]="conf.textoConfirmar ?? 'Confirmar'"
+    (confirmar)="ejecutarConfirmacion()"
+    (cancelar)="confirmacion.set(null)"
+  />
 }

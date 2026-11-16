@@ -2,16 +2,26 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
+import {
+  ConfirmacionPendiente,
+  ConfirmarModalComponent,
+} from '../../../shared/confirmar-modal/confirmar-modal.component';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 import { MascotaCardComponent } from './mascota-card/mascota-card.component';
 import { MascotaFormComponent } from './mascota-form/mascota-form.component';
-import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
   selector: 'app-mascotas-page',
-  imports: [RouterLink, MascotaCardComponent, MascotaFormComponent, MensajeAlertaComponent],
+  imports: [
+    RouterLink,
+    MascotaCardComponent,
+    MascotaFormComponent,
+    MensajeAlertaComponent,
+    ConfirmarModalComponent,
+  ],
   templateUrl: './mascotas-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './mascotas-page.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MascotasPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);
@@ -22,6 +32,7 @@ export class MascotasPageComponent implements OnInit {
   readonly error = signal('');
   readonly mostrarForm = signal(false);
   readonly mascotaEditar = signal<Mascota | null>(null);
+  readonly confirmacion = signal<ConfirmacionPendiente | null>(null);
 
   ngOnInit(): void {
     this.cargarMascotas();
@@ -82,10 +93,22 @@ export class MascotasPageComponent implements OnInit {
   }
 
   handleEliminar(id: number): void {
-    if (!confirm('¿Eliminar esta mascota?')) return;
-    this.mascotaService.eliminarMia(id).subscribe({
-      next: () => this.cargarMascotas(),
-      error: (err) => this.error.set(err.message),
+    this.confirmacion.set({
+      titulo: 'Eliminar mascota',
+      mensaje: '¿Eliminar esta mascota?',
+      textoConfirmar: 'Eliminar',
+      accion: () => {
+        this.mascotaService.eliminarMia(id).subscribe({
+          next: () => this.cargarMascotas(),
+          error: (err) => this.error.set(err.message),
+        });
+      },
     });
+  }
+
+  protected ejecutarConfirmacion(): void {
+    const pendiente = this.confirmacion();
+    this.confirmacion.set(null);
+    pendiente?.accion();
   }
 }
