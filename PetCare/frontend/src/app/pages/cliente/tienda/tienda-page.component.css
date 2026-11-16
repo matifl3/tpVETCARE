@@ -1,3 +1,11 @@
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+
 .buscador {
   display: flex;
   gap: 12px;
@@ -23,4 +31,108 @@
 .btn-agregar {
   margin-top: 12px;
   width: 100%;
+}
+
+.acciones-carrito {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.input-cantidad {
+  width: 64px;
+  padding: 8px;
+  text-align: center;
+  border: 1px solid var(--color-borde, #ccc);
+  border-radius: 6px;
+}
+
+.acciones-carrito .btn-agregar {
+  flex: 1;
+  margin-top: 0;
+}
+
+.selector-cantidad {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-borde, #d1d5db);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.btn-step {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cantidad-valor {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.btn-confirmar {
+  flex: 1;
+  margin-top: 0;
+  padding: 8px 10px;
+}
+
+.btn-cancelar {
+  margin-top: 0;
+  padding: 8px 10px;
+}
+
+.estado-agregado {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.badge-exito {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: #dcfce7;
+  color: #15803d;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.acciones-post-agregado {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-ver-carrito {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  padding: 8px 10px;
+  margin-top: 0;
+}
+
+.btn-mas {
+  padding: 8px 10px;
+  margin-top: 0;
 }

@@ -296,3 +296,4 @@ export interface LoginForm {
   password: string;
 }
 
+export type EstadoTarjeta = 'inicial' | 'eligiendo' | 'agregado';
