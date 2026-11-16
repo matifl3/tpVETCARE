@@ -50,7 +50,6 @@
   border-radius: 10px;
   padding: 12px;
   font-size: 13px;
-  margin-bottom: 16px;
   text-align: center;
 }
 
@@ -142,4 +141,8 @@ button[type="submit"]:disabled {
 
 .form-footer .link:hover {
   text-decoration: underline;
+}
+
+.alertas{
+  margin-top: 16px;
 }

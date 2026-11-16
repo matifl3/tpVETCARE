@@ -114,11 +114,11 @@
           }
         </button>
 
-        <app-mensaje-alerta [mensaje]="errorRegistro()" />
-
-        <app-mensaje-alerta [mostrar]="registroExitoso()" tipo="success">
-          ¡Registro exitoso! Ya podés <a routerLink="/login" class="link">iniciar sesión</a>.
-        </app-mensaje-alerta>
+        <div class="alertas">
+          <app-mensaje-alerta [mensaje]="errorRegistro()" />
+          
+          <app-mensaje-alerta [mensaje]="registroExitoso() ? '¡Registro exitoso! Ya podés iniciar sesión.' : ''"tipo="success"/>
+        </div>
 
         <p class="form-footer">
             ¿Ya tenés cuenta?

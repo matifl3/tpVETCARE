@@ -2,6 +2,7 @@
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { AuthService } from '../../core/auth.service';
 import { Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
 import { ROLES_PROFESIONALES, esRolProfesional } from '../../core/models';
 
@@ -70,6 +71,9 @@ export class RegisterComponent {
           this.errorRegistro.set(null);
           this.registroExitoso.set(false);
           const registro = campos().value();
+
+          await firstValueFrom(this.auth.registro(registro));
+
           this.formModel.set({ ...this.formVacio });
           this.formularioRegistro().reset();
           this.registroExitoso.set(true);
