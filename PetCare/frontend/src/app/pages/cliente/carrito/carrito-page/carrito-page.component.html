@@ -56,9 +56,15 @@
         } @else {
           <div class="empty-state">
             <p class="texto-estado">Tu carrito está vacío.</p>
-            <a routerLink="/dashboard" class="btn-volver">
-              ← Volver al Dashboard
-            </a>
+            <div class="botones-carrito-vacio">
+
+              <a routerLink="/dashboard" class="btn-volver">
+                ← Volver al Dashboard
+              </a>
+              <a routerLink="/dashboard/tienda" class="btn-primary">
+                Ir a la Tienda
+              </a>
+            </div>
           </div>
         }
       }

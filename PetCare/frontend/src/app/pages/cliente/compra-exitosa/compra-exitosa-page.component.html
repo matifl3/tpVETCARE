@@ -44,6 +44,9 @@
 
   <div class="acciones-centradas">
     <a routerLink="/dashboard" class="btn-primary">Volver al Dashboard</a>
-    <a routerLink="/dashboard/mis-turnos" class="btn-secondary">Ver mis turnos</a>
+    <a routerLink="/dashboard/mis-turnos" class="btn-primary">Ver mis turnos</a>
+    <a routerLink="/dashboard/carrito" [queryParams]="{ tab: 'historial' }" class="btn-primary">
+      Ver historial de compras
+    </a>
   </div>
 </div>

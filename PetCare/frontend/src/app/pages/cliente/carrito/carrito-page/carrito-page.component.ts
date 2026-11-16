@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { CarritoItemsComponent } from '../carrito-items/carrito-items.component';
 import { CarritoPagoComponent } from '../carrito-pago/carrito-pago.component';
@@ -20,6 +20,7 @@ type Pestana = 'carrito' | 'historial';
 })
 export class CarritoPageComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute); 
   private readonly carritoService = inject(CarritoService);
   private readonly tarjetaService = inject(TarjetaService);
 
@@ -38,6 +39,10 @@ export class CarritoPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    const tabParam = this.route.snapshot.queryParamMap.get('tab');
+    if (tabParam === 'historial') {
+      this.pestana.set('historial');
+    }
     this.cargarDatos();
   }
 

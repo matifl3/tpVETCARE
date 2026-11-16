@@ -89,3 +89,9 @@
   flex-direction: column;
   gap: 28px;
 }
+
+.botones-carrito-vacio {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
