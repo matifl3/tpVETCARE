@@ -4,12 +4,7 @@ import { AuthService } from '../../core/auth.service';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { firstValueFrom } from 'rxjs';
 import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
-
-interface LoginForm {
-  email: string;
-  password: string;
-}
-
+import { LoginForm } from '../../core/models';
 
 @Component({
     selector: 'app-login',
@@ -44,9 +39,9 @@ export class LoginComponent {
             const contraseña = campos().value().password;
             await firstValueFrom(this.auth.login(mail, contraseña));
             await this.router.navigate(['/dashboard']);
-          }catch(err : any){
-          const mensaje = err?.error?.message || 'Correo o contraseña incorrectos.';
-          this.error.set(mensaje);
+          }catch(err){
+            const mensaje = err instanceof Error ? err.message : 'Correo o contraseña incorrectos.';
+            this.error.set(mensaje);
           }
         }
       }

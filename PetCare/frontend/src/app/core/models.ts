@@ -290,3 +290,9 @@ export function esRolProfesional(rol: string | null | undefined): boolean {
 export function capitalizar(valor: string | undefined): string {
   return valor ? valor.charAt(0).toUpperCase() + valor.slice(1).toLowerCase() : '';
 }
+
+export interface LoginForm {
+  email: string;
+  password: string;
+}
+
