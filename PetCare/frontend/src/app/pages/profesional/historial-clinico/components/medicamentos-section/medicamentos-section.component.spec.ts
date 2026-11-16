@@ -107,11 +107,13 @@ describe('MedicamentosSectionComponent', () => {
   });
 
   it('elimina un medicamento', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
     const exitos: string[] = [];
     component.exito.subscribe((m) => exitos.push(m));
 
     component.eliminar(MEDICAMENTO);
+    expect(component.confirmacion()).not.toBeNull();
+    component.confirmacion()?.accion();
+    component.confirmacion.set(null);
 
     const baja = http.expectOne(esMedicamentos('DELETE'));
     expect(baja.request.url).toContain('/medicamentos/21');

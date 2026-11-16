@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ResumenTurnos } from '../../../../../../core/models';
 
 /** Tarjetas con los totales del período consultado. */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-kpi-grid',
   templateUrl: './kpi-grid.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './kpi-grid.component.css',
 })
 export class KpiGridComponent {

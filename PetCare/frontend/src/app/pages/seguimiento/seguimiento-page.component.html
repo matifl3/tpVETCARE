@@ -6,61 +6,64 @@
       <h1>Seguimiento de {{ seguimiento()?.nombreMascota || 'Mascota' }}</h1>
       <a href="#" (click)="volver($event)" class="btn-secondary btn-volver">← Volver</a>
     </div>
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="alert alert-success show">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
-    @if (esAdiestradorOAdmin()) {
+    @if (esAdiestradorOAdmin) {
       <div class="mb-24">
-        <button class="btn-primary" (click)="mostrarForm.set(!mostrarForm())">
+        <button class="btn-primary" (click)="toggleForm()">
           {{ mostrarForm() ? 'Cancelar' : '+ Registrar progreso' }}
         </button>
       </div>
     }
 
     @if (mostrarForm()) {
-      <form (submit)="handleSubmit($event)" class="admin-card mb-24">
+      <form [formGroup]="form" (ngSubmit)="guardar()" class="admin-card mb-24">
         <h3>Nuevo registro de progreso</h3>
         <div class="grilla-2">
           <div class="input-group">
             <label>Descripción</label>
-            <textarea class="campo campo-textarea"
-              required
-              [value]="form().descripcion"
-              (input)="upd({ descripcion: inputValue($event) })"
-            ></textarea>
+            <textarea class="campo campo-textarea" formControlName="descripcion"></textarea>
+            @if (form.controls.descripcion.touched) {
+              @if (form.controls.descripcion.hasError('required')) {
+                <small class="error-campo">La descripción es obligatoria</small>
+              }
+              @if (form.controls.descripcion.hasError('maxlength')) {
+                <small class="error-campo">Máximo 500 caracteres</small>
+              }
+            }
           </div>
           <div class="input-group">
             <label>Técnicas aplicadas</label>
-            <textarea class="campo campo-textarea"
-              required
-              [value]="form().tecnicas"
-              (input)="upd({ tecnicas: inputValue($event) })"
-            ></textarea>
+            <textarea class="campo campo-textarea" formControlName="tecnicas"></textarea>
+            @if (form.controls.tecnicas.touched) {
+              @if (form.controls.tecnicas.hasError('required')) {
+                <small class="error-campo">Las técnicas son obligatorias</small>
+              }
+              @if (form.controls.tecnicas.hasError('maxlength')) {
+                <small class="error-campo">Máximo 500 caracteres</small>
+              }
+            }
           </div>
           <div class="input-group">
-            <label>Observaciones</label>
-            <textarea class="campo campo-textarea"
-              [value]="form().observaciones"
-              (input)="upd({ observaciones: inputValue($event) })"
-            ></textarea>
+            <label>Observaciones (opcional)</label>
+            <textarea class="campo campo-textarea" formControlName="observaciones"></textarea>
+            @if (form.controls.observaciones.touched && form.controls.observaciones.hasError('maxlength')) {
+              <small class="error-campo">Máximo 500 caracteres</small>
+            }
           </div>
           <div class="input-group">
             <label>Evaluación</label>
-            <select class="campo"
-              required
-              [value]="form().evaluacion"
-              (change)="upd({ evaluacion: inputValue($event) })"
-            >
-              <option value="">Seleccionar</option>
+            <select class="campo" formControlName="evaluacion">
+              <option value="" disabled>Seleccionar evaluación</option>
               <option value="EXCELENTE">Excelente</option>
               <option value="BUENO">Bueno</option>
               <option value="REGULAR">Regular</option>
               <option value="MALO">Malo</option>
             </select>
+            @if (form.controls.evaluacion.touched && form.controls.evaluacion.hasError('required')) {
+              <small class="error-campo">Elegí una evaluación</small>
+            }
           </div>
         </div>
         <button type="submit" class="btn-primary mt-16">Guardar registro</button>

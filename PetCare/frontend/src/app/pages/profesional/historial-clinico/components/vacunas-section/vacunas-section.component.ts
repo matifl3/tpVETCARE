@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, output, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormField, form, required, validate } from '@angular/forms/signals';
 import { Vacuna } from '../../../../../core/models';
 import { HistorialClinicoService } from '../../../../../services/historial-clinico.service';
+import {
+  ConfirmacionPendiente,
+  ConfirmarModalComponent,
+} from '../../../../../shared/confirmar-modal/confirmar-modal.component';
 import { fechaHoy, VACUNA_VACIA, VacunaForm } from '../../historial-clinico.model';
 
 /**
@@ -12,14 +15,13 @@ import { fechaHoy, VACUNA_VACIA, VacunaForm } from '../../historial-clinico.mode
  */
 @Component({
   selector: 'app-vacunas-section',
-  imports: [FormField],
+  imports: [FormField, ConfirmarModalComponent],
   templateUrl: './vacunas-section.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './vacunas-section.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VacunasSectionComponent {
   private readonly historialService = inject(HistorialClinicoService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly idMascota = input.required<number>();
   readonly vacunas = input<Vacuna[]>([]);
@@ -30,6 +32,7 @@ export class VacunasSectionComponent {
 
   readonly mostrarForm = signal(false);
   readonly editandoId = signal<number | null>(null);
+  readonly confirmacion = signal<ConfirmacionPendiente | null>(null);
   readonly vacunaModel = signal<VacunaForm>({ ...VACUNA_VACIA });
   readonly vacunaForm = form(this.vacunaModel, (p) => {
     required(p.nombre, { message: 'El nombre de la vacuna es obligatorio' });
@@ -94,7 +97,7 @@ export class VacunasSectionComponent {
       ? this.historialService.actualizarVacuna(this.idMascota(), id, payload)
       : this.historialService.registrarVacuna(this.idMascota(), payload);
 
-    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    request.subscribe({
       next: () => {
         this.exito.emit(id ? 'Vacuna actualizada correctamente' : 'Vacuna registrada correctamente');
         this.cancelar();
@@ -105,17 +108,26 @@ export class VacunasSectionComponent {
   }
 
   eliminar(vacuna: Vacuna): void {
-    if (!confirm(`¿Eliminar la vacuna "${vacuna.nombre}"?`)) return;
-    this.historialService
-      .eliminarVacuna(this.idMascota(), vacuna.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.exito.emit('Vacuna eliminada correctamente');
-          if (this.editandoId() === vacuna.id) this.cancelar();
-          this.recargar.emit();
-        },
-        error: (err) => this.errorMsg.emit(err.message),
-      });
+    this.confirmacion.set({
+      titulo: 'Eliminar vacuna',
+      mensaje: `¿Eliminar la vacuna "${vacuna.nombre}"?`,
+      textoConfirmar: 'Eliminar',
+      accion: () => {
+        this.historialService.eliminarVacuna(this.idMascota(), vacuna.id).subscribe({
+          next: () => {
+            this.exito.emit('Vacuna eliminada correctamente');
+            if (this.editandoId() === vacuna.id) this.cancelar();
+            this.recargar.emit();
+          },
+          error: (err) => this.errorMsg.emit(err.message),
+        });
+      },
+    });
+  }
+
+  protected ejecutarConfirmacion(): void {
+    const pendiente = this.confirmacion();
+    this.confirmacion.set(null);
+    pendiente?.accion();
   }
 }

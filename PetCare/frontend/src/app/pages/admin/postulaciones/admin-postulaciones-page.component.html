@@ -6,12 +6,8 @@
       <h1>Postulaciones</h1>
       <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
     </div>
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="alert alert-success show">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
     @if (postulaciones().length === 0) {
       <div class="admin-card">
@@ -37,7 +33,7 @@
                 <td>{{ p.id }}</td>
                 <td>{{ p.nombre }} {{ p.apellido }}</td>
                 <td>{{ p.email }}</td>
-                <td><span class="nav-role">{{ p.rol | nombreRol }}</span></td>
+                <td><span class="nav-role">{{ p.rol }}</span></td>
                 <td>{{ p.matricula || '—' }}</td>
                 <td>{{ p.experiencia || '—' }}</td>
                 <td>

@@ -1,0 +1,81 @@
+<app-mensaje-alerta [mensaje]="error()" />
+
+<div class="admin-card mb-24">
+  <div class="filtros">
+    @let inicio = rangoFechas.controls.fechaInicio;
+    @let fin = rangoFechas.controls.fechaFin;
+    <div class="input-group mb-0">
+      <label>Fecha inicio</label>
+      <input type="date" [formControl]="inicio" />
+      @if (inicio.touched && inicio.hasError('required')) {
+        <small class="error-campo">Elegí la fecha de inicio</small>
+      }
+    </div>
+
+    <div class="input-group mb-0">
+      <label>Fecha fin</label>
+      <input type="date" [formControl]="fin" />
+      @if (fin.touched && fin.hasError('required')) {
+        <small class="error-campo">Elegí la fecha de fin</small>
+      }
+      @if (fin.touched && rangoFechas.hasError('rangoInvalido')) {
+        <small class="error-campo">No puede ser anterior a la fecha de inicio</small>
+      }
+    </div>
+
+    <button type="button" class="btn-primary" (click)="consultar()" [disabled]="loading()">
+      {{ loading() ? 'Consultando...' : 'Consultar' }}
+    </button>
+  </div>
+</div>
+
+@if (data(); as data) {
+  <div class="admin-card">
+    <div class="header-ventas">
+      <h3>
+        Ventas del {{ rangoFechas.controls.fechaInicio.value }} al
+        {{ rangoFechas.controls.fechaFin.value }}
+      </h3>
+
+      @if (isArray(data) && data.length > 0) {
+        <div class="acciones-exportar">
+          <button type="button" class="btn-primary" (click)="exportarPdf()">
+            📄 Imprimir/Exportar PDF
+          </button>
+          <button type="button" class="btn-primary" (click)="exportarCsv()">
+            📊 Exportar CSV
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (isArray(data) && data.length === 0) {
+      <p class="estado-vacio estado-vacio-chico">No hay ventas en ese período.</p>
+    }
+
+    @if (isArray(data) && data.length > 0) {
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of data; track c.id) {
+            <tr>
+              <td>{{ c.id }}</td>
+              <td>{{ c.idUsuario || '—' }}</td>
+              <td>${{ c.total?.toFixed(2) }}</td>
+              <td>{{ c.estado }}</td>
+              <td>{{ c.fechaCreacion }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+}

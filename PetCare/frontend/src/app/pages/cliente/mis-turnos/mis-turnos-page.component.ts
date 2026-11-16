@@ -1,37 +1,33 @@
-import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-mis-turnos-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './mis-turnos-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './mis-turnos-page.component.css'
 })
 export class MisTurnosPageComponent implements OnInit {
   private readonly turnoService = inject(TurnoService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly turnos = signal<Turno[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
 
   ngOnInit(): void {
-    this.turnoService
-      .misTurnos()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.turnos.set(data);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.loading.set(false);
-        },
-      });
+    this.turnoService.misTurnos().subscribe({
+      next: (data) => {
+        this.turnos.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+      },
+    });
   }
 }

@@ -5,9 +5,7 @@
     <h1>Profesionales</h1>
     <p class="mb-24">Buscá profesionales para el cuidado de tus mascotas.</p>
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
 
     <div class="barra-filtros">
       <button [class]="'btn-' + (filtroRol() === '' ? 'primary' : 'secondary')" (click)="handleFiltrar('')">
@@ -15,7 +13,7 @@
       </button>
       @for (r of roles; track r) {
         <button [class]="'btn-' + (filtroRol() === r ? 'primary' : 'secondary')" (click)="handleFiltrar(r)">
-          {{ r | nombreRol }}
+          {{ capitalizar(r) }}
         </button>
       }
     </div>
@@ -29,7 +27,7 @@
             <div>
               <span class="dash-icon">👨‍⚕️</span>
               <h3>{{ p.nombre }} {{ p.apellido }}</h3>
-              <p><strong>Rol:</strong> {{ p.rol | nombreRol }}</p>
+              <p><strong>Rol:</strong> {{ capitalizar(p.rol) }}</p>
               @if (p.matricula) {
                 <p><strong>Matrícula:</strong> {{ p.matricula }}</p>
               }

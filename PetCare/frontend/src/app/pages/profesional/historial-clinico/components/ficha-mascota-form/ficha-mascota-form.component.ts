@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { FieldTree, FormField } from '@angular/forms/signals';
 import { FichaModel } from '../../historial-clinico.model';
 
@@ -8,10 +8,10 @@ import { FichaModel } from '../../historial-clinico.model';
  * avisa cuando el usuario quiere guardar.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ficha-mascota-form',
   imports: [FormField],
   templateUrl: './ficha-mascota-form.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './ficha-mascota-form.component.css',
 })
 export class FichaMascotaFormComponent {

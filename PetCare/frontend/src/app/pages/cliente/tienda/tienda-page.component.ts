@@ -1,51 +1,43 @@
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  computed,
-  inject,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { inputValue } from '../../../core/form.helpers';
-import { Producto } from '../../../core/models';
-import { despuesDe } from '../../../core/tiempo.helpers';
+import { CATEGORIAS_PRODUCTO, Producto } from '../../../core/models';
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductoService } from '../../../services/producto.service';
-
-const CATEGORIAS = ['ALIMENTO', 'JUGUETE', 'HIGIENE', 'ACCESORIO', 'SALUD', 'ROPA', 'CAMA', 'TRANSPORTE'];
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-tienda-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent, ReactiveFormsModule],
     templateUrl: './tienda-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './tienda-page.component.css'
 })
 export class TiendaPageComponent implements OnInit {
   private readonly productoService = inject(ProductoService);
   private readonly carritoService = inject(CarritoService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(NonNullableFormBuilder);
 
-  protected readonly inputValue = inputValue;
-  protected readonly categorias = CATEGORIAS;
+  protected readonly categorias = CATEGORIAS_PRODUCTO;
 
   readonly productos = signal<Producto[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly success = signal('');
   readonly categoria = signal('');
-  readonly busqueda = signal('');
+
+  /** Buscador por nombre (opcional, sin validaciones). */
+  readonly filtros = this.fb.group({
+    busqueda: [''],
+  });
 
   ngOnInit(): void {
     this.cargar();
   }
 
-  readonly productosActivos = computed(() =>
-    this.productos().filter((p) => p.activo !== false),
-  );
+  productosActivos(): Producto[] {
+    return this.productos().filter((p) => p.activo !== false);
+  }
 
   cargar(cat?: string, busq?: string): void {
     this.loading.set(true);
@@ -57,7 +49,7 @@ export class TiendaPageComponent implements OnInit {
     } else {
       req = this.productoService.listar();
     }
-    req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    req.subscribe({
       next: (data) => {
         this.productos.set(data);
         this.loading.set(false);
@@ -69,29 +61,26 @@ export class TiendaPageComponent implements OnInit {
     });
   }
 
-  handleBuscar(event: Event): void {
-    event.preventDefault();
-    this.cargar(this.categoria(), this.busqueda());
+  buscar(): void {
+    const texto = this.filtros.controls.busqueda.value.trim();
+    this.cargar(this.categoria(), texto);
   }
 
   filtrarCategoria(cat: string): void {
     this.categoria.set(cat);
-    this.busqueda.set('');
+    this.filtros.reset();
     this.cargar(cat, '');
   }
 
   handleAgregarCarrito(id: number): void {
     this.error.set('');
     this.success.set('');
-    this.carritoService
-      .agregar(id, 1)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.success.set('Producto agregado al carrito');
-          despuesDe(2000, this.destroyRef).subscribe(() => this.success.set(''));
-        },
-        error: (err) => this.error.set(err.message),
-      });
+    this.carritoService.agregar(id, 1).subscribe({
+      next: () => {
+        this.success.set('Producto agregado al carrito');
+        setTimeout(() => this.success.set(''), 2000);
+      },
+      error: (err) => this.error.set(err.message),
+    });
   }
 }

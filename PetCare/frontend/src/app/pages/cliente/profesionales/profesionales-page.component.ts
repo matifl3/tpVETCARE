@@ -1,29 +1,28 @@
-import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Profesional } from '../../../core/models';
-import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
+import { Profesional, ROLES_PROFESIONALES, capitalizar } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
-const ROLES = ['VETERINARIO', 'PASEADOR', 'PELUQUERO', 'ADIESTRADOR', 'CUIDADOR'];
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-profesionales-page',
-    imports: [RouterLink, NombreRolPipe],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './profesionales-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './profesionales-page.component.css'
 })
 export class ProfesionalesPageComponent implements OnInit {
   private readonly profesionalService = inject(ProfesionalService);
-  private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly roles = ROLES;
+  protected readonly roles = ROLES_PROFESIONALES;
 
   readonly profesionales = signal<Profesional[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly filtroRol = signal('');
+
+  protected readonly capitalizar = capitalizar;
 
   ngOnInit(): void {
     this.cargar();
@@ -32,7 +31,7 @@ export class ProfesionalesPageComponent implements OnInit {
   cargar(rol?: string): void {
     this.loading.set(true);
     const req = rol ? this.profesionalService.porRol(rol) : this.profesionalService.listar();
-    req.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    req.subscribe({
       next: (data) => {
         this.profesionales.set(data);
         this.loading.set(false);

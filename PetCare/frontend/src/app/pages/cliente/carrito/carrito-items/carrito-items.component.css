@@ -1,0 +1,143 @@
+.grupo-items {
+  margin-bottom: 24px;
+}
+
+.grupo-titulo {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6b7280;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: #fafafa;
+  border: 1px solid #ececf4;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.item-row:hover {
+  border-color: var(--color-borde-lila, #d8b4fe);
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.item-nombre {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.item-detalle {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qty-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--color-primario, #7c3aed);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background: #f5f3ff;
+}
+
+.qty-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qty-value {
+  min-width: 28px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.item-subtotal {
+  min-width: 76px;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.btn-remove {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-remove:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.items-footer {
+  margin-top: 20px;
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-borde-lila, #d8b4fe);
+  background: #ffffff;
+  color: var(--color-primario, #7c3aed);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-volver:hover {
+  background: var(--color-primario-06, #f5f3ff);
+  border-color: var(--color-primario, #7c3aed);
+}

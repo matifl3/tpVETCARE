@@ -31,8 +31,8 @@ export class CarritoService {
     return this.api.delete<Carrito>(`/api/carrito/eliminar-turno/${idCarritoTurno}`);
   }
 
-  comprar(data: Record<string, unknown>): Observable<any> {
-    return this.api.post<any>('/api/carrito/comprar', data);
+  comprar(data: Record<string, unknown>): Observable<Carrito> {
+    return this.api.post<Carrito>('/api/carrito/comprar', data);
   }
 
   historial(): Observable<Carrito[]> {

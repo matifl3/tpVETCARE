@@ -1,18 +1,26 @@
-import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
-import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
+import { SessionUser } from '../../../core/models';
+
+const ROL_LABELS: Record<string, { icon: string; label: string }> = {
+  VETERINARIO: { icon: '👨‍⚕️', label: 'Veterinario' },
+  PASEADOR: { icon: '🐕', label: 'Paseador' },
+  PELUQUERO: { icon: '✂️', label: 'Peluquero' },
+  ADIESTRADOR: { icon: '🎯', label: 'Adiestrador' },
+  CUIDADOR: { icon: '🏠', label: 'Cuidador' },
+};
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-profesional-dashboard',
-    imports: [RouterLink, NombreRolPipe],
+    imports: [RouterLink],
     templateUrl: './profesional-dashboard.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './profesional-dashboard.component.css'
 })
 export class ProfesionalDashboardComponent {
   private readonly auth = inject(AuthService);
 
-  /** Sigue la signal global para que el panel refleje los cambios del usuario. */
-  protected readonly user = computed(() => this.auth.user()!);
+  protected readonly user: SessionUser = this.auth.user()!;
+  protected readonly info = ROL_LABELS[this.user.rol] || { icon: '👤', label: this.user.rol };
 }

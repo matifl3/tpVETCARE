@@ -114,17 +114,11 @@
           }
         </button>
 
-        @if (errorRegistro()) {
-          <div class="alert-error" role="alert">
-            {{ errorRegistro() }}
-          </div>
-        }
+        <app-mensaje-alerta [mensaje]="errorRegistro()" />
 
-        @if (registroExitoso()) {
-          <div class="alert-success" role="status">
-            ¡Registro exitoso! Ya podés <a routerLink="/login" class="link">iniciar sesión</a>.
-        </div>
-        }
+        <app-mensaje-alerta [mostrar]="registroExitoso()" tipo="success">
+          ¡Registro exitoso! Ya podés <a routerLink="/login" class="link">iniciar sesión</a>.
+        </app-mensaje-alerta>
 
         <p class="form-footer">
             ¿Ya tenés cuenta?

@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Carrito } from '../../../core/models';
 
@@ -7,10 +7,10 @@ import { Carrito } from '../../../core/models';
  * `history.state` lo conserva si se recarga la página.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-compra-exitosa-page',
     imports: [RouterLink],
     templateUrl: './compra-exitosa-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './compra-exitosa-page.component.css'
 })
 export class CompraExitosaPageComponent {

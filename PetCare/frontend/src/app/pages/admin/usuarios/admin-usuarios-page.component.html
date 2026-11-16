@@ -6,12 +6,8 @@
       <h1>Usuarios</h1>
       <a routerLink="/dashboard" class="btn-secondary btn-volver">← Volver al Dashboard</a>
     </div>
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="alert alert-success show">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
     <div class="admin-card">
       <table class="admin-table">
@@ -31,7 +27,7 @@
               <td>{{ u.idUsuario }}</td>
               <td>{{ u.nombre }} {{ u.apellido }}</td>
               <td>{{ u.email }}</td>
-              <td><span class="nav-role">{{ u.rol | nombreRol }}</span></td>
+              <td><span class="nav-role">{{ u.rol }}</span></td>
               <td>{{ u.activo ? '✅' : '❌' }}</td>
               <td>
                 <button class="btn-secondary btn-sm" (click)="toggleActivo(u)">

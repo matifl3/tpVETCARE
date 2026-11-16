@@ -20,16 +20,18 @@
       <span class="stats-filters-label">Fechas</span>
       <div class="fechas-custom">
         <input
+          #inputDesde
           type="date"
           [value]="desde()"
-          (change)="cambiarFecha('desde', $event)"
+          (change)="cambiarFecha('desde', inputDesde.value)"
           aria-label="Fecha desde"
         />
         <span>hasta</span>
         <input
+          #inputHasta
           type="date"
           [value]="hasta()"
-          (change)="cambiarFecha('hasta', $event)"
+          (change)="cambiarFecha('hasta', inputHasta.value)"
           aria-label="Fecha hasta"
         />
       </div>

@@ -1,0 +1,34 @@
+@let m = mascota();
+<div class="dash-card relativo">
+  <span class="dash-icon">🐾</span>
+  <h3>{{ m.nombre }}</h3>
+  <p><strong>Especie:</strong> {{ m.especie }}</p>
+  @if (m.raza) {
+    <p><strong>Raza:</strong> {{ m.raza }}</p>
+  }
+  @if (m.sexo) {
+    <p><strong>Sexo:</strong> {{ m.sexo === 'MACHO' ? 'Macho' : 'Hembra' }}</p>
+  }
+  @if ((m.peso ?? 0) > 0) {
+    <p><strong>Peso:</strong> {{ m.peso }} kg</p>
+  }
+  @if (m.fechaNacimiento) {
+    <p><strong>Nacimiento:</strong> {{ m.fechaNacimiento }}</p>
+  }
+  <div class="acciones-mascota">
+    <button type="button" (click)="editar.emit(m)" class="btn-sm accion">Editar</button>
+    <button
+      type="button"
+      (click)="eliminar.emit(m.idMascota)"
+      class="btn-sm accion accion-eliminar"
+    >
+      Eliminar
+    </button>
+    <a
+      [routerLink]="['/dashboard/mascotas', m.idMascota, 'seguimiento']"
+      class="btn-sm accion accion-seguimiento"
+    >
+      Seguimiento
+    </a>
+  </div>
+</div>

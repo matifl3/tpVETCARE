@@ -1,15 +1,16 @@
-import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-mis-turnos-profesional-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './mis-turnos-profesional-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './mis-turnos-profesional-page.component.css'
 })
 export class MisTurnosProfesionalPageComponent implements OnInit {
@@ -26,14 +27,14 @@ export class MisTurnosProfesionalPageComponent implements OnInit {
       .porProfesional(this.auth.user()!.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (data) => {
-          this.turnos.set(data);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.loading.set(false);
-        },
-      });
+      next: (data) => {
+        this.turnos.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+      },
+    });
   }
 }

@@ -65,36 +65,20 @@ describe('MascotasPageComponent', () => {
     expect(alerta.textContent).toContain('Algo salió mal');
   });
 
-  it('con el formulario vacío no envía nada y marca los campos como tocados', () => {
-    http.expectOne(misMascotas('GET')).flush([]);
-
-    component.guardar();
-
-    http.expectNone(misMascotas('POST'));
-    expect(component.form.invalid).toBeTrue();
-    expect(component.form.controls.nombre.touched).toBeTrue();
-  });
-
-  it('no acepta una fecha de nacimiento futura', () => {
-    http.expectOne(misMascotas('GET')).flush([]);
-
-    component.form.controls.fechaNacimiento.setValue('2999-01-01');
-
-    expect(component.form.controls.fechaNacimiento.hasError('fechaFutura')).toBeTrue();
-  });
-
   it('con datos válidos crea la mascota y recarga la lista', () => {
     http.expectOne(misMascotas('GET')).flush([]);
 
-    component.form.setValue({
-      nombre: 'Toby',
-      especie: 'PERRO',
-      raza: 'Mestizo',
-      sexo: 'MACHO',
-      peso: 12,
-      fechaNacimiento: '2020-05-01',
+    component.onGuardar({
+      id: null,
+      data: {
+        nombre: 'Toby',
+        especie: 'PERRO',
+        raza: 'Mestizo',
+        sexo: 'MACHO',
+        peso: 12,
+        fechaNacimiento: '2020-05-01',
+      },
     });
-    component.guardar();
 
     const pedido = http.expectOne(misMascotas('POST'));
     expect(pedido.request.body.nombre).toBe('Toby');

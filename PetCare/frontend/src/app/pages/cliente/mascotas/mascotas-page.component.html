@@ -4,134 +4,43 @@
   <div class="dashboard">
     <div class="encabezado-pagina">
       <h1>Mis Mascotas</h1>
-      <button class="btn-primary" (click)="toggleForm()">
+      <button type="button" class="btn-primary" (click)="toggleForm()">
         {{ mostrarForm() ? 'Cancelar' : '+ Nueva Mascota' }}
       </button>
     </div>
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
 
     @if (mostrarForm()) {
-      <form class="panel-formulario" [formGroup]="form" (ngSubmit)="guardar()">
-        <h3 class="mt-0">{{ editandoId() ? 'Editar Mascota' : 'Nueva Mascota' }}</h3>
-      <div class="grilla-2">
-          <div class="input-group">
-            <label>Nombre</label>
-            <input formControlName="nombre" />
-            @if (form.controls.nombre.touched) {
-              @if (form.controls.nombre.hasError('required')) {
-                <small class="error-campo">El nombre es obligatorio</small>
-              }
-              @if (form.controls.nombre.hasError('maxlength')) {
-                <small class="error-campo">Máximo 50 caracteres</small>
-              }
-            }
-          </div>
-       <div class="input-group">
-            <label>Especie</label>
-            <select class="input-group campo" formControlName="especie">
-              <option value="" disabled>Seleccionar especie</option>
-              <option value="PERRO">Perro</option>
-              <option value="GATO">Gato</option>
-              <option value="AVE">Ave</option>
-              <option value="PEZ">Pez</option>
-              <option value="ROEDOR">Roedor</option>
-              <option value="OTRO">Otro</option>
-            </select>
-            @if (form.controls.especie.touched && form.controls.especie.hasError('required')) {
-              <small class="error-campo">Elegí la especie</small>
-            }
-          </div>
-          <div class="input-group">
-            <label>Raza</label>
-            <input formControlName="raza" placeholder="Ej: Caniche, Mestizo" />
-            @if (form.controls.raza.touched && form.controls.raza.hasError('required')) {
-              <small class="error-campo">La raza es obligatoria</small>
-            }
-          </div>
-          <div class="input-group">
-            <label>Sexo</label>
-            <select class="campo" formControlName="sexo">
-              <option value="">Seleccionar</option>
-              <option value="MACHO">Macho</option>
-              <option value="HEMBRA">Hembra</option>
-            </select>
-            @if (form.controls.sexo.touched && form.controls.sexo.hasError('required')) {
-              <small class="error-campo">Elegí el sexo</small>
-            }
-          </div>
-          <div class="input-group">
-            <label>Peso (kg)</label>
-            <input type="number" step="0.1" formControlName="peso" />
-            @if (form.controls.peso.touched) {
-              @if (form.controls.peso.hasError('required')) {
-                <small class="error-campo">El peso es obligatorio</small>
-              }
-              @if (form.controls.peso.hasError('min')) {
-                <small class="error-campo">El peso tiene que ser mayor a 0</small>
-              }
-            }
-          </div>
-          <div class="input-group">
-            <label>Fecha de nacimiento</label>
-            <input type="date" formControlName="fechaNacimiento" />
-            @if (form.controls.fechaNacimiento.touched) {
-              @if (form.controls.fechaNacimiento.hasError('required')) {
-                <small class="error-campo">La fecha de nacimiento es obligatoria</small>
-              }
-              @if (form.controls.fechaNacimiento.hasError('fechaFutura')) {
-                <small class="error-campo">La fecha no puede ser futura</small>
-              }
-            }
-          </div>
-        </div>
-        <button type="submit" class="btn-primary mt-16">
-          {{ editandoId() ? 'Guardar Cambios' : 'Guardar Mascota' }}
-        </button>
-      </form>
-    }
-
-    @if (mascotas().length === 0) {
+      <app-mascota-form
+        [mascotaEditar]="mascotaEditar()"
+        [guardando]="guardando()"
+        (guardar)="onGuardar($event)"
+      />
+    } @else if (mascotas().length === 0) {
       <p class="texto-gris">No tenés mascotas registradas. ¡Agregá una!</p>
     } @else {
       <div class="card-grid">
         @for (m of mascotas(); track m.idMascota) {
-          <div class="dash-card relativo">
-            <span class="dash-icon">🐾</span>
-            <h3>{{ m.nombre }}</h3>
-            <p><strong>Especie:</strong> {{ m.especie }}</p>
-            @if (m.raza) {
-              <p><strong>Raza:</strong> {{ m.raza }}</p>
-            }
-            @if (m.sexo) {
-              <p><strong>Sexo:</strong> {{ m.sexo === 'MACHO' ? 'Macho' : 'Hembra' }}</p>
-            }
-            @if ((m.peso ?? 0) > 0) {
-              <p><strong>Peso:</strong> {{ m.peso }} kg</p>
-            }
-            @if (m.fechaNacimiento) {
-              <p><strong>Nacimiento:</strong> {{ m.fechaNacimiento }}</p>
-            }
-            <div class="acciones-mascota">
-              <button (click)="handleEditar(m)" class="btn-sm accion">Editar</button>
-              <button
-                (click)="handleEliminar(m.idMascota)"
-                class="btn-sm accion accion-eliminar"
-              >Eliminar</button>
-              <a
-                [routerLink]="['/dashboard/mascotas', m.idMascota, 'seguimiento']"
-                class="btn-sm accion accion-seguimiento"
-              >
-                Seguimiento
-              </a>
-            </div>
-          </div>
+          <app-mascota-card
+            [mascota]="m"
+            (editar)="handleEditar($event)"
+            (eliminar)="handleEliminar($event)"
+          />
         }
       </div>
     }
 
     <a routerLink="/dashboard" class="btn-secondary link-volver">← Volver al Dashboard</a>
   </div>
-}   
+}
+
+@if (confirmacion(); as conf) {
+  <app-confirmar-modal
+    [titulo]="conf.titulo"
+    [mensaje]="conf.mensaje"
+    [textoConfirmar]="conf.textoConfirmar ?? 'Confirmar'"
+    (confirmar)="ejecutarConfirmacion()"
+    (cancelar)="confirmacion.set(null)"
+  />
+}

@@ -1,20 +1,18 @@
-import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Usuario } from '../../../core/models';
-import { NombreRolPipe } from '../../../core/pipes/nombre-rol.pipe';
 import { UsuarioService } from '../../../services/usuario.service';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-admin-usuarios-page',
-    imports: [RouterLink, NombreRolPipe],
+    imports: [RouterLink, MensajeAlertaComponent],
     templateUrl: './admin-usuarios-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-usuarios-page.component.css'
 })
 export class AdminUsuariosPageComponent implements OnInit {
   private readonly usuarioService = inject(UsuarioService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly usuarios = signal<Usuario[]>([]);
   readonly loading = signal(true);
@@ -27,31 +25,25 @@ export class AdminUsuariosPageComponent implements OnInit {
 
   cargar(): void {
     this.loading.set(true);
-    this.usuarioService
-      .listar()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.usuarios.set(data);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.loading.set(false);
-        },
-      });
+    this.usuarioService.listar().subscribe({
+      next: (data) => {
+        this.usuarios.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+      },
+    });
   }
 
   toggleActivo(user: Usuario): void {
-    this.usuarioService
-      .actualizar({ ...user, activo: !user.activo })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.success.set(`Usuario ${user.email} ${user.activo ? 'desactivado' : 'activado'}`);
-          this.cargar();
-        },
-        error: (err) => this.error.set(err.message),
-      });
+    this.usuarioService.actualizar({ ...user, activo: !user.activo }).subscribe({
+      next: () => {
+        this.success.set(`Usuario ${user.email} ${user.activo ? 'desactivado' : 'activado'}`);
+        this.cargar();
+      },
+      error: (err) => this.error.set(err.message),
+    });
   }
 }

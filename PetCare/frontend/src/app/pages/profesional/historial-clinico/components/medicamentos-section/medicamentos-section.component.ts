@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, output, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormField, form, required, validate } from '@angular/forms/signals';
 import { Medicamento } from '../../../../../core/models';
 import { HistorialClinicoService } from '../../../../../services/historial-clinico.service';
+import {
+  ConfirmacionPendiente,
+  ConfirmarModalComponent,
+} from '../../../../../shared/confirmar-modal/confirmar-modal.component';
 import { fechaHoy, MEDICAMENTO_VACIO, MedicamentoForm } from '../../historial-clinico.model';
 
 /**
@@ -12,14 +15,13 @@ import { fechaHoy, MEDICAMENTO_VACIO, MedicamentoForm } from '../../historial-cl
  */
 @Component({
   selector: 'app-medicamentos-section',
-  imports: [FormField],
+  imports: [FormField, ConfirmarModalComponent],
   templateUrl: './medicamentos-section.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './medicamentos-section.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MedicamentosSectionComponent {
   private readonly historialService = inject(HistorialClinicoService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly idMascota = input.required<number>();
   readonly medicamentos = input<Medicamento[]>([]);
@@ -30,6 +32,7 @@ export class MedicamentosSectionComponent {
 
   readonly mostrarForm = signal(false);
   readonly editandoId = signal<number | null>(null);
+  readonly confirmacion = signal<ConfirmacionPendiente | null>(null);
   readonly medicamentoModel = signal<MedicamentoForm>({ ...MEDICAMENTO_VACIO });
   readonly medicamentoForm = form(this.medicamentoModel, (p) => {
     required(p.nombre, { message: 'El nombre del medicamento es obligatorio' });
@@ -92,7 +95,7 @@ export class MedicamentosSectionComponent {
       ? this.historialService.actualizarMedicamento(this.idMascota(), id, payload)
       : this.historialService.registrarMedicamento(this.idMascota(), payload);
 
-    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    request.subscribe({
       next: () => {
         this.exito.emit(
           id ? 'Medicamento actualizado correctamente' : 'Medicamento registrado correctamente',
@@ -105,17 +108,26 @@ export class MedicamentosSectionComponent {
   }
 
   eliminar(medicamento: Medicamento): void {
-    if (!confirm(`¿Eliminar el medicamento "${medicamento.nombre}"?`)) return;
-    this.historialService
-      .eliminarMedicamento(this.idMascota(), medicamento.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.exito.emit('Medicamento eliminado correctamente');
-          if (this.editandoId() === medicamento.id) this.cancelar();
-          this.recargar.emit();
-        },
-        error: (err) => this.errorMsg.emit(err.message),
-      });
+    this.confirmacion.set({
+      titulo: 'Eliminar medicamento',
+      mensaje: `¿Eliminar el medicamento "${medicamento.nombre}"?`,
+      textoConfirmar: 'Eliminar',
+      accion: () => {
+        this.historialService.eliminarMedicamento(this.idMascota(), medicamento.id).subscribe({
+          next: () => {
+            this.exito.emit('Medicamento eliminado correctamente');
+            if (this.editandoId() === medicamento.id) this.cancelar();
+            this.recargar.emit();
+          },
+          error: (err) => this.errorMsg.emit(err.message),
+        });
+      },
+    });
+  }
+
+  protected ejecutarConfirmacion(): void {
+    const pendiente = this.confirmacion();
+    this.confirmacion.set(null);
+    pendiente?.accion();
   }
 }

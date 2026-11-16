@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EstadisticasTurnos } from '../../../../core/models';
 import { TurnoService } from '../../../../services/turno.service';
@@ -8,6 +7,7 @@ import { PeriodoFiltrosComponent } from './components/periodo-filtros/periodo-fi
 import { KpiGridComponent } from './components/kpi-grid/kpi-grid.component';
 import { GraficoBarrasComponent } from './components/grafico-barras/grafico-barras.component';
 import { RankingServiciosComponent } from './components/ranking-servicios/ranking-servicios.component';
+import { MensajeAlertaComponent } from '../../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 /**
  * Panel de estadísticas de turnos (solo ADMIN).
@@ -15,6 +15,7 @@ import { RankingServiciosComponent } from './components/ranking-servicios/rankin
  * bloques visuales (filtros, KPIs, gráficos) son componentes aparte.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-admin-turnos-estadisticas-page',
   imports: [
     RouterLink,
@@ -22,14 +23,13 @@ import { RankingServiciosComponent } from './components/ranking-servicios/rankin
     KpiGridComponent,
     GraficoBarrasComponent,
     RankingServiciosComponent,
-  ],
+    MensajeAlertaComponent
+],
   templateUrl: './admin-turnos-estadisticas-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin-turnos-estadisticas-page.component.css',
 })
 export class AdminTurnosEstadisticasPageComponent implements OnInit {
   private readonly turnoService = inject(TurnoService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly presets = PRESETS;
   readonly agrupaciones = AGRUPACIONES;
@@ -104,22 +104,19 @@ export class AdminTurnosEstadisticasPageComponent implements OnInit {
     this.loading.set(primeraCarga);
     this.refreshing.set(!primeraCarga);
 
-    this.turnoService
-      .estadisticas(rango.desde, rango.hasta, this.agrupacion())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res) => {
-          this.data.set(res);
-          this.actualizadoEn.set(new Date().toLocaleTimeString('es-AR'));
-          this.loading.set(false);
-          this.refreshing.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.loading.set(false);
-          this.refreshing.set(false);
-        },
-      });
+    this.turnoService.estadisticas(rango.desde, rango.hasta, this.agrupacion()).subscribe({
+      next: (res) => {
+        this.data.set(res);
+        this.actualizadoEn.set(new Date().toLocaleTimeString('es-AR'));
+        this.loading.set(false);
+        this.refreshing.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+        this.refreshing.set(false);
+      },
+    });
   }
 
   // ==================== FECHAS ====================

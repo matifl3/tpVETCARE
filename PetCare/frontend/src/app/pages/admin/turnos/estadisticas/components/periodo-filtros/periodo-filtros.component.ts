@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { inputValue } from '../../../../../../core/form.helpers';
+﻿import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Agrupacion, Preset } from '../../estadisticas.model';
 
 /** Filtros del panel: período (presets o fechas) y agrupación. */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-periodo-filtros',
   templateUrl: './periodo-filtros.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './periodo-filtros.component.css',
 })
 export class PeriodoFiltrosComponent {
@@ -21,7 +20,7 @@ export class PeriodoFiltrosComponent {
   readonly agrupacionCambiada = output<string>();
   readonly fechaCambiada = output<{ cual: 'desde' | 'hasta'; valor: string }>();
 
-  cambiarFecha(cual: 'desde' | 'hasta', event: Event): void {
-    this.fechaCambiada.emit({ cual, valor: inputValue(event) });
+  cambiarFecha(cual: 'desde' | 'hasta', valor: string): void {
+    this.fechaCambiada.emit({ cual, valor });
   }
 }

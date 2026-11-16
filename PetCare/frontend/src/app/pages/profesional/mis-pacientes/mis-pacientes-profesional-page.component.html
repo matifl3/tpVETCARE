@@ -6,9 +6,7 @@
       <h1>Mis Pacientes</h1>
       <a routerLink="/dashboard/profesional" class="btn-secondary btn-volver">← Volver</a>
     </div>
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
 
     @if (mascotas().length === 0) {
       <div class="admin-card">
@@ -24,7 +22,7 @@
               <th>Especie</th>
               <th>Raza</th>
               <th>Sexo</th>
-              @if (user().rol === 'ADIESTRADOR' || user().rol === 'VETERINARIO') {
+              @if (user.rol === 'ADIESTRADOR' || user.rol === 'VETERINARIO') {
                 <th>Acción</th>
               }
             </tr>
@@ -37,7 +35,7 @@
                 <td>{{ m.especie }}</td>
                 <td>{{ m.raza || '—' }}</td>
                 <td>{{ m.sexo || '—' }}</td>
-                @if (user().rol === 'VETERINARIO') {
+                @if (user.rol === 'VETERINARIO') {
                   <td>
                     <a
                       [routerLink]="['/dashboard/profesional/mis-pacientes', m.idMascota, 'historial']"
@@ -46,7 +44,7 @@
                       Ver detalles
                     </a>
                   </td>
-                } @else if (user().rol === 'ADIESTRADOR') {
+                } @else if (user.rol === 'ADIESTRADOR') {
                   <td>
                     <a
                       [routerLink]="['/dashboard/mascotas', m.idMascota, 'seguimiento']"

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { Profesional } from '../core/models';
+import { MensajeResponse, Profesional } from '../core/models';
 
 @Injectable({ providedIn: 'root' })
 export class ProfesionalService {
@@ -23,11 +23,11 @@ export class ProfesionalService {
     return this.api.get<Profesional[]>('/api/profesionales/pendientes');
   }
 
-  aprobar(id: number | string): Observable<Profesional> {
-    return this.api.put<Profesional>(`/api/profesionales/${id}/aprobar`);
+  aprobar(id: number | string): Observable<MensajeResponse> {
+    return this.api.put<MensajeResponse>(`/api/profesionales/${id}/aprobar`);
   }
 
-  rechazar(id: number | string): Observable<Profesional> {
-    return this.api.put<Profesional>(`/api/profesionales/${id}/rechazar`);
+  rechazar(id: number | string): Observable<MensajeResponse> {
+    return this.api.put<MensajeResponse>(`/api/profesionales/${id}/rechazar`);
   }
 }

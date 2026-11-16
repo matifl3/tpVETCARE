@@ -107,3 +107,13 @@
     </div>
   }
 </div>
+
+@if (confirmacion(); as conf) {
+  <app-confirmar-modal
+    [titulo]="conf.titulo"
+    [mensaje]="conf.mensaje"
+    [textoConfirmar]="conf.textoConfirmar ?? 'Confirmar'"
+    (confirmar)="ejecutarConfirmacion()"
+    (cancelar)="confirmacion.set(null)"
+  />
+}

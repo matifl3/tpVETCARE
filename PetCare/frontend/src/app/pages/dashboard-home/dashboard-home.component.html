@@ -1,9 +1,9 @@
 <div class="dashboard">
-  <h1>{{ esAdmin() ? 'Panel de Administración' : '¡Bienvenido, ' + user().nombre + '!' }}</h1>
+  <h1>{{ esAdmin() ? 'Panel de Administración' : '¡Bienvenido, ' + user()?.nombre + '!' }}</h1>
   <p>
     {{
       esAdmin()
-        ? 'Bienvenido, ' + user().nombre + '. Gestioná la plataforma PetCare.'
+        ? 'Bienvenido, ' + user()?.nombre + '. Gestioná la plataforma PetCare.'
         : 'Gestioná tus mascotas, turnos y más desde tu panel.'
     }}
   </p>
@@ -61,8 +61,8 @@
         <span class="dash-icon">📋</span>
         <h3>
           Postulaciones
-          @if (user().pendientes) {
-            <span class="nav-role">{{ user().pendientes }} pendientes</span>
+          @if (user()?.pendientes) {
+            <span class="nav-role">{{ user()?.pendientes }} pendientes</span>
           }
         </h3>
         <p>Revisá y aprobá solicitudes de profesionales.</p>

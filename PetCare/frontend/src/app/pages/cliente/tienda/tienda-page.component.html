@@ -5,26 +5,21 @@
     <h1>Tienda</h1>
     <p class="mb-24">Productos para tu mascota.</p>
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="alert alert-success show">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
-    <form class="buscador" (submit)="handleBuscar($event)">
+    <form class="buscador" [formGroup]="filtros" (ngSubmit)="buscar()">
       <input class="input-busqueda"
         type="text"
         placeholder="Buscar producto..."
-        [value]="busqueda()"
-        (input)="busqueda.set(inputValue($event))"
+        formControlName="busqueda"
       />
       <button type="submit" class="btn-primary">Buscar</button>
     </form>
 
     <div class="barra-filtros">
       <button
-        [class]="'btn-' + (categoria() === '' && busqueda() === '' ? 'primary' : 'secondary')"
+        [class]="'btn-' + (categoria() === '' && filtros.controls.busqueda.value === '' ? 'primary' : 'secondary')"
         (click)="filtrarCategoria('')"
       >
         Todas

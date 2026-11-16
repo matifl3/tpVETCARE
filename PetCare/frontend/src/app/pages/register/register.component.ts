@@ -1,9 +1,10 @@
-import { Component, computed, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { AuthService } from '../../core/auth.service';
-import { NombreRolPipe } from '../../core/pipes/nombre-rol.pipe';
-import { firstValueFrom } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
+import { NombreRolPipe } from '../../core/pipes/nombre-rol.pipe';
+import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
+import { ROLES_PROFESIONALES, esRolProfesional } from '../../core/models';
 
 interface RegistroForm {
   nombre: string;
@@ -16,14 +17,9 @@ interface RegistroForm {
   experiencia: string;
 }
 
-const ROLES_PROFESIONALES = ['VETERINARIO', 
-  'PASEADOR', 
-  'PELUQUERO', 
-  'ADIESTRADOR', 
-  'CUIDADOR'];
-
 @Component({
-  imports: [FormRoot, FormField, RouterLink, NombreRolPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormRoot, FormField, RouterLink, NombreRolPipe, MensajeAlertaComponent],
   selector: 'app-register',
   styleUrl: './register.component.css',
   templateUrl: './register.component.html',
@@ -51,7 +47,7 @@ export class RegisterComponent {
   protected readonly formModel = signal({...this.formVacio});
 
   protected readonly camposProfesionales = computed(() =>
-    ROLES_PROFESIONALES.includes(this.formModel().rol)
+    esRolProfesional(this.formModel().rol)
   );
 
   readonly formularioRegistro = form(

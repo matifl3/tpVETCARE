@@ -1,56 +1,66 @@
-import { Component, DestroyRef, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+﻿import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
+import {
+  ConfirmacionPendiente,
+  ConfirmarModalComponent,
+} from '../../../shared/confirmar-modal/confirmar-modal.component';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
-    selector: 'app-admin-turnos-page',
-    imports: [RouterLink],
-    templateUrl: './admin-turnos-page.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
-    styleUrl: './admin-turnos-page.component.css'
+  selector: 'app-admin-turnos-page',
+  imports: [RouterLink, MensajeAlertaComponent, ConfirmarModalComponent],
+  templateUrl: './admin-turnos-page.component.html',
+  styleUrl: './admin-turnos-page.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminTurnosPageComponent implements OnInit {
   private readonly turnoService = inject(TurnoService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly turnos = signal<Turno[]>([]);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly success = signal('');
+  readonly confirmacion = signal<ConfirmacionPendiente | null>(null);
 
   ngOnInit(): void {
-    this.turnoService
-      .listarTodos()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.turnos.set(data);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.loading.set(false);
-        },
-      });
+    this.turnoService.listarTodos().subscribe({
+      next: (data) => {
+        this.turnos.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+      },
+    });
   }
 
   handleCancelar(id: number): void {
-    if (!confirm('¿Cancelar este turno?')) return;
-    this.error.set('');
-    this.success.set('');
-    this.turnoService
-      .cancelar(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.success.set('Turno cancelado correctamente');
-          this.turnos.update((prev) =>
-            prev.map((t) => (t.id === id ? { ...t, estadoTurno: 'CANCELADO', activo: false } : t)),
-          );
-        },
-        error: (err) => this.error.set(err.message),
-      });
+    this.confirmacion.set({
+      titulo: 'Cancelar turno',
+      mensaje: '¿Cancelar este turno?',
+      textoConfirmar: 'Cancelar turno',
+      accion: () => {
+        this.error.set('');
+        this.success.set('');
+        this.turnoService.cancelar(id).subscribe({
+          next: () => {
+            this.success.set('Turno cancelado correctamente');
+            this.turnos.update((prev) =>
+              prev.map((t) => (t.id === id ? { ...t, estadoTurno: 'CANCELADO', activo: false } : t)),
+            );
+          },
+          error: (err) => this.error.set(err.message),
+        });
+      },
+    });
+  }
+
+  protected ejecutarConfirmacion(): void {
+    const pendiente = this.confirmacion();
+    this.confirmacion.set(null);
+    pendiente?.accion();
   }
 }

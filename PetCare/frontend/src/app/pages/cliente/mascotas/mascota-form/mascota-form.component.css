@@ -1,0 +1,6 @@
+.error-campo {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-error);
+  font-size: 0.85rem;
+}

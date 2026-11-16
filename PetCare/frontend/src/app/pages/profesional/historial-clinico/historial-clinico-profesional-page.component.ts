@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  OnInit,
-  computed,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { form, maxLength, min, required, validate } from '@angular/forms/signals';
@@ -19,6 +10,7 @@ import { FICHA_VACIA, FichaModel, fechaHoy } from './historial-clinico.model';
 import { FichaMascotaFormComponent } from './components/ficha-mascota-form/ficha-mascota-form.component';
 import { VacunasSectionComponent } from './components/vacunas-section/vacunas-section.component';
 import { MedicamentosSectionComponent } from './components/medicamentos-section/medicamentos-section.component';
+import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 /**
  * Página del historial clínico del veterinario.
@@ -26,22 +18,22 @@ import { MedicamentosSectionComponent } from './components/medicamentos-section/
  * vacunas y los medicamentos viven en sus propias secciones.
  */
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-historial-clinico-profesional-page',
   imports: [
     RouterLink,
     FichaMascotaFormComponent,
     VacunasSectionComponent,
     MedicamentosSectionComponent,
-  ],
+    MensajeAlertaComponent
+],
   templateUrl: './historial-clinico-profesional-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class HistorialClinicoProfesionalPageComponent implements OnInit {
   private readonly mascotaService = inject(MascotaService);
   private readonly historialService = inject(HistorialClinicoService);
   private readonly destroyRef = inject(DestroyRef);
 
-  /** Parámetro `:idMascota` de la URL (con withComponentInputBinding). */
   readonly idMascota = input.required<string>();
   protected readonly idMascotaNum = computed(() => Number(this.idMascota()));
 
@@ -76,41 +68,36 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
     forkJoin({
       mascota: this.mascotaService.buscarPorId(this.idMascotaNum()),
       historial: this.historialService.obtener(this.idMascotaNum()),
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: ({ mascota, historial }) => {
-          this.mascota.set(mascota);
-          this.historial.set(historial);
-          this.fichaModel.set({
-            nombre: mascota.nombre ?? '',
-            especie: mascota.especie ?? '',
-            raza: mascota.raza ?? '',
-            sexo: mascota.sexo ?? '',
-            peso: mascota.peso ?? null,
-            fechaNacimiento: mascota.fechaNacimiento ?? '',
-            observaciones: mascota.observaciones ?? '',
-            observacionesHistorial: historial.observaciones ?? '',
-          });
-          this.fichaForm().reset();
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.loading.set(false);
-        },
-      });
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ mascota, historial }) => {
+        this.mascota.set(mascota);
+        this.historial.set(historial);
+        this.fichaModel.set({
+          nombre: mascota.nombre ?? '',
+          especie: mascota.especie ?? '',
+          raza: mascota.raza ?? '',
+          sexo: mascota.sexo ?? '',
+          peso: mascota.peso ?? null,
+          fechaNacimiento: mascota.fechaNacimiento ?? '',
+          observaciones: mascota.observaciones ?? '',
+          observacionesHistorial: historial.observaciones ?? '',
+        });
+        this.fichaForm().reset();
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+      },
+    });
   }
 
   /** Vuelve a pedir solo el historial (lo usan las secciones de vacunas y medicamentos). */
   recargarHistorial(): void {
-    this.historialService
-      .obtener(this.idMascotaNum())
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (historial) => this.historial.set(historial),
-        error: (err) => this.error.set(err.message),
-      });
+    this.historialService.obtener(this.idMascotaNum()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (historial) => this.historial.set(historial),
+      error: (err) => this.error.set(err.message),
+    });
   }
 
   guardarFicha(): void {
@@ -139,19 +126,17 @@ export class HistorialClinicoProfesionalPageComponent implements OnInit {
       historial: this.historialService.actualizar(this.idMascotaNum(), {
         observaciones: f.observacionesHistorial.trim(),
       }),
-    })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.guardando.set(false);
-          this.success.set('Datos guardados correctamente');
-          this.cargar();
-        },
-        error: (err) => {
-          this.guardando.set(false);
-          this.error.set(err.message);
-          this.cargar();
-        },
-      });
+    }).subscribe({
+      next: () => {
+        this.guardando.set(false);
+        this.success.set('Datos guardados correctamente');
+        this.cargar();
+      },
+      error: (err) => {
+        this.guardando.set(false);
+        this.error.set(err.message);
+        this.cargar();
+      },
+    });
   }
 }

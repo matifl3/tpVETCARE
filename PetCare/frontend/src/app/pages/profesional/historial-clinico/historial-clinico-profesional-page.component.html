@@ -7,12 +7,8 @@
       <a routerLink="/dashboard/profesional/mis-pacientes" class="btn-secondary btn-volver">← Volver</a>
     </div>
 
-    @if (error()) {
-      <div class="alert alert-error show">{{ error() }}</div>
-    }
-    @if (success()) {
-      <div class="alert alert-success show">{{ success() }}</div>
-    }
+    <app-mensaje-alerta [mensaje]="error()" />
+    <app-mensaje-alerta [mensaje]="success()" tipo="success" />
 
     <app-ficha-mascota-form
       [fichaForm]="fichaForm"

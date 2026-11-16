@@ -1,82 +1,67 @@
-import { Location } from '@angular/common';
-import {
-  Component,
-  DestroyRef,
-  OnInit,
-  computed,
-  inject,
-  input,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+﻿import { Location } from '@angular/common';
+import { Component, DestroyRef, OnInit, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
-import { inputValue } from '../../core/form.helpers';
 import { Seguimiento } from '../../core/models';
 import { SeguimientoService } from '../../services/seguimiento.service';
-
-interface ProgresoForm {
-  descripcion: string;
-  tecnicas: string;
-  observaciones: string;
-  evaluacion: string;
-}
-
-const FORM_VACIO: ProgresoForm = { descripcion: '', tecnicas: '', observaciones: '', evaluacion: '' };
+import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-seguimiento-page',
   standalone: true,
+  imports: [ReactiveFormsModule, MensajeAlertaComponent],
   templateUrl: './seguimiento-page.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './seguimiento-page.component.css',
 })
 export class SeguimientoPageComponent implements OnInit {
   private readonly location = inject(Location);
   private readonly auth = inject(AuthService);
   private readonly seguimientoService = inject(SeguimientoService);
+  private readonly fb = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
-
-  protected readonly inputValue = inputValue;
-
-  /** Parámetro `:idMascota` de la URL (con withComponentInputBinding). */
   readonly idMascota = input.required<string>();
-  private readonly idMascotaNum = computed(() => Number(this.idMascota()));
-  private readonly user = this.auth.user;
-  protected readonly esAdiestradorOAdmin = computed(
-    () => this.user()?.rol === 'ADIESTRADOR' || this.user()?.rol === 'ADMIN',
-  );
+  private readonly user = this.auth.user();
+  protected readonly esAdiestradorOAdmin = this.user?.rol === 'ADIESTRADOR' || this.user?.rol === 'ADMIN';
 
   readonly seguimiento = signal<Seguimiento | null>(null);
   readonly loading = signal(true);
   readonly error = signal('');
   readonly success = signal('');
   readonly mostrarForm = signal(false);
-  readonly form = signal<ProgresoForm>({ ...FORM_VACIO });
+
+  readonly form = this.fb.group({
+    descripcion: ['', [Validators.required, Validators.maxLength(500)]],
+    tecnicas: ['', [Validators.required, Validators.maxLength(500)]],
+    observaciones: ['', Validators.maxLength(500)], // opcional
+    evaluacion: ['', Validators.required],
+  });
 
   ngOnInit(): void {
     this.cargar();
   }
 
-  upd(patch: Partial<ProgresoForm>): void {
-    this.form.set({ ...this.form(), ...patch });
+  toggleForm(): void {
+    this.form.reset();
+    this.mostrarForm.update((v) => !v);
   }
 
   cargar(): void {
     this.loading.set(true);
     this.seguimientoService
-      .obtener(this.idMascotaNum())
+      .obtener(Number(this.idMascota()))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (data) => {
-          this.seguimiento.set(data);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.loading.set(false);
-        },
-      });
+      next: (data) => {
+        this.seguimiento.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message);
+        this.loading.set(false);
+      },
+    });
   }
 
   /** "← Volver" vuelve a la página anterior. */
@@ -85,21 +70,24 @@ export class SeguimientoPageComponent implements OnInit {
     this.location.back();
   }
 
-  handleSubmit(event: Event): void {
-    event.preventDefault();
+  guardar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.error.set('');
     this.success.set('');
     this.seguimientoService
-      .registrarProgreso(this.idMascotaNum(), { ...this.form() })
+      .registrarProgreso(Number(this.idMascota()), this.form.getRawValue())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          this.success.set('Progreso registrado correctamente');
-          this.form.set({ ...FORM_VACIO });
-          this.mostrarForm.set(false);
-          this.cargar();
-        },
-        error: (err) => this.error.set(err.message),
-      });
+      next: () => {
+        this.success.set('Progreso registrado correctamente');
+        this.form.reset();
+        this.mostrarForm.set(false);
+        this.cargar();
+      },
+      error: (err) => this.error.set(err.message),
+    });
   }
 }
