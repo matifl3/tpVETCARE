@@ -1,16 +1,24 @@
+
 <section class="items-section">
   @if (carrito().items?.length) {
     <div class="grupo-items">
       <h3 class="grupo-titulo">Productos</h3>
 
-      @for (item of carrito().items; track item.idProducto) {
-        <article class="item-row">
-          <div class="item-info">
-            <span class="item-nombre">{{ item.nombre }}</span>
-            <span class="item-detalle">${{ item.precioUnitario }} c/u</span>
-          </div>
+      <div class="productos-header" aria-hidden="true">
+        <span>Producto</span>
+        <span class="col-num">Precio</span>
+        <span class="col-center">Cantidad</span>
+        <span class="col-num">Subtotal</span>
+        <span></span>
+      </div>
 
-          <div class="item-actions">
+      @for (item of carrito().items; track item.idProducto) {
+        <article class="item-row item-row-producto">
+          <span class="item-nombre">{{ item.productoNombre }}</span>
+          <span class="item-detalle col-num">${{ item.precioUnitario }}</span>
+          
+
+          <div class="col-center">
             <div class="qty-control">
               <button
                 type="button"
@@ -30,19 +38,19 @@
                 +
               </button>
             </div>
-
-            <span class="item-subtotal">${{ item.subtotal }}</span>
-
-            <button
-              type="button"
-              class="btn-remove"
-              title="Quitar producto"
-              [disabled]="disabled()"
-              (click)="eliminarProducto.emit(item.idProducto)"
-            >
-              ✕
-            </button>
           </div>
+
+          <span class="item-subtotal col-num">${{ item.subtotal }}</span>
+
+          <button
+            type="button"
+            class="btn-remove"
+            title="Quitar producto"
+            [disabled]="disabled()"
+            (click)="eliminarProducto.emit(item.idProducto)"
+          >
+            ✕
+          </button>
         </article>
       }
     </div>
@@ -77,9 +85,6 @@
     </div>
   }
 
-  <div class="items-footer">
-    <a routerLink="/dashboard" class="btn-volver">
-      ← Volver al Dashboard
-    </a>
-  </div>
+ 
+  
 </section>

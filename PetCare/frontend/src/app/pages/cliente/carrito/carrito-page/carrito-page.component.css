@@ -4,6 +4,14 @@
   padding: 0 24px;
 }
 
+.carrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
 .carrito-card {
   background: #ffffff;
   border-radius: 20px;
