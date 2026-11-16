@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ProductoMasVendido } from '../../../../../core/models';
 import { ReporteService } from '../../../../../services/reporte.service';
 import { ANIO_ACTUAL, MESES } from '../../resportes.model';
 import { MensajeAlertaComponent } from '../../../../../shared/mensaje-alerta/mensaje-alerta.component';
@@ -28,7 +29,7 @@ export class ReporteProductosComponent {
     mes: [new Date().getMonth() + 1, Validators.required],
   });
 
-  readonly data = signal<any>(null);
+  readonly data = signal<ProductoMasVendido[] | null>(null);
   readonly error = signal('');
   readonly loading = signal(false);
 

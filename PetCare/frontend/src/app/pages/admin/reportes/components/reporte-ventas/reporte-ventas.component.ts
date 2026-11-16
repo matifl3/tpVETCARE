@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { ReporteVenta } from '../../../../../core/models';
 import { ReporteService } from '../../../../../services/reporte.service';
 import { MensajeAlertaComponent } from '../../../../../shared/mensaje-alerta/mensaje-alerta.component';
 
@@ -31,7 +32,7 @@ export class ReporteVentasComponent {
     { validators: rangoFechasValido },
   );
 
-  readonly data = signal<any>(null);
+  readonly data = signal<ReporteVenta[] | null>(null);
   readonly error = signal('');
   readonly loading = signal(false);
 
@@ -64,8 +65,8 @@ export class ReporteVentasComponent {
 
     let csvContent = 'ID;Usuario;Total;Estado;Fecha\n';
 
-    ventas.forEach((v: any) => {
-      const usuario = v.idUsuario || '—';
+    ventas.forEach((v) => {
+      const usuario = v.idUsuario ?? '—';
       const total = v.total ? v.total.toFixed(2) : '0.00';
       const estado = v.estado || '';
       const fecha = v.fechaCreacion || '';

@@ -1,6 +1,5 @@
 // Modelos compartidos por toda la app.
-// Inferidos de los DTO del backend (Spring Boot). El índice de propiedades
-// tolera campos extra que devuelva el backend.
+// Inferidos de los DTO del backend (Spring Boot).
 
 /** Usuario de la sesión: respuesta de /api/auth/me y /api/auth/login. */
 export interface SessionUser {
@@ -11,7 +10,6 @@ export interface SessionUser {
   aprobado: boolean;
   estado?: string;
   pendientes?: number;
-  [key: string]: any;
 }
 
 /** Usuario del sistema (GET /api/usuarios, etc.). */
@@ -24,7 +22,6 @@ export interface Usuario {
   direccion?: string | null;
   rol: string;
   activo: boolean;
-  [key: string]: any;
 }
 
 export interface Mascota {
@@ -38,7 +35,6 @@ export interface Mascota {
   observaciones?: string | null;
   activo?: boolean;
   idUsuario?: number | null;
-  [key: string]: any;
 }
 
 export interface Producto {
@@ -49,7 +45,6 @@ export interface Producto {
   stock: number;
   categoria: string;
   activo?: boolean;
-  [key: string]: any;
 }
 
 export interface Turno {
@@ -65,7 +60,6 @@ export interface Turno {
   horas?: number;
   precio?: number;
   activo?: boolean;
-  [key: string]: any;
 }
 
 /** Cantidad de turnos de un período del gráfico (GET /api/turnos/estadisticas). */
@@ -106,11 +100,11 @@ export interface EstadisticasTurnos {
 export interface CarritoProducto {
   id: number;
   idProducto: number;
-  productoNombre: string;
+  nombre?: string;
+  productoNombre?: string;
   cantidad: number;
   precioUnitario: number;
   subtotal: number;
-  [key: string]: any;
 }
 
 export interface CarritoTurno {
@@ -118,12 +112,12 @@ export interface CarritoTurno {
   idProfesional: number;
   nombreProfesional: string;
   rolProfesional?: string;
+  servicio?: string;
   idMascota: number;
   nombreMascota: string;
   fecha: string;
   horas?: number;
   precio?: number;
-  [key: string]: any;
 }
 
 export interface Carrito {
@@ -136,7 +130,6 @@ export interface Carrito {
   turnos?: CarritoTurno[];
   total: number;
   metodoPago?: string;
-  [key: string]: any;
 }
 
 export interface Tarjeta {
@@ -145,7 +138,6 @@ export interface Tarjeta {
   titular: string;
   vencimiento: string;
   activo?: boolean;
-  [key: string]: any;
 }
 
 export interface Profesional {
@@ -161,7 +153,6 @@ export interface Profesional {
   estado?: string;
   precioBase?: number;
   precioHora?: number;
-  [key: string]: any;
 }
 
 /** Registro individual de progreso (sesión de adiestramiento). */
@@ -174,7 +165,6 @@ export interface RegistroProgreso {
   evaluacion?: string;
   idProfesional?: number;
   nombreProfesional?: string;
-  [key: string]: any;
 }
 
 /** Seguimiento completo de entrenamiento de una mascota. */
@@ -185,7 +175,6 @@ export interface Seguimiento {
   idMascota: number;
   nombreMascota?: string;
   registros?: RegistroProgreso[];
-  [key: string]: any;
 }
 
 /** Vacuna registrada en el historial clínico de una mascota. */
@@ -198,7 +187,6 @@ export interface Vacuna {
   observaciones?: string | null;
   idProfesional?: number;
   nombreProfesional?: string | null;
-  [key: string]: any;
 }
 
 /** Medicamento recetado en el historial clínico de una mascota. */
@@ -213,7 +201,6 @@ export interface Medicamento {
   activo?: boolean;
   idProfesional?: number;
   nombreProfesional?: string | null;
-  [key: string]: any;
 }
 
 /** Historial clínico completo de una mascota. */
@@ -226,7 +213,6 @@ export interface HistorialClinico {
   nombreMascota?: string | null;
   vacunas?: Vacuna[];
   medicamentos?: Medicamento[];
-  [key: string]: any;
 }
 
 /** Reporte de ganancias mensuales. */
@@ -235,7 +221,6 @@ export interface GananciaMensual {
   mes: number;
   cantidadVentas: number;
   gananciaTotal: number;
-  [key: string]: any;
 }
 
 /** Reporte de productos más vendidos. */
@@ -245,10 +230,32 @@ export interface ProductoMasVendido {
   categoria?: string;
   cantidadVendida: number;
   gananciaTotal: number;
-  [key: string]: any;
 }
 
-/** Reporte de ventas por rango de fechas (forma libre según filtros). */
+/** Reporte de ventas por rango de fechas. */
 export interface ReporteVenta {
-  [key: string]: any;
+  id: number;
+  idUsuario?: number;
+  nombreUsuario?: string;
+  emailUsuario?: string;
+  estado?: string;
+  fechaCreacion?: string;
+  fechaActualizacion?: string;
+  items?: CarritoProducto[];
+  turnos?: CarritoTurno[];
+  total: number;
+  metodoPago?: string;
+}
+
+/** Respuesta simple del backend con un mensaje de confirmación. */
+export interface MensajeResponse {
+  mensaje?: string;
+}
+
+/** Respuesta de GET /api/turnos/disponibilidad/:idProfesional. */
+export interface DisponibilidadTurno {
+  disponible: boolean;
+  fecha?: string;
+  idProfesional?: number;
+  mensaje?: string;
 }

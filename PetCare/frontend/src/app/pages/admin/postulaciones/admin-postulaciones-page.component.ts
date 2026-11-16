@@ -52,7 +52,7 @@ export class AdminPostulacionesPageComponent implements OnInit {
     this.procesando.set(id);
     this.profesionalService[accion](id).subscribe({
       next: (res) => {
-        this.success.set(res?.['mensaje'] || mensajeDefault);
+        this.success.set(res?.mensaje || mensajeDefault);
         this.postulaciones.update((prev) => prev.filter((p) => p.id !== id));
         this.procesando.set(null);
       },

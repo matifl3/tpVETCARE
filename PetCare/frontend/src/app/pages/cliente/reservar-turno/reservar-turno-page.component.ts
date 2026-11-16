@@ -81,7 +81,7 @@ export class ReservarTurnoPageComponent implements OnInit {
         switchMap((fecha) => {
           if (!fecha || this.form.controls.fecha.invalid) return of(null);
           return this.turnoService.disponibilidad(this.idProfesional, fecha).pipe(
-            map((res) => res.disponible as boolean),
+            map((res) => res.disponible),
             catchError(() => of(false)),
           );
         }),
