@@ -19,13 +19,10 @@ export function crearFormTarjeta(fb: NonNullableFormBuilder) {
   });
 }
 
-/** El tipo del formulario que devuelve crearFormTarjeta. */
+
 export type TarjetaFormGroup = ReturnType<typeof crearFormTarjeta>;
 
-/**
- * Campos de una tarjeta con sus mensajes de error.
- * El componente padre crea el formulario y se lo pasa con [form].
- */
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-tarjeta-form',
