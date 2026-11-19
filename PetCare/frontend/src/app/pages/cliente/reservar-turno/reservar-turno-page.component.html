@@ -83,7 +83,7 @@
         <p class="precio-total">Total: ${{ total().toFixed(2) }}</p>
       </div>
 
-      <button type="submit" class="btn-primary" [disabled]="enviando() || disponible() === false">
+      <button type="submit" class="btn-primary" [disabled]="enviando() || !disponible()">
         {{ enviando() ? 'Agregando...' : 'Agregar al carrito' }}
       </button>
     </form>
