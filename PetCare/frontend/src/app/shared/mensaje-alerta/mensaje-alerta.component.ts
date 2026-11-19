@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-
-export type TipoMensaje = 'error' | 'success';
+import { TipoMensaje } from '../../core/models';
 
 @Component({
   selector: 'app-mensaje-alerta',

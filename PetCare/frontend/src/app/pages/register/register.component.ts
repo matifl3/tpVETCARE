@@ -4,18 +4,7 @@ import { AuthService } from '../../core/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { MensajeAlertaComponent } from '../../shared/mensaje-alerta/mensaje-alerta.component';
-import { ROLES_PROFESIONALES, esRolProfesional } from '../../core/models';
-
-interface RegistroForm {
-  nombre: string;
-  apellido: string;
-  email: string;
-  telefono: string;
-  password: string;
-  rol: string;
-  matricula: string;
-  experiencia: string;
-}
+import { RegistroForm, ROLES_PROFESIONALES, esRolProfesional } from '../../core/models';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

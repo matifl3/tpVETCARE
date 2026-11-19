@@ -1,15 +1,7 @@
 ﻿import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
-import { SessionUser } from '../../../core/models';
-
-const ROL_LABELS: Record<string, { icon: string; label: string }> = {
-  VETERINARIO: { icon: '👨‍⚕️', label: 'Veterinario' },
-  PASEADOR: { icon: '🐕', label: 'Paseador' },
-  PELUQUERO: { icon: '✂️', label: 'Peluquero' },
-  ADIESTRADOR: { icon: '🎯', label: 'Adiestrador' },
-  CUIDADOR: { icon: '🏠', label: 'Cuidador' },
-};
+import { ROL_LABELS_DASHBOARD, SessionUser } from '../../../core/models';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,5 +14,5 @@ export class ProfesionalDashboardComponent {
   private readonly auth = inject(AuthService);
 
   protected readonly user: SessionUser = this.auth.user()!;
-  protected readonly info = ROL_LABELS[this.user.rol] || { icon: '👤', label: this.user.rol };
+  protected readonly info = ROL_LABELS_DASHBOARD[this.user.rol] || { icon: '👤', label: this.user.rol };
 }

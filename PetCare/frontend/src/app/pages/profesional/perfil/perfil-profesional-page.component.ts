@@ -2,26 +2,10 @@
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth.service';
-import { Profesional } from '../../../core/models';
+import { Profesional, ROL_LABELS_PERFIL } from '../../../core/models';
 import { ProfesionalService } from '../../../services/profesional.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
-
-interface PasswordForm {
-  actual: string;
-  nueva: string;
-  repetir: string;
-}
-
-const PASSWORD_FORM_VACIO: PasswordForm = { actual: '', nueva: '', repetir: '' };
-
-const ROL_LABELS: Record<string, string> = {
-  VETERINARIO: 'Veterinario',
-  PASEADOR: 'Paseador',
-  PELUQUERO: 'Peluquero',
-  ADIESTRADOR: 'Adiestrador',
-  CUIDADOR: 'Cuidador',
-};
 
 /**
  * Validador de GRUPO: mira dos campos juntos.
@@ -47,7 +31,7 @@ export class PerfilProfesionalPageComponent implements OnInit {
   private readonly usuarioService = inject(UsuarioService);
   private readonly fb = inject(NonNullableFormBuilder);
 
-  protected readonly rolLabels = ROL_LABELS;
+  protected readonly rolLabels = ROL_LABELS_PERFIL;
 
   readonly perfil = signal<Profesional | null>(null);
   readonly loading = signal(true);

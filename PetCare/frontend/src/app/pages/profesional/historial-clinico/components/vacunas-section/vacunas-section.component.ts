@@ -1,11 +1,8 @@
 ﻿import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormField, form, required, validate } from '@angular/forms/signals';
-import { Vacuna } from '../../../../../core/models';
+import { ConfirmacionPendiente, Vacuna } from '../../../../../core/models';
 import { HistorialClinicoService } from '../../../../../services/historial-clinico.service';
-import {
-  ConfirmacionPendiente,
-  ConfirmarModalComponent,
-} from '../../../../../shared/confirmar-modal/confirmar-modal.component';
+import { ConfirmarModalComponent } from '../../../../../shared/confirmar-modal/confirmar-modal.component';
 import { fechaHoy, VACUNA_VACIA, VacunaForm } from '../../historial-clinico.model';
 
 /**

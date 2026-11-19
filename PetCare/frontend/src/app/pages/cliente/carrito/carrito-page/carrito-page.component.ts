@@ -6,10 +6,8 @@ import { CarritoPagoComponent } from '../carrito-pago/carrito-pago.component';
 import { CarritoHistorialComponent } from '../carrito-historial/carrito-historial.component';
 import { CarritoService } from '../../../../services/carrito.service';
 import { TarjetaService } from '../../../../services/tarjeta.service';
-import { Carrito, Tarjeta } from '../../../../core/models';
+import { Carrito, Pestana, Tarjeta } from '../../../../core/models';
 import { MensajeAlertaComponent } from '../../../../shared/mensaje-alerta/mensaje-alerta.component';
-
-type Pestana = 'carrito' | 'historial';
 
 @Component({
   selector: 'app-carrito-page',
