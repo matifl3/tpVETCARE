@@ -1,7 +1,11 @@
 @if (loading()) {
   <div class="dashboard"><p>Cargando...</p></div>
 } @else {
+  
   <div class="dashboard">
+    <a routerLink="/dashboard" class="btn-secondary link-volver volver"
+      >&LeftArrow; Volver al Dashboard</a
+    >
     <div class="encabezado-pagina">
       <h1>Métodos de Pago</h1>
       <button class="btn-primary" (click)="toggleForm()">
@@ -24,6 +28,7 @@
     @if (tarjetas().length === 0) {
       <p class="texto-gris">No tenés tarjetas registradas.</p>
     } @else {
+      
       <div class="card-grid">
         @for (t of tarjetas(); track t.idTarjeta) {
           <div class="dash-card relativo">
@@ -43,9 +48,7 @@
       </div>
     }
 
-    <a routerLink="/dashboard" class="btn-secondary link-volver"
-      >← Volver al Dashboard</a
-    >
+    
   </div>
 }
 

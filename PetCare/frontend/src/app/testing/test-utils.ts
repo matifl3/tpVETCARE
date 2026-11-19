@@ -1,4 +1,4 @@
-// Utilidades compartidas por los tests (.spec.ts). No forma parte del build de la app.
+
 import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EnvironmentProviders, Provider } from '@angular/core';
