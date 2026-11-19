@@ -1,12 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
-export interface ConfirmacionPendiente {
-  titulo: string;
-  mensaje: string;
-  textoConfirmar?: string;
-  accion: () => void;
-}
-
 @Component({
   selector: 'app-confirmar-modal',
   templateUrl: './confirmar-modal.component.html',

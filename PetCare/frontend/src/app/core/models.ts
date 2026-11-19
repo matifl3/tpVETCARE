@@ -297,3 +297,60 @@ export interface LoginForm {
 }
 
 export type EstadoTarjeta = 'inicial' | 'eligiendo' | 'agregado';
+
+export interface RegistroForm {
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string;
+  password: string;
+  rol: string;
+  matricula: string;
+  experiencia: string;
+}
+
+export interface PasswordForm {
+  actual: string;
+  nueva: string;
+  repetir: string;
+}
+
+export const PASSWORD_FORM_VACIO: PasswordForm = {
+  actual: '',
+  nueva: '',
+  repetir: '',
+};
+
+export interface TarjetaNuevaModel {
+  titular: string;
+  numeroTarjeta: string;
+  vencimiento: string;
+  cvv: string;
+}
+
+export type Pestana = 'carrito' | 'historial';
+
+export interface ConfirmacionPendiente {
+  titulo: string;
+  mensaje: string;
+  textoConfirmar?: string;
+  accion: () => void;
+}
+
+export type TipoMensaje = 'error' | 'success';
+
+export const ROL_LABELS_DASHBOARD: Record<string, { icon: string; label: string }> = {
+  VETERINARIO: { icon: '👨‍⚕️', label: 'Veterinario' },
+  PASEADOR: { icon: '🐕', label: 'Paseador' },
+  PELUQUERO: { icon: '✂️', label: 'Peluquero' },
+  ADIESTRADOR: { icon: '🎯', label: 'Adiestrador' },
+  CUIDADOR: { icon: '🏠', label: 'Cuidador' },
+};
+
+export const ROL_LABELS_PERFIL: Record<string, string> = {
+  VETERINARIO: 'Veterinario',
+  PASEADOR: 'Paseador',
+  PELUQUERO: 'Peluquero',
+  ADIESTRADOR: 'Adiestrador',
+  CUIDADOR: 'Cuidador',
+};

@@ -1,12 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Tarjeta } from '../../../core/models';
+import { ConfirmacionPendiente, Tarjeta } from '../../../core/models';
 import { TarjetaService } from '../../../services/tarjeta.service';
-import {
-  ConfirmacionPendiente,
-  ConfirmarModalComponent,
-} from '../../../shared/confirmar-modal/confirmar-modal.component';
+import { ConfirmarModalComponent } from '../../../shared/confirmar-modal/confirmar-modal.component';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 import {
   crearFormTarjeta,

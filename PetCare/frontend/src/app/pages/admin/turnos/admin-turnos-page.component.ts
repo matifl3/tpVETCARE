@@ -1,11 +1,8 @@
 ﻿import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Turno } from '../../../core/models';
+import { ConfirmacionPendiente, Turno } from '../../../core/models';
 import { TurnoService } from '../../../services/turno.service';
-import {
-  ConfirmacionPendiente,
-  ConfirmarModalComponent,
-} from '../../../shared/confirmar-modal/confirmar-modal.component';
+import { ConfirmarModalComponent } from '../../../shared/confirmar-modal/confirmar-modal.component';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 
 @Component({

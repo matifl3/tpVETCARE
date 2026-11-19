@@ -1,14 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, linkedSignal, output, signal } from '@angular/core';
 import { FormField, form, maxLength, pattern, required, validate, FormRoot } from '@angular/forms/signals';
-import { Carrito, Tarjeta } from '../../../../core/models';
+import { Carrito, Tarjeta, TarjetaNuevaModel } from '../../../../core/models';
 import { PATRON_CVV, PATRON_NUMERO_TARJETA, PATRON_VENCIMIENTO } from '../../../../core/tarjeta.validators';
-
-interface TarjetaNuevaModel {
-  titular: string;
-  numeroTarjeta: string;
-  vencimiento: string;
-  cvv: string;
-}
 
 @Component({
   selector: 'app-carrito-pago',

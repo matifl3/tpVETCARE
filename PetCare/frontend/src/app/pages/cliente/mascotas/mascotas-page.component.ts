@@ -1,11 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Mascota } from '../../../core/models';
+import { ConfirmacionPendiente, Mascota } from '../../../core/models';
 import { MascotaService } from '../../../services/mascota.service';
-import {
-  ConfirmacionPendiente,
-  ConfirmarModalComponent,
-} from '../../../shared/confirmar-modal/confirmar-modal.component';
+import { ConfirmarModalComponent } from '../../../shared/confirmar-modal/confirmar-modal.component';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
 import { MascotaCardComponent } from './mascota-card/mascota-card.component';
 import { MascotaFormComponent } from './mascota-form/mascota-form.component';
