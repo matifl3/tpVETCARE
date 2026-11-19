@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 export interface ConfirmacionPendiente {
   titulo: string;
@@ -8,21 +8,16 @@ export interface ConfirmacionPendiente {
 }
 
 @Component({
-  imports: [],
   selector: 'app-confirmar-modal',
-  styleUrl: './confirmar-modal.component.css',
   templateUrl: './confirmar-modal.component.html',
+  styleUrl: './confirmar-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmarModalComponent {
-
-  readonly abierto = input<boolean>(true);
-  readonly titulo = input<string>('Confirmar acción');
+  readonly titulo = input.required<string>();
   readonly mensaje = input.required<string>();
-  readonly textoConfirmar = input<string>('Confirmar');
-  readonly textoCancelar = input<string>('Cancelar');
-  readonly peligroso = input<boolean>(true);
+  readonly textoConfirmar = input('Confirmar');
 
   readonly confirmar = output<void>();
   readonly cancelar = output<void>();
-  
 }
