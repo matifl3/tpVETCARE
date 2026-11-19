@@ -30,10 +30,7 @@
     </form>
 
     <div class="barra-filtros">
-      <button
-        [class]="'btn-' + (categoria() === '' && filtros.controls.busqueda.value === '' ? 'primary' : 'secondary')"
-        (click)="filtrarCategoria('')"
-      >
+      <button [class]="'btn-' + (categoria() === '' && filtros.controls.busqueda.value === '' ? 'primary' : 'secondary')" (click)="filtrarCategoria('')" >
         Todas
       </button>
       @for (c of categorias; track c) {
