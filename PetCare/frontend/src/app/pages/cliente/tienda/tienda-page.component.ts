@@ -5,7 +5,7 @@ import { CATEGORIAS_PRODUCTO, Producto, EstadoTarjeta } from '../../../core/mode
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductoService } from '../../../services/producto.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
-import is from '@angular/common/locales/extra/is';
+
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,6 +88,7 @@ export class TiendaPageComponent implements OnInit {
     this.carritoService.agregar(id, cantidad).subscribe({
       next: () => {
         this.success.set(cantidad > 1 ? `Se agregaron ${cantidad} unidades al carrito.` : 'Producto agregado al carrito.');
+        this.mostrarIrCarrito.set(true);
         this.ultimaCantidadAgregada.update((prev) => ({ ...prev, [id]: cantidad }));
         this.estadoTarjeta.update((prev) => ({ ...prev, [id]: 'agregado' }));
       },
