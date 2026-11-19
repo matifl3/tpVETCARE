@@ -1,1 +1,15 @@
-<p>confirmar-modal works!</p>
+<div class="modal-fondo" (click)="cancelar.emit()">
+  <div class="modal-caja" (click)="$event.stopPropagation()">
+    <h3>{{ titulo() }}</h3>
+    <p class="modal-txt">{{ mensaje() }}</p>
+
+    <div class="modal-botones">
+      <button type="button" class="btn-secondary" (click)="cancelar.emit()">
+        Cancelar
+      </button>
+      <button type="button" class="btn-primary" (click)="confirmar.emit()">
+        {{ textoConfirmar() }}
+      </button>
+    </div>
+  </div>
+</div>
