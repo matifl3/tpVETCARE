@@ -5,7 +5,7 @@ import { CATEGORIAS_PRODUCTO, Producto, EstadoTarjeta } from '../../../core/mode
 import { CarritoService } from '../../../services/carrito.service';
 import { ProductoService } from '../../../services/producto.service';
 import { MensajeAlertaComponent } from '../../../shared/mensaje-alerta/mensaje-alerta.component';
-import is from '@angular/common/locales/extra/is';
+
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -32,7 +32,7 @@ public class ProductoService {
     }
 
     public List<Producto> findByNombre(String nombre) {
-        return productoRepository.findByNombre(nombre);
+        return productoRepository.findByNombreContainingIgnoreCase(nombre);
     }
 
     public List<Producto> findByPrecioBefore(Double precio) {
