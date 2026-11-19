@@ -3,27 +3,48 @@ import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
 
-/**
- * Guardia de rutas privadas.
- * - Sin token → al login.
- * - Con token pero sin usuario cargado (ej: se recargó la página) → valida el token con /api/auth/me.
- */
-export const authGuard: CanActivateFn = () => {
+
+export const authGuard: CanActivateFn = (route) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+  const rolesPermitidos = route.data?.['roles'] as string[] | undefined;
 
-  if (auth.user()) {
+  const usuarioActual = auth.user();
+  if (usuarioActual) {
+    if (!rolesPermitidos || rolesPermitidos.length === 0) {
+      return true;
+    }
+    const rolUsuario = usuarioActual.rol?.toUpperCase();
+    const permitido = rolesPermitidos.some((rol) => rol.toUpperCase() === rolUsuario);
+    if (!permitido) {
+      router.navigate(['/dashboard']);
+      return false;
+    }
     return true;
   }
+
   if (!auth.getToken()) {
-    return router.createUrlTree(['/login']);
+    router.navigate(['/login']);
+    return false;
   }
 
   return auth.check().pipe(
-    map(() => true),
+    map((user) => {
+      if (!rolesPermitidos || rolesPermitidos.length === 0) {
+        return true;
+      }
+      const rolUsuario = user.rol?.toUpperCase();
+      const permitido = rolesPermitidos.some((rol) => rol.toUpperCase() === rolUsuario);
+      if (!permitido) {
+        router.navigate(['/dashboard']);
+        return false;
+      }
+      return true;
+    }),
     catchError(() => {
       auth.logout();
-      return of(router.createUrlTree(['/login']));
+      router.navigate(['/login']);
+      return of(false);
     })
   );
 };

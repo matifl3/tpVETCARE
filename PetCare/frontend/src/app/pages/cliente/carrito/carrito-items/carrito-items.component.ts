@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { Carrito } from '../../../../core/models';
 
 @Component({
   selector: 'app-carrito-items',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './carrito-items.component.html',
   styleUrl: './carrito-items.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
