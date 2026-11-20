@@ -1,11 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 
-/**
- * Normaliza los errores HTTP a un mensaje legible:
- * `data?.error || data?.message || statusText || 'Error en la solicitud'`.
- * Todos los observables fallan con `Error` (usar `err.message` en los componentes).
- */
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) =>
   next(req).pipe(
     catchError((err: HttpErrorResponse) => {

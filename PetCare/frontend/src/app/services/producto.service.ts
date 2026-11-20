@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../core/api.service';
-import { Producto } from '../core/models';
+import { Producto, ProductoCambios, ProductoNuevo } from '../core/models';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
@@ -23,11 +23,11 @@ export class ProductoService {
     return this.api.get<Producto[]>(`/api/productos/nombre/${encodeURIComponent(nombre)}`);
   }
 
-  crear(data: Partial<Producto>): Observable<Producto> {
+  crear(data: ProductoNuevo): Observable<Producto> {
     return this.api.post<Producto>('/api/productos', data);
   }
 
-  actualizar(id: number | string, data: Partial<Producto>): Observable<Producto> {
+  actualizar(id: number | string, data: ProductoCambios): Observable<Producto> {
     return this.api.put<Producto>(`/api/productos/${id}`, data);
   }
 
@@ -35,3 +35,4 @@ export class ProductoService {
     return this.api.delete<void>(`/api/productos/${id}`);
   }
 }
+

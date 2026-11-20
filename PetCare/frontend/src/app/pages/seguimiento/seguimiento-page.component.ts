@@ -62,7 +62,7 @@ export class SeguimientoPageComponent implements OnInit {
     });
   }
 
-  /** "← Volver" vuelve a la página anterior. */
+  
   volver(event: Event): void {
     event.preventDefault();
     this.location.back();

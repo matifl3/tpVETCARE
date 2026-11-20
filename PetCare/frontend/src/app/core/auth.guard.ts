@@ -3,11 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { catchError, map, of } from 'rxjs';
 import { AuthService } from './auth.service';
 
-/**
- * Guardia de rutas privadas.
- * - Sin token → al login.
- * - Con token pero sin usuario cargado (ej: se recargó la página) → valida el token con /api/auth/me.
- */
+
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
