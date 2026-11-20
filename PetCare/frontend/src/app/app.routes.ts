@@ -26,6 +26,7 @@ import { TarjetasPageComponent } from './pages/cliente/tarjetas/tarjetas-page.co
 import { TiendaPageComponent } from './pages/cliente/tienda/tienda-page.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { CarritoPageComponent } from './pages/cliente/carrito/carrito-page/carrito-page.component';
+import { ROLES_PROFESIONALES } from './core/models';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -47,18 +48,18 @@ export const routes: Routes = [
       { path: 'mascotas/:idMascota/seguimiento', component: SeguimientoPageComponent },
       { path: 'tarjetas', component: TarjetasPageComponent },
       { path: 'compra-exitosa', component: CompraExitosaPageComponent },
-      { path: 'admin/usuarios', component: AdminUsuariosPageComponent },
-      { path: 'admin/postulaciones', component: AdminPostulacionesPageComponent },
-      { path: 'admin/mascotas', component: AdminMascotasPageComponent },
-      { path: 'admin/turnos', component: AdminTurnosPageComponent },
-      { path: 'admin/turnos/estadisticas', component: AdminTurnosEstadisticasPageComponent },
-      { path: 'admin/productos', component: AdminProductosPageComponent },
-      { path: 'admin/reportes', component: AdminReportesPageComponent },
-      { path: 'profesional', component: ProfesionalDashboardComponent },
-      { path: 'profesional/mis-turnos', component: MisTurnosProfesionalPageComponent },
-      { path: 'profesional/mis-pacientes', component: MisPacientesProfesionalPageComponent },
-      { path: 'profesional/mis-pacientes/:idMascota/historial', component: HistorialClinicoProfesionalPageComponent},
-      { path: 'profesional/perfil', component: PerfilProfesionalPageComponent },
+      { path: 'admin/usuarios', component: AdminUsuariosPageComponent,  data: { roles: ['ADMIN'] } },
+      { path: 'admin/postulaciones', component: AdminPostulacionesPageComponent, data: { roles: ['ADMIN'] } },
+      { path: 'admin/mascotas', component: AdminMascotasPageComponent, data: { roles: ['ADMIN'] } },
+      { path: 'admin/turnos', component: AdminTurnosPageComponent, data: { roles: ['ADMIN'] } },
+      { path: 'admin/turnos/estadisticas', component: AdminTurnosEstadisticasPageComponent, data: { roles: ['ADMIN'] } },
+      { path: 'admin/productos', component: AdminProductosPageComponent, data: { roles: ['ADMIN'] } },
+      { path: 'admin/reportes', component: AdminReportesPageComponent, data: { roles: ['ADMIN'] } },
+      { path: 'profesional', component: ProfesionalDashboardComponent, data: { roles: ROLES_PROFESIONALES } },
+      { path: 'profesional/mis-turnos', component: MisTurnosProfesionalPageComponent, data: { roles: ROLES_PROFESIONALES } },
+      { path: 'profesional/mis-pacientes', component: MisPacientesProfesionalPageComponent, data: { roles: ROLES_PROFESIONALES } },
+      { path: 'profesional/mis-pacientes/:idMascota/historial', component: HistorialClinicoProfesionalPageComponent, data: { roles: ROLES_PROFESIONALES } },
+      { path: 'profesional/perfil', component: PerfilProfesionalPageComponent, data: { roles: ROLES_PROFESIONALES } },
     ],
   },
   { path: '**', redirectTo: '' },
