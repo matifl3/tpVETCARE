@@ -535,12 +535,7 @@ body {
   }
 }
 
-/* ============================================================
-   Utilidades compartidas por las pantallas
-   (antes estaban como style="..." repetidos en los templates).
-   Las de una sola línea llevan !important, igual que en Bootstrap,
-   para que le ganen a reglas más específicas como ".dashboard h1".
-   ============================================================ */
+
 
 /* Botones */
 .btn-volver { padding: 8px 20px !important; font-size: 13px !important; }
@@ -622,3 +617,7 @@ body {
   font-family: inherit;
 }
 .campo-textarea { min-height: 80px !important; resize: vertical !important; }
+
+.Volver{
+  margin-bottom: 2rem;
+}

@@ -46,6 +46,9 @@ export interface Producto {
   categoria: string;
   activo?: boolean;
 }
+export type ProductoNuevo = Omit<Producto, 'id'>;
+
+export type ProductoCambios = Partial<ProductoNuevo>;
 
 export interface Turno {
   id: number;

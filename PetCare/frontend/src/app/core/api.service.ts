@@ -5,28 +5,26 @@ import { environment } from '../../environments/environment';
 
 export type QueryParams = Record<string, string | number | boolean>;
 
-/**
- * Cliente HTTP base. El token JWT lo agrega `authInterceptor`.
- */
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrl;
 
   get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(this.url(endpoint), { });
+    return this.http.get<T>(this.url(endpoint), );
   }
 
   post<T>(endpoint: string, body?: unknown): Observable<T> {
-    return this.http.post<T>(this.url(endpoint), body ?? null, { });
+    return this.http.post<T>(this.url(endpoint), body ?? null, );
   }
 
   put<T>(endpoint: string, body?: unknown): Observable<T> {
-    return this.http.put<T>(this.url(endpoint), body ?? null, { });
+    return this.http.put<T>(this.url(endpoint), body ?? null, );
   }
 
   delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(this.url(endpoint), { });
+    return this.http.delete<T>(this.url(endpoint),);
   }
 
   postWithParams<T>(endpoint: string, params: QueryParams): Observable<T> {
@@ -58,4 +56,8 @@ export class ApiService {
     }
     return hp;
   }
+
+  getWithParams<T>(endpoint: string, params: QueryParams): Observable<T> {
+  return this.http.get<T>(this.url(endpoint), { params: this.toParams(params) });
+}
 }
